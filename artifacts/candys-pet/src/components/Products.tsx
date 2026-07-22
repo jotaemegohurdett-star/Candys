@@ -342,13 +342,24 @@ function ProductCard({
                     style={{ background: 'hsl(38 92% 40%)' }}>
                     <AlertTriangle className="w-2.5 h-2.5" /> Últimas unidades
                   </div>
-                ) : !stock.loading ? (
-                  <div className="absolute top-4 right-4 px-2.5 py-1 rounded-full text-[10px] font-bold text-white flex items-center gap-1"
-                    style={{ background: 'hsl(142 72% 29%)' }}>
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-300 inline-block" />
-                    Disponible
-                  </div>
                 ) : null}
+
+                {/* Stock por talla — siempre visible cuando hay datos */}
+                {!stock.loading && !(stock.isOutOfStock(product.id, 'M') && stock.isOutOfStock(product.id, 'L')) && (
+                  <div className="absolute bottom-14 left-3 right-3 flex gap-1.5 justify-end">
+                    {(['M', 'L'] as const).map(sz => {
+                      const qty = stock.getQty(product.id, sz);
+                      const oos = qty === 0;
+                      const low = qty > 0 && qty <= 3;
+                      return (
+                        <span key={sz} className="px-2 py-0.5 rounded text-[10px] font-bold text-white"
+                          style={{ background: oos ? 'hsl(0 72% 35%)' : low ? 'hsl(38 92% 35%)' : 'rgba(0,0,0,0.55)', backdropFilter: 'blur(4px)' }}>
+                          {sz}: {oos ? 'Agotado' : `${qty} ud.`}
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               {/* Info */}
