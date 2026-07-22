@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Lock, LogOut, Package, DollarSign, ImageIcon,
-  Save, Plus, Trash2, Eye, EyeOff, CheckCircle,
-  AlertTriangle, RefreshCw, ShieldCheck, X
+  Save, Plus, Trash2, Eye, EyeOff,
+  AlertTriangle, RefreshCw, ShieldCheck, Upload
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -339,11 +339,105 @@ function PricesTab() {
 /* ─────────────── IMÁGENES TAB ─────────────── */
 type ImageRow = { id: string; productId: string; url: string; position: number };
 
+/**
+ * Two-step presigned upload:
+ * 1. POST /api/storage/uploads/request-url  → get presigned GCS URL + objectPath
+ * 2. PUT <presigned-url> with file bytes (direct to GCS)
+ * 3. Save serving URL to product_images via admin API
+ */
+async function uploadImageFile(
+  file: File,
+  productId: string,
+): Promise<void> {
+  // Step 1 — request presigned URL (needs admin cookie)
+  const metaRes = await fetch(`${BASE}/api/storage/uploads/request-url`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: file.name, size: file.size, contentType: file.type || 'image/jpeg' }),
+  });
+  if (!metaRes.ok) throw new Error('No se pudo obtener la URL de subida');
+  const { uploadURL, objectPath } = await metaRes.json() as { uploadURL: string; objectPath: string };
+
+  // Step 2 — upload file directly to GCS
+  const uploadRes = await fetch(uploadURL, {
+    method: 'PUT',
+    body: file,
+    headers: { 'Content-Type': file.type || 'image/jpeg' },
+  });
+  if (!uploadRes.ok) throw new Error('Error al subir la imagen a storage');
+
+  // Step 3 — save serving URL in DB (full path the browser can fetch)
+  const servingUrl = `${BASE}/api/storage${objectPath}`;
+  await fetch(`${BASE}/api/admin/images`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ productId, url: servingUrl }),
+  }).then(r => { if (!r.ok) throw new Error('Error al guardar imagen'); });
+}
+
+function ImageUploadButton({ productId, onUploaded }: { productId: string; onUploaded: () => void }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  const handleFiles = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    setProgress(10);
+    let ok = 0;
+    for (const file of Array.from(files)) {
+      try {
+        await uploadImageFile(file, productId);
+        ok++;
+        setProgress(p => Math.min(p + Math.round(80 / files.length), 95));
+      } catch (err) {
+        toast.error(`Error con "${file.name}"`);
+      }
+    }
+    setProgress(100);
+    if (ok > 0) {
+      toast.success(`${ok} foto${ok > 1 ? 's' : ''} subida${ok > 1 ? 's' : ''} ✓`);
+      onUploaded();
+    }
+    setTimeout(() => { setUploading(false); setProgress(0); }, 600);
+  };
+
+  return (
+    <div>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        className="hidden"
+        onChange={e => handleFiles(e.target.files)}
+      />
+      <button
+        onClick={() => inputRef.current?.click()}
+        disabled={uploading}
+        className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm text-white transition-all disabled:opacity-60 w-full justify-center"
+        style={{ background: uploading ? 'hsl(220 25% 20%)' : 'hsl(340 84% 50%)', boxShadow: uploading ? 'none' : '0 4px 16px hsl(340 84% 50%/0.35)' }}
+      >
+        {uploading
+          ? <><RefreshCw className="w-4 h-4 animate-spin" /> Subiendo… {progress}%</>
+          : <><Upload className="w-4 h-4" /> Subir foto desde celular o computador</>
+        }
+      </button>
+      {uploading && (
+        <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ background: 'hsl(220 25% 20%)' }}>
+          <div className="h-full rounded-full transition-all duration-300" style={{ width: `${progress}%`, background: 'hsl(340 84% 50%)' }} />
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ImagesTab() {
   const [images, setImages] = useState<ImageRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [newUrl, setNewUrl] = useState<Record<string, string>>({});
-  const [saving, setSaving] = useState<Record<string, boolean>>({});
+  const [removing, setRemoving] = useState<Record<string, boolean>>({});
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -354,36 +448,15 @@ function ImagesTab() {
 
   useEffect(() => { load(); }, [load]);
 
-  const saveNew = async (productId: string) => {
-    const url = newUrl[productId]?.trim();
-    if (!url) return;
-    setSaving(s => ({ ...s, [productId]: true }));
-    try {
-      await api('POST', '/images', { productId, url });
-      await load();
-      setNewUrl(n => { const m = { ...n }; delete m[productId]; return m; });
-      toast.success('Imagen agregada ✓');
-    } catch { toast.error('Error al agregar imagen'); }
-    finally { setSaving(s => ({ ...s, [productId]: false })); }
-  };
-
-  const update = async (id: string, url: string) => {
-    setSaving(s => ({ ...s, [id]: true }));
-    try {
-      await api('PUT', `/images/${id}`, { url });
-      setImages(imgs => imgs.map(i => i.id === id ? { ...i, url } : i));
-      toast.success('Imagen actualizada ✓');
-    } catch { toast.error('Error al actualizar'); }
-    finally { setSaving(s => ({ ...s, [id]: false })); }
-  };
-
   const remove = async (id: string) => {
     if (!confirm('¿Eliminar esta imagen?')) return;
+    setRemoving(r => ({ ...r, [id]: true }));
     try {
       await api('DELETE', `/images/${id}`);
       setImages(imgs => imgs.filter(i => i.id !== id));
       toast.success('Imagen eliminada');
     } catch { toast.error('Error al eliminar'); }
+    finally { setRemoving(r => ({ ...r, [id]: false })); }
   };
 
   if (loading) return <Spinner />;
@@ -391,7 +464,7 @@ function ImagesTab() {
   return (
     <div className="space-y-4">
       <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
-        Pegá la URL directa de cualquier imagen (Cloudinary, Google Fotos, Dropbox, etc.).
+        Sube fotos directo desde tu celular o computador. La primera foto de cada producto es la que aparece en la tienda.
       </p>
 
       <div className="grid gap-4">
@@ -400,60 +473,56 @@ function ImagesTab() {
           return (
             <div key={pid} className="rounded-2xl overflow-hidden"
               style={{ background: 'hsl(220 25% 12%)', border: '1px solid hsl(220 25% 20%)' }}>
+              {/* Header */}
               <div className="px-5 py-3 border-b flex items-center gap-2"
                 style={{ borderColor: 'hsl(220 25% 20%)' }}>
                 <ImageIcon className="w-4 h-4" style={{ color: 'hsl(340 84% 60%)' }} />
                 <span className="font-semibold text-white text-sm">{name}</span>
                 <span className="ml-auto text-xs px-2 py-0.5 rounded-full"
                   style={{ background: 'hsl(220 25% 20%)', color: 'rgba(255,255,255,0.5)' }}>
-                  {imgs.length} imagen{imgs.length !== 1 ? 'es' : ''}
+                  {imgs.length} foto{imgs.length !== 1 ? 's' : ''}
                 </span>
               </div>
 
-              <div className="p-4 space-y-3">
-                {/* Existing images */}
-                {imgs.map(img => (
-                  <div key={img.id} className="flex gap-3 items-start">
-                    <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-white/5 border border-white/10">
-                      <img src={img.url} alt="" className="w-full h-full object-cover"
-                        onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                    </div>
-                    <div className="flex-1 min-w-0 space-y-2">
-                      <input
-                        type="url"
-                        defaultValue={img.url}
-                        onBlur={e => { if (e.target.value !== img.url) update(img.id, e.target.value); }}
-                        className="w-full px-3 py-2 rounded-lg text-xs font-mono focus:outline-none text-white/80"
-                        style={{ background: 'hsl(220 25% 8%)', border: '1px solid hsl(220 25% 25%)' }}
-                        placeholder="https://..."
-                      />
-                    </div>
-                    <button onClick={() => remove(img.id)}
-                      className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-red-500/20 text-red-400">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+              <div className="p-4 space-y-4">
+                {/* Uploaded images grid */}
+                {imgs.length > 0 && (
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                    {imgs.map((img, idx) => (
+                      <div key={img.id} className="relative group aspect-square rounded-xl overflow-hidden"
+                        style={{ background: 'hsl(220 25% 8%)', border: '1px solid hsl(220 25% 22%)' }}>
+                        <img
+                          src={img.url}
+                          alt=""
+                          className="w-full h-full object-cover"
+                          onError={e => { (e.target as HTMLImageElement).src = ''; }}
+                        />
+                        {/* "Principal" badge on first */}
+                        {idx === 0 && (
+                          <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded text-[9px] font-bold text-white"
+                            style={{ background: 'hsl(340 84% 50%)' }}>
+                            Principal
+                          </div>
+                        )}
+                        {/* Delete on hover */}
+                        <button
+                          onClick={() => remove(img.id)}
+                          disabled={removing[img.id]}
+                          className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          style={{ background: 'rgba(0,0,0,0.6)' }}
+                        >
+                          {removing[img.id]
+                            ? <RefreshCw className="w-5 h-5 text-white animate-spin" />
+                            : <Trash2 className="w-5 h-5 text-red-400" />
+                          }
+                        </button>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
 
-                {/* Add new image */}
-                <div className="flex gap-2 pt-1">
-                  <input
-                    type="url"
-                    value={newUrl[pid] ?? ''}
-                    onChange={e => setNewUrl(n => ({ ...n, [pid]: e.target.value }))}
-                    onKeyDown={e => e.key === 'Enter' && saveNew(pid)}
-                    className="flex-1 px-3 py-2 rounded-lg text-sm focus:outline-none text-white/80"
-                    style={{ background: 'hsl(220 25% 8%)', border: '1px solid hsl(220 25% 25%)' }}
-                    placeholder="Pegar URL de imagen nueva…"
-                  />
-                  <button onClick={() => saveNew(pid)}
-                    disabled={!newUrl[pid]?.trim() || saving[pid]}
-                    className="shrink-0 px-3 py-2 rounded-lg font-medium text-sm flex items-center gap-1.5 transition-all disabled:opacity-40"
-                    style={{ background: 'hsl(340 84% 50%)', color: 'white' }}>
-                    {saving[pid] ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
-                    Agregar
-                  </button>
-                </div>
+                {/* Upload button */}
+                <ImageUploadButton productId={pid} onUploaded={load} />
               </div>
             </div>
           );
