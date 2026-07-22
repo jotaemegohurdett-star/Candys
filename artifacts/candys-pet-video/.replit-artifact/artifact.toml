@@ -1,0 +1,27 @@
+kind = "video"
+previewPath = "/candys-pet-video/"
+title = "Candy's Pet — Video"
+version = "1.0.0"
+id = "artifacts/candys-pet-video"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/candys-pet-video/" ]
+localPort = 26272
+
+[services.development]
+run = "pnpm --filter @workspace/candys-pet-video run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/candys-pet-video", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/candys-pet-video/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "26272"
+BASE_PATH = "/candys-pet-video/"
