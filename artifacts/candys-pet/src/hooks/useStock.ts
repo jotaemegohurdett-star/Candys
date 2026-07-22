@@ -30,20 +30,25 @@ export function useStock() {
 
   /**
    * Returns qty. While loading, returns Infinity so UI doesn't block purchases.
-   * After load, missing keys return 0 (assume out of stock — safer than 99).
+   * After load, missing keys return Infinity (product not tracked → assume available).
+   * Only explicit 0 values mean out of stock.
    */
   const getQty = (productId: string, size: string): number => {
     const key = `${productId}-${size}`;
     if (loading) return Infinity;
-    return stock[key] ?? 0;
+    // Key absent from DB means this product isn't tracked yet — treat as available
+    if (!(key in stock)) return Infinity;
+    return stock[key];
   };
 
-  const isOutOfStock = (productId: string, size: string): boolean =>
-    getQty(productId, size) === 0;
+  const isOutOfStock = (productId: string, size: string): boolean => {
+    const qty = getQty(productId, size);
+    return qty !== Infinity && qty === 0;
+  };
 
   const isLowStock = (productId: string, size: string): boolean => {
     const qty = getQty(productId, size);
-    return qty > 0 && qty !== Infinity && qty <= 3;
+    return qty !== Infinity && qty > 0 && qty <= 3;
   };
 
   return { stock, loading, getQty, isOutOfStock, isLowStock, refresh: fetchStock };
