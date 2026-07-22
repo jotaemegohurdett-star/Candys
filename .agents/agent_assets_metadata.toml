@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "lAfeZXWWBEIh0ngt1SGwJ"
+uri = "file://artifacts/candys-pet-video/public/audio/bg_music.mp3"
+type = "audio"
+title = "playful pet brand background music"
