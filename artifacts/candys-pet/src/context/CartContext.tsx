@@ -23,7 +23,7 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-const WHATSAPP_NUMBER = '56912345678'; // Dummy number for Chilean code
+const WHATSAPP_NUMBER = '56936693300'; // Lorena Abarca — Candy's Pet
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);

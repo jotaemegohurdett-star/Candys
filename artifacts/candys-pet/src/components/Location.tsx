@@ -1,75 +1,195 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Clock, Mail } from 'lucide-react';
+import { MapPin, Clock, Phone, Instagram, Package } from 'lucide-react';
+
+const contactItems = [
+  {
+    icon: <Phone className="w-5 h-5" />,
+    color: 'hsl(340 84% 50%)',
+    bg: 'hsl(340 84% 50% / 0.1)',
+    title: 'WhatsApp',
+    value: '+56 9 3669 3300',
+    link: 'https://wa.me/56936693300?text=Hola%20Candy\'s%20Pet!%20Me%20gustar%C3%ADa%20consultar%20sobre%20sus%20porta%20mascotas%20%F0%9F%90%BE',
+  },
+  {
+    icon: <Instagram className="w-5 h-5" />,
+    color: 'hsl(186 96% 43%)',
+    bg: 'hsl(186 96% 43% / 0.1)',
+    title: 'Instagram',
+    value: '@candys_pets1',
+    link: 'https://www.instagram.com/candys_pets1',
+  },
+  {
+    icon: <MapPin className="w-5 h-5" />,
+    color: 'hsl(340 84% 50%)',
+    bg: 'hsl(340 84% 50% / 0.1)',
+    title: 'Ubicación',
+    value: 'Santiago, Chile 🇨🇱',
+    link: null,
+  },
+  {
+    icon: <Clock className="w-5 h-5" />,
+    color: 'hsl(186 96% 43%)',
+    bg: 'hsl(186 96% 43% / 0.1)',
+    title: 'Atención',
+    value: 'Lun–Vie 10–19h · Sáb 10–14h',
+    link: null,
+  },
+  {
+    icon: <Package className="w-5 h-5" />,
+    color: 'hsl(340 84% 50%)',
+    bg: 'hsl(340 84% 50% / 0.1)',
+    title: 'Envíos',
+    value: 'Todo Chile · Retiro en Santiago',
+    link: null,
+  },
+];
 
 export function Location() {
   return (
-    <section id="location" className="py-24 bg-background">
-      <div className="container mx-auto px-4 sm:px-6">
-        <div className="flex flex-col lg:flex-row gap-12 bg-white rounded-3xl overflow-hidden shadow-xl border border-border/50">
-          
-          <div className="lg:w-1/3 p-8 lg:p-12 flex flex-col justify-center bg-primary/5">
-            <motion.h2 
+    <section id="location" className="py-24 bg-white">
+      <div className="container mx-auto px-6 sm:px-10">
+        <div className="flex flex-col lg:flex-row gap-12 items-center">
+
+          {/* Left — text */}
+          <div className="lg:w-1/2">
+            <motion.span
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-6"
+              style={{ background: 'hsl(340 84% 50% / 0.1)', color: 'hsl(340 84% 45%)' }}
+            >
+              Contacto
+            </motion.span>
+
+            <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-3xl md:text-4xl font-heading font-bold text-foreground mb-6"
+              transition={{ delay: 0.1 }}
+              className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-4 leading-tight"
             >
-              ¿Dónde <span className="text-primary italic">estamos</span>?
+              ¿Hablamos{' '}
+              <span className="italic" style={{ color: 'hsl(340 84% 50%)' }}>
+                hoy?
+              </span>
             </motion.h2>
-            
-            <p className="text-muted-foreground mb-8">
-              Actualmente somos una tienda 100% online con envíos a todo Chile, pero puedes retirar tus pedidos directamente en nuestro taller previo aviso.
-            </p>
-            
-            <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary shadow-sm shrink-0">
-                  <MapPin className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-foreground">Taller (Solo Retiro)</h4>
-                  <p className="text-sm text-muted-foreground">Providencia, Santiago, Chile.<br/>(Dirección exacta al confirmar tu compra)</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-secondary shadow-sm shrink-0">
-                  <Clock className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-foreground">Horario de Atención Online</h4>
-                  <p className="text-sm text-muted-foreground">Lunes a Viernes: 10:00 - 19:00 hrs.<br/>Sábados: 10:00 - 14:00 hrs.</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary shadow-sm shrink-0">
-                  <Mail className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-foreground">Contacto</h4>
-                  <p className="text-sm text-muted-foreground">hola@candyspet.cl</p>
-                </div>
-              </div>
+
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.15 }}
+              className="text-muted-foreground text-base leading-relaxed mb-10"
+            >
+              Tienda 100% online con envíos a todo Chile. Te atendemos por WhatsApp e Instagram para cualquier consulta sobre tallas, colores, pedidos personalizados y despachos.
+            </motion.p>
+
+            {/* Contact items */}
+            <div className="space-y-4">
+              {contactItems.map((item, i) => {
+                const Inner = (
+                  <div className="flex items-center gap-4">
+                    <div
+                      className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
+                      style={{ background: item.bg, color: item.color }}
+                    >
+                      {item.icon}
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-0.5">{item.title}</p>
+                      <p className="font-semibold text-foreground">{item.value}</p>
+                    </div>
+                    {item.link && (
+                      <div className="ml-auto">
+                        <svg className="w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                );
+
+                return (
+                  <motion.div
+                    key={item.title}
+                    initial={{ opacity: 0, x: -16 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.07 }}
+                  >
+                    {item.link ? (
+                      <a
+                        href={item.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block p-4 rounded-2xl border border-border/60 bg-background hover:shadow-md hover:border-border transition-all duration-200"
+                      >
+                        {Inner}
+                      </a>
+                    ) : (
+                      <div className="p-4 rounded-2xl border border-border/60 bg-background">
+                        {Inner}
+                      </div>
+                    )}
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
-          
-          <div className="lg:w-2/3 min-h-[400px]">
-            {/* Google Maps iframe representation for Santiago, Providencia area */}
-            <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d26615.11197945081!2d-70.6276856!3d-33.428782!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9662cf6551b96a99%3A0xc48c412586745199!2sProvidencia%2C%20Regi%C3%B3n%20Metropolitana%2C%20Chile!5e0!3m2!1sen!2sus!4v1715000000000!5m2!1sen!2sus" 
-              width="100%" 
-              height="100%" 
-              style={{ border: 0, minHeight: '400px' }} 
-              allowFullScreen={true} 
-              loading="lazy" 
-              referrerPolicy="no-referrer-when-downgrade"
-              className="w-full h-full object-cover"
-              title="Mapa de ubicación Providencia"
-            ></iframe>
+
+          {/* Right — big CTA card */}
+          <div className="lg:w-1/2">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="rounded-3xl overflow-hidden shadow-2xl"
+              style={{ background: 'hsl(220 25% 9%)' }}
+            >
+              <div className="p-10 md:p-12">
+                <div
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mb-8"
+                  style={{ background: 'hsl(340 84% 50% / 0.15)' }}
+                >
+                  🐾
+                </div>
+                <h3 className="font-heading text-3xl font-bold text-white mb-4">
+                  ¿Lista para llevar a tu regalón a todas partes?
+                </h3>
+                <p className="text-white/60 text-base leading-relaxed mb-8">
+                  Escríbenos por WhatsApp y te ayudamos a elegir el porta mascota perfecto para tu peludo. Atención personalizada, envíos a todo Chile.
+                </p>
+
+                <div className="space-y-3">
+                  <a
+                    href="https://wa.me/56936693300?text=Hola%20Candy's%20Pet!%20Me%20gustar%C3%ADa%20pedir%20un%20porta%20mascota%20%F0%9F%90%BE"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full py-4 rounded-full font-bold text-base text-white transition-all hover:opacity-90 active:scale-95"
+                    style={{ background: 'hsl(340 84% 50%)', boxShadow: '0 8px 28px hsl(340 84% 50% / 0.4)' }}
+                  >
+                    💬 Escribir por WhatsApp
+                  </a>
+                  <a
+                    href="https://www.instagram.com/candys_pets1"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full py-4 rounded-full font-semibold text-sm text-white border border-white/20 hover:bg-white/10 transition-all active:scale-95"
+                  >
+                    <Instagram className="w-4 h-4" />
+                    Seguir en Instagram
+                  </a>
+                </div>
+
+                <p className="text-white/30 text-xs text-center mt-6">
+                  Lorena Abarca · Candy's Pet · Santiago, Chile 🇨🇱
+                </p>
+              </div>
+            </motion.div>
           </div>
-          
         </div>
       </div>
     </section>

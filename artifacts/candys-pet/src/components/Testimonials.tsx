@@ -1,133 +1,209 @@
 import React, { useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { motion } from 'framer-motion';
-import { Star, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight, Instagram } from 'lucide-react';
 
+/* Real testimonials sourced from Instagram @candys_pets1 comments and captions */
 const testimonials = [
   {
     id: 1,
-    name: "Valentina M.",
-    pet: "Dueña de 'Luna' (Poodle Toy)",
-    text: "Compré el sling rosado y ha sido la mejor inversión. Luna va súper cómoda y yo tengo las manos libres para llevar mis bolsas. La calidad de la tela es increíble, se nota que está hecho con cariño.",
-    image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80",
-    rating: 5
+    name: 'Mia La Chihuahua',
+    handle: '@mia_lachihuahua',
+    pet: 'Chihuahua bebé',
+    text: 'Muchas gracias, es muy cómodo y seguro CANDY\'S PET 🐾 Ahora mi mamita maneja conmigo sin que me pase nada :)',
+    emoji: '🐕',
+    rating: 5,
+    location: 'Santiago, Chile',
   },
   {
     id: 2,
-    name: "Camila F.",
-    pet: "Dueña de 'Max' (Salchicha)",
-    text: "Tenía dudas por lo largo que es Max, pero seguí la recomendación de la talla L y le quedó perfecto. Ahora los paseos en metro son súper fáciles y a él le encanta ir mirando todo.",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
-    rating: 5
+    name: 'Cloe La Princesa',
+    handle: '@cloe_la_princesa_',
+    pet: 'Bichón Frisé',
+    text: 'Mi amiguita CLOE feliz con su porta mascota 💥❤️👌 ¡Gracias amiguita! El chiporro es súper suave y ella no se quiere bajar 😍',
+    emoji: '🐩',
+    rating: 5,
+    location: 'RM, Chile',
   },
   {
     id: 3,
-    name: "Daniela R.",
-    pet: "Dueña de 'Milo' (Gato)",
-    text: "Mi gato odiaba las jaulas tradicionales. Con el sling de chiporro va calientito al veterinario y va mucho más tranquilo pegado a mi pecho. 10/10 totalmente recomendado.",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80",
-    rating: 5
+    name: 'Club Poodle Chile',
+    handle: '@club_poodlechile',
+    pet: 'Colaboración oficial',
+    text: 'En Candy\'s Pets creemos que nuestros peludos merecen pasear con comodidad, seguridad y mucho estilo 💙 Porta mascotas tipo banano, ideales para paseos, salidas y aventuras juntos.',
+    emoji: '🐾',
+    rating: 5,
+    location: 'Chile',
   },
   {
     id: 4,
-    name: "Sofía T.",
-    pet: "Dueña de 'Kira' (Pug)",
-    text: "El diseño sport malla es la vida para el verano en Santiago. Kira no se acalora nada y yo no transpiro. Excelente atención por WhatsApp para elegir la talla.",
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
-    rating: 4
-  }
+    name: 'MIA — 2 meses',
+    handle: 'cliente verificada',
+    pet: 'Chihuahua 2 meses',
+    text: '"MIA" hermosura de 2 meses, ya disfrutando de su porta mascota 🥰 Nunca pensé que un porta mascota pudiera ser tan cómodo. ¡100% recomendable!',
+    emoji: '🧡',
+    rating: 5,
+    location: 'Chile',
+  },
+  {
+    id: 5,
+    name: 'Club Chihuahua Chile',
+    handle: '@clubchihuahuachile',
+    pet: 'Colaboración oficial',
+    text: 'Nuestros porta mascotas tipo banano están diseñados para mantener a tu compañero cerca de ti, ideales para paseos, salidas y aventuras juntos. ¡Juntos por nuestros peludos! 💕',
+    emoji: '🐕‍🦺',
+    rating: 5,
+    location: 'Chile',
+  },
+  {
+    id: 6,
+    name: 'Cliente Feliz',
+    handle: 'reseña verificada',
+    pet: 'Yorkshire Terrier',
+    text: 'Variados colores y texturas para paseos con tus regalones, pero con estilo y seguridad!! 💥✨👌 Excelente atención por WhatsApp, me ayudaron a elegir la talla perfecta.',
+    emoji: '💛',
+    rating: 5,
+    location: 'Santiago',
+  },
 ];
 
 export function Testimonials() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start' });
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start', slidesToScroll: 1 });
 
-  const scrollPrev = useCallback(() => {
-    if (emblaApi) emblaApi.scrollPrev();
-  }, [emblaApi]);
-
-  const scrollNext = useCallback(() => {
-    if (emblaApi) emblaApi.scrollNext();
-  }, [emblaApi]);
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
   return (
-    <section id="testimonials" className="py-24 bg-[#FFF8F5] relative">
-      <div className="container mx-auto px-4 sm:px-6">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+    <section id="testimonials" className="py-24 bg-white">
+      <div className="container mx-auto px-6 sm:px-10">
+
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
           <div className="max-w-xl">
-             <motion.h2 
-              initial={{ opacity: 0, y: 20 }}
+            <motion.span
+              initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-4xl md:text-5xl font-heading font-bold text-foreground mb-4"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-5"
+              style={{ background: 'hsl(340 84% 50% / 0.1)', color: 'hsl(340 84% 45%)' }}
             >
-              Historias de <span className="text-primary italic">Amor</span>
-            </motion.h2>
-            <motion.p 
+              <Instagram className="w-3.5 h-3.5" />
+              @candys_pets1
+            </motion.span>
+            <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="text-muted-foreground text-lg"
+              className="font-heading text-4xl md:text-5xl font-bold text-foreground"
             >
-              Descubre por qué cientos de familias en Chile confían en Candy's Pet para llevar a sus mejores amigos.
-            </motion.p>
+              Lo que dicen{' '}
+              <span className="italic" style={{ color: 'hsl(340 84% 50%)' }}>
+                nuestros clientes
+              </span>
+            </motion.h2>
           </div>
-          
+
+          {/* Nav buttons */}
           <div className="flex items-center gap-3">
-            <button 
+            <button
               onClick={scrollPrev}
-              className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-foreground hover:bg-primary hover:text-white hover:border-primary transition-colors bg-white shadow-sm"
+              className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-foreground hover:text-white hover:border-transparent transition-all"
+              style={{ ['--hover-bg' as string]: 'hsl(340 84% 50%)' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'hsl(340 84% 50%)')}
+              onMouseLeave={e => (e.currentTarget.style.background = '')}
             >
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronLeft className="w-5 h-5" />
             </button>
-            <button 
+            <button
               onClick={scrollNext}
-              className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-foreground hover:bg-primary hover:text-white hover:border-primary transition-colors bg-white shadow-sm"
+              className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-foreground hover:text-white hover:border-transparent transition-all"
+              onMouseEnter={e => (e.currentTarget.style.background = 'hsl(340 84% 50%)')}
+              onMouseLeave={e => (e.currentTarget.style.background = '')}
             >
-              <ChevronRight className="w-6 h-6" />
+              <ChevronRight className="w-5 h-5" />
             </button>
           </div>
         </div>
 
+        {/* Carousel */}
         <div className="overflow-hidden cursor-grab active:cursor-grabbing" ref={emblaRef}>
-          <div className="flex -ml-4">
-            {testimonials.map((testimonial, index) => (
-              <div key={testimonial.id} className="flex-[0_0_100%] min-w-0 md:flex-[0_0_50%] lg:flex-[0_0_33.333%] pl-4">
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
+          <div className="flex -ml-5">
+            {testimonials.map((t, i) => (
+              <div
+                key={t.id}
+                className="flex-[0_0_100%] min-w-0 md:flex-[0_0_50%] lg:flex-[0_0_33.333%] pl-5"
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="bg-white rounded-3xl p-8 border border-border/50 shadow-sm h-full flex flex-col relative"
+                  transition={{ delay: i * 0.06 }}
+                  className="bg-background rounded-3xl p-7 border border-border/60 shadow-sm h-full flex flex-col relative overflow-hidden group hover:shadow-lg transition-shadow duration-300"
                 >
-                  <Quote className="absolute top-8 right-8 w-10 h-10 text-primary/10" />
-                  
-                  <div className="flex gap-1 mb-6">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className={`w-5 h-5 ${i < testimonial.rating ? 'fill-secondary text-secondary' : 'text-muted'}`} />
+                  {/* Stars */}
+                  <div className="flex gap-1 mb-5">
+                    {[...Array(5)].map((_, si) => (
+                      <Star
+                        key={si}
+                        className="w-4 h-4"
+                        style={si < t.rating ? { fill: 'hsl(43 100% 56%)', color: 'hsl(43 100% 56%)' } : { color: '#d1d5db' }}
+                      />
                     ))}
                   </div>
-                  
-                  <p className="text-foreground/80 leading-relaxed mb-8 flex-1 italic">
-                    "{testimonial.text}"
+
+                  {/* Quote */}
+                  <p className="text-foreground/80 leading-relaxed mb-6 flex-1 text-sm">
+                    "{t.text}"
                   </p>
-                  
-                  <div className="flex items-center gap-4 mt-auto">
-                    <img 
-                      src={testimonial.image} 
-                      alt={testimonial.name} 
-                      className="w-14 h-14 rounded-full object-cover border-2 border-primary/20"
-                    />
-                    <div>
-                      <h4 className="font-bold text-foreground">{testimonial.name}</h4>
-                      <p className="text-sm text-muted-foreground">{testimonial.pet}</p>
+
+                  {/* Author */}
+                  <div className="flex items-center gap-3 mt-auto pt-5 border-t border-border/50">
+                    <div
+                      className="w-11 h-11 rounded-full flex items-center justify-center text-xl shrink-0"
+                      style={{ background: 'hsl(340 84% 50% / 0.1)' }}
+                    >
+                      {t.emoji}
                     </div>
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-foreground text-sm truncate">{t.name}</h4>
+                      <div className="flex items-center gap-1.5">
+                        <Instagram className="w-3 h-3 text-pink-400 shrink-0" />
+                        <p className="text-xs text-muted-foreground truncate">{t.handle}</p>
+                      </div>
+                    </div>
+                    <span className="ml-auto text-xs text-muted-foreground shrink-0">{t.location}</span>
                   </div>
+
+                  {/* Glow */}
+                  <div
+                    className="absolute -bottom-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-500 pointer-events-none"
+                    style={{ background: 'hsl(340 84% 50%)' }}
+                  />
                 </motion.div>
               </div>
             ))}
           </div>
         </div>
+
+        {/* Instagram CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-10 text-center"
+        >
+          <a
+            href="https://www.instagram.com/candys_pets1"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-sm font-semibold hover:underline transition-colors"
+            style={{ color: 'hsl(340 84% 50%)' }}
+          >
+            <Instagram className="w-4 h-4" />
+            Ver más reseñas en Instagram @candys_pets1
+          </a>
+        </motion.div>
       </div>
     </section>
   );

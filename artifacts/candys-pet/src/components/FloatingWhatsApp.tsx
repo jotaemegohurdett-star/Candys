@@ -1,63 +1,70 @@
-import React from 'react';
-import { MessageCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCart } from '../context/CartContext';
+import { X } from 'lucide-react';
 
 export function FloatingWhatsApp() {
-  const { generateWhatsAppLink, totalItems } = useCart();
-  const [showTooltip, setShowTooltip] = React.useState(false);
+  const [showBubble, setShowBubble] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
 
-  React.useEffect(() => {
-    // Show tooltip occasionally to draw attention
-    const interval = setInterval(() => {
-      setShowTooltip(true);
-      setTimeout(() => setShowTooltip(false), 4000);
-    }, 20000);
-    
-    // Initial show
-    const initialTimeout = setTimeout(() => {
-      setShowTooltip(true);
-      setTimeout(() => setShowTooltip(false), 4000);
-    }, 5000);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!dismissed) setShowBubble(true);
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, [dismissed]);
 
-    return () => {
-      clearInterval(interval);
-      clearTimeout(initialTimeout);
-    };
-  }, []);
+  const dismiss = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowBubble(false);
+    setDismissed(true);
+  };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex items-center justify-end">
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+      {/* Chat bubble */}
       <AnimatePresence>
-        {showTooltip && (
+        {showBubble && (
           <motion.div
-            initial={{ opacity: 0, x: 20, scale: 0.9 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
-            className="mr-4 bg-white px-4 py-2 rounded-2xl shadow-lg border border-border text-sm font-medium text-foreground relative hidden sm:block whitespace-nowrap"
+            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.9 }}
+            className="relative bg-white rounded-2xl shadow-xl p-4 max-w-[220px] border border-gray-100"
           >
-            {totalItems > 0 ? '¡Completa tu pedido aquí! 👇' : '¿Dudas? ¡Escríbenos! 👋'}
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-3 h-3 bg-white border-r border-t border-border rotate-45 hidden sm:block"></div>
+            <button
+              onClick={dismiss}
+              className="absolute -top-2 -right-2 w-6 h-6 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center transition-colors"
+              aria-label="Cerrar"
+            >
+              <X className="w-3 h-3 text-gray-600" />
+            </button>
+            <p className="text-xs font-semibold text-gray-800 mb-1">🐾 Candy's Pet</p>
+            <p className="text-xs text-gray-500 leading-relaxed">
+              ¡Hola! ¿Buscas el porta mascota ideal? Te ayudo a elegir la talla 💕
+            </p>
+            {/* Triangle */}
+            <div className="absolute -bottom-2 right-6 w-4 h-4 bg-white rotate-45 border-r border-b border-gray-100" />
           </motion.div>
         )}
       </AnimatePresence>
 
-      <a
-        href={generateWhatsAppLink()}
+      {/* Main button */}
+      <motion.a
+        href="https://wa.me/56936693300?text=Hola%20Candy's%20Pet!%20Me%20gustar%C3%ADa%20consultar%20sobre%20sus%20porta%20mascotas%20%F0%9F%90%BE"
         target="_blank"
         rel="noopener noreferrer"
-        className="w-16 h-16 bg-[#25D366] rounded-full flex items-center justify-center text-white shadow-xl shadow-[#25D366]/30 hover:scale-110 hover:shadow-[#25D366]/50 transition-all duration-300 relative group z-10"
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => setShowTooltip(false)}
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.95 }}
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: 'spring', damping: 15, stiffness: 200, delay: 1 }}
+        className="w-16 h-16 rounded-full flex items-center justify-center shadow-xl text-white text-2xl"
+        style={{ background: 'hsl(142 70% 45%)', boxShadow: '0 8px 28px rgba(37, 211, 102, 0.45)' }}
         aria-label="Contactar por WhatsApp"
+        onClick={() => setShowBubble(false)}
       >
-        <MessageCircle className="w-8 h-8" />
-        {totalItems > 0 && (
-          <div className="absolute -top-2 -right-2 w-7 h-7 bg-primary rounded-full border-2 border-background flex items-center justify-center text-xs font-bold text-white shadow-sm">
-            {totalItems}
-          </div>
-        )}
-      </a>
+        💬
+      </motion.a>
     </div>
   );
 }

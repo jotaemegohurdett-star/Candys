@@ -1,87 +1,130 @@
 import React from 'react';
-import { Heart, Instagram, Facebook, Ticket } from 'lucide-react';
+import { Instagram, Heart } from 'lucide-react';
+import logoImg from '@assets/Screenshot_20260721-214654_Instagram_2-removebg-preview_1784688274639.png';
+
+const navColumns = [
+  {
+    heading: 'Catálogo',
+    links: [
+      { label: 'Porta Mascota Clásico', href: '#products' },
+      { label: 'Corderito Invierno', href: '#products' },
+      { label: 'Estampados Especiales', href: '#products' },
+      { label: 'Modelo Unisex', href: '#products' },
+    ],
+  },
+  {
+    heading: 'Información',
+    links: [
+      { label: 'Guía de Tallas', href: '#size-guide' },
+      { label: 'Beneficios', href: '#benefits' },
+      { label: 'Reseñas', href: '#testimonials' },
+      { label: 'Contacto', href: '#location' },
+    ],
+  },
+];
 
 export function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="bg-foreground text-white pt-20 pb-10">
-      <div className="container mx-auto px-4 sm:px-6">
+    <footer style={{ background: 'hsl(220 25% 6%)' }} className="text-white pt-20 pb-10">
+      <div className="container mx-auto px-6 sm:px-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-          
-          <div className="lg:col-span-1">
-            <a href="#" className="flex items-center gap-2 mb-6 group inline-flex">
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white shadow-md">
-                <Heart className="w-5 h-5 fill-current" />
-              </div>
+
+          {/* Brand */}
+          <div className="lg:col-span-2">
+            <a href="#home" className="inline-flex items-center gap-3 mb-6 group">
+              <img
+                src={logoImg}
+                alt="Candy's Pet logo"
+                className="w-12 h-12 rounded-full object-cover group-hover:scale-105 transition-transform"
+              />
               <span className="font-heading text-2xl font-bold">
-                Candy's <span className="text-primary italic">Pet</span>
+                Candy's{' '}
+                <span className="italic" style={{ color: 'hsl(340 84% 60%)' }}>
+                  Pet
+                </span>
               </span>
             </a>
-            <p className="text-white/70 text-sm leading-relaxed mb-6">
-              Creamos slings y accesorios premium para que lleves a tu mascota a todas partes con el estilo y la comodidad que ambos merecen.
+            <p className="text-white/50 text-sm leading-relaxed mb-6 max-w-sm">
+              Porta mascotas tipo banano, hechos a mano con amor en Chile 🇨🇱. Para que lleves a tu perrito o gatito a todas partes con comodidad, seguridad y estilo.
             </p>
-            <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-primary transition-colors">
+
+            {/* Social */}
+            <div className="flex gap-3">
+              <a
+                href="https://www.instagram.com/candys_pets1"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-11 h-11 rounded-full flex items-center justify-center border border-white/15 text-white/60 hover:border-pink-400 hover:text-pink-400 transition-all"
+              >
                 <Instagram className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-primary transition-colors">
-                <Facebook className="w-5 h-5" />
+              <a
+                href="https://wa.me/56936693300"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-11 h-11 rounded-full flex items-center justify-center border border-white/15 text-white/60 hover:border-green-400 hover:text-green-400 transition-all text-lg"
+              >
+                💬
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-primary transition-colors">
-                <Ticket className="w-5 h-5" /> {/* TikTok placeholder */}
+              <a
+                href="https://www.tiktok.com/@candys_pets1"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-11 h-11 rounded-full flex items-center justify-center border border-white/15 text-white/60 hover:border-white hover:text-white transition-all text-lg"
+              >
+                ♪
               </a>
             </div>
           </div>
 
-          <div>
-            <h4 className="font-heading font-bold text-lg mb-6">Enlaces Rápidos</h4>
-            <ul className="space-y-3">
-              <li><a href="#home" className="text-white/70 hover:text-primary transition-colors text-sm">Inicio</a></li>
-              <li><a href="#benefits" className="text-white/70 hover:text-primary transition-colors text-sm">Beneficios</a></li>
-              <li><a href="#products" className="text-white/70 hover:text-primary transition-colors text-sm">Catálogo</a></li>
-              <li><a href="#size-guide" className="text-white/70 hover:text-primary transition-colors text-sm">Guía de Tallas</a></li>
-              <li><a href="#testimonials" className="text-white/70 hover:text-primary transition-colors text-sm">Testimonios</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-heading font-bold text-lg mb-6">Soporte</h4>
-            <ul className="space-y-3">
-              <li><a href="#" className="text-white/70 hover:text-primary transition-colors text-sm">Preguntas Frecuentes</a></li>
-              <li><a href="#" className="text-white/70 hover:text-primary transition-colors text-sm">Políticas de Envío</a></li>
-              <li><a href="#" className="text-white/70 hover:text-primary transition-colors text-sm">Cambios y Devoluciones</a></li>
-              <li><a href="#" className="text-white/70 hover:text-primary transition-colors text-sm">Términos y Condiciones</a></li>
-              <li><a href="#" className="text-white/70 hover:text-primary transition-colors text-sm">Contacto</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-heading font-bold text-lg mb-6">Newsletter</h4>
-            <p className="text-white/70 text-sm mb-4">
-              Suscríbete para recibir novedades y descuentos exclusivos.
-            </p>
-            <form className="flex flex-col gap-3" onSubmit={(e) => e.preventDefault()}>
-              <input 
-                type="email" 
-                placeholder="Tu correo electrónico" 
-                className="bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/50 focus:outline-none focus:border-primary"
-              />
-              <button 
-                type="submit"
-                className="bg-primary text-white rounded-lg px-4 py-3 text-sm font-bold hover:bg-primary/90 transition-colors"
-              >
-                Suscribirme
-              </button>
-            </form>
-          </div>
-
+          {/* Nav columns */}
+          {navColumns.map((col) => (
+            <div key={col.heading}>
+              <h4 className="font-heading font-bold text-base mb-6 text-white">{col.heading}</h4>
+              <ul className="space-y-3">
+                {col.links.map((link) => (
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      className="text-white/45 hover:text-white text-sm transition-colors"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
-        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-white/50 text-sm">
-            © {new Date().getFullYear()} Candy's Pet. Todos los derechos reservados.
+        {/* WhatsApp CTA strip */}
+        <div
+          className="rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 mb-10"
+          style={{ background: 'hsl(340 84% 50% / 0.12)', border: '1px solid hsl(340 84% 50% / 0.25)' }}
+        >
+          <p className="text-white/80 text-sm text-center sm:text-left">
+            ¿Quieres un color personalizado? Escríbenos y lo hacemos para ti 🎨
           </p>
-          <p className="text-white/50 text-sm">
-            Diseñado en Chile 🇨🇱
+          <a
+            href="https://wa.me/56936693300?text=Hola!%20Quisiera%20un%20porta%20mascota%20personalizado%20%F0%9F%90%BE"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-95"
+            style={{ background: 'hsl(340 84% 50%)' }}
+          >
+            Pedido personalizado
+          </a>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-white/30 text-xs">
+            © {currentYear} Candy's Pet — Lorena Abarca. Todos los derechos reservados.
+          </p>
+          <p className="text-white/30 text-xs flex items-center gap-1">
+            Hecho con <Heart className="w-3 h-3 fill-pink-400 text-pink-400" /> en Santiago, Chile
           </p>
         </div>
       </div>
