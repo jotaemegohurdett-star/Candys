@@ -10,11 +10,14 @@ export interface CatalogData {
   prices: { price_m: number; price_l: number };
   /** productId → ordered list of image URLs */
   images: Record<string, string[]>;
+  /** All products registered in admin, in order: [{id, name}] */
+  products: { id: string; name: string }[];
 }
 
 const DEFAULTS: CatalogData = {
   prices: { price_m: 18990, price_l: 20990 },
   images: {},
+  products: [],
 };
 
 export function useCatalog() {
@@ -28,6 +31,7 @@ export function useCatalog() {
       const data = await res.json() as {
         prices: Record<string, string>;
         images: Record<string, string[]>;
+        products?: { id: string; name: string }[];
       };
       setCatalog({
         prices: {
@@ -35,6 +39,7 @@ export function useCatalog() {
           price_l: parseInt(data.prices['price_l'] ?? '20990', 10) || 20990,
         },
         images: data.images ?? {},
+        products: data.products ?? [],
       });
     } catch {
       // silently keep defaults

@@ -4,7 +4,7 @@
  * No auth required.
  */
 import { Router, type IRouter } from "express";
-import { db, settingsTable, productImagesTable } from "@workspace/db";
+import { db, settingsTable, productImagesTable, stockTable } from "@workspace/db";
 import { asc } from "drizzle-orm";
 import { logger } from "../lib/logger";
 
@@ -12,12 +12,13 @@ const router: IRouter = Router();
 
 router.get("/", async (_req, res) => {
   try {
-    const [settingsRows, imageRows] = await Promise.all([
+    const [settingsRows, imageRows, stockRows] = await Promise.all([
       db.select().from(settingsTable),
       db.select().from(productImagesTable).orderBy(
         asc(productImagesTable.productId),
         asc(productImagesTable.position),
       ),
+      db.select().from(stockTable).orderBy(asc(stockTable.productId)),
     ]);
 
     // Build prices map: { price_m: "18990", price_l: "20990" }
@@ -31,7 +32,17 @@ router.get("/", async (_req, res) => {
       images[r.productId].push(r.url);
     }
 
-    res.json({ prices, images });
+    // Build products list: unique [{id, name}] from stock table
+    const seen = new Set<string>();
+    const products: { id: string; name: string }[] = [];
+    for (const r of stockRows) {
+      if (!seen.has(r.productId)) {
+        seen.add(r.productId);
+        products.push({ id: r.productId, name: r.productName });
+      }
+    }
+
+    res.json({ prices, images, products });
   } catch (err) {
     logger.error({ err }, "Failed to fetch catalog");
     res.status(500).json({ error: "CATALOG_ERROR" });
