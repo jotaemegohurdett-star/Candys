@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Instagram } from 'lucide-react';
-import colabImg from '@assets/Screenshot_20260721-205928_Instagram_1784688487737.jpg';
-import poodleImg from '@assets/Screenshot_20260721-205845_Instagram_1784688487317.jpg';
+import colabImg from '@assets/Screenshot_20260722-005655_Instagram_1784696503278.jpg';
+import poodleImg from '@assets/Screenshot_20260722-005650_Instagram_1784696503395.jpg';
 
 const partners = [
   {

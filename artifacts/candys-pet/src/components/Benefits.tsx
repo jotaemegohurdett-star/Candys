@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Heart, ShieldCheck, Feather, Sparkles } from 'lucide-react';
-import lifestyleImg from '@assets/Screenshot_20260721-205734_Instagram_1784688487030.jpg';
+import lifestyleImg from '@assets/Screenshot_20260722-005607_Instagram_1784696503768.jpg';
 
 const benefits = [
   {

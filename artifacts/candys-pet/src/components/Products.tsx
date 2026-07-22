@@ -10,10 +10,10 @@ import {
   DialogTrigger,
   DialogDescription,
 } from './ui/dialog';
-import p1Img from '@assets/Screenshot_20260721-205818_Instagram_1784688487169.jpg';
-import p2Img from '@assets/Screenshot_20260721-205920_Instagram_1784688487619.jpg';
-import p3Img from '@assets/Screenshot_20260721-205707_Instagram_1784688486738.jpg';
-import p4Img from '@assets/Screenshot_20260721-205831_Instagram_1784688487248.jpg';
+import p1Img from '@assets/Screenshot_20260722-005620_Instagram_1784696503686.jpg';
+import p2Img from '@assets/Screenshot_20260722-005908_Instagram_1784696502984.jpg';
+import p3Img from '@assets/Screenshot_20260722-005601_Instagram_1784696503852.jpg';
+import p4Img from '@assets/Screenshot_20260722-005653_Instagram_1784696503335.jpg';
 
 const products = [
   {
