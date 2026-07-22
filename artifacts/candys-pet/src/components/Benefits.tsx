@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Heart, ShieldCheck, Feather, Sparkles } from 'lucide-react';
+import { Heart, ShieldCheck, Feather, Sparkles, Brain, Wind } from 'lucide-react';
 import lifestyleImg from '@assets/Screenshot_20260722-051400_WhatsApp~2_1784713749406.jpg';
 
 const benefits = [
@@ -11,7 +11,25 @@ const benefits = [
     hoverBg: 'hsl(340 84% 50% / 0.18)',
     title: 'Vínculo Cercano',
     description:
-      'Mantiene a tu mascota junto a tu pecho, calmando su ansiedad y fortaleciendo su lazo contigo en cada paseo.',
+      'Mantiene a tu mascota junto a tu pecho, fortaleciendo el lazo afectivo en cada paseo, viaje o salida al mall.',
+  },
+  {
+    icon: <Wind className="w-6 h-6" />,
+    color: 'hsl(186 96% 38%)',
+    bg: 'hsl(186 96% 43% / 0.1)',
+    hoverBg: 'hsl(186 96% 43% / 0.18)',
+    title: 'Reduce el Estrés',
+    description:
+      'El contacto constante con tu cuerpo calma la ansiedad de tu regalón. Menos ladridos, más tranquilidad — probado por cientos de familias. 🌿',
+  },
+  {
+    icon: <Brain className="w-6 h-6" />,
+    color: 'hsl(270 70% 60%)',
+    bg: 'hsl(270 70% 60% / 0.1)',
+    hoverBg: 'hsl(270 70% 60% / 0.18)',
+    title: 'Uso Terapéutico 🧡',
+    description:
+      'Ideal para perritos senior o con alguna discapacidad. El calor y el movimiento del portador los ayuda a sentirse seguros, protegidos y amados.',
   },
   {
     icon: <Feather className="w-6 h-6" />,
@@ -20,7 +38,7 @@ const benefits = [
     hoverBg: 'hsl(186 96% 43% / 0.18)',
     title: 'Liviano y Cómodo',
     description:
-      'Distribuye el peso uniformemente. Manos 100% libres para el metro, el mall o cualquier aventura.',
+      'Distribuye el peso uniformemente. Manos 100% libres para el metro, el mall o cualquier aventura. ¡En talla L caben 2 perritos pequeños!',
   },
   {
     icon: <ShieldCheck className="w-6 h-6" />,
@@ -29,16 +47,16 @@ const benefits = [
     hoverBg: 'hsl(340 84% 50% / 0.18)',
     title: 'Seguro y Resistente',
     description:
-      'Materiales de alta durabilidad, costuras reforzadas y gancho de seguridad interior homologado.',
+      'Materiales de alta durabilidad, costuras reforzadas y gancho de seguridad interior. Fabricado con amor en Chile 🇨🇱',
   },
   {
     icon: <Sparkles className="w-6 h-6" />,
-    color: 'hsl(186 96% 38%)',
-    bg: 'hsl(186 96% 43% / 0.1)',
-    hoverBg: 'hsl(186 96% 43% / 0.18)',
+    color: 'hsl(42 90% 55%)',
+    bg: 'hsl(42 90% 55% / 0.1)',
+    hoverBg: 'hsl(42 90% 55% / 0.18)',
     title: 'Calidad Premium',
     description:
-      'Tela suave, segura y resistente. Forrado con algodón. Hecho con amor 💕, pensado para ellos — también para mascotas con movilidad reducida 🧡',
+      'Tela suave, segura y transpirable. Forrado con algodón. Hecho a mano con amor 💕, apto desde los 2 meses de vida.',
   },
 ];
 
@@ -82,7 +100,11 @@ export function Benefits() {
               transition={{ delay: 0.15 }}
               className="text-muted-foreground text-lg leading-relaxed mb-8"
             >
-              Nuestros porta mascotas tipo banano están diseñados para mantener a tu compañero cerca de ti. Ideales para paseos, salidas al mall, viajes en metro y aventuras juntos. Para perros y gatos de hasta 10 kg.
+              Nuestros porta mascotas tipo sling están diseñados para perros de raza pequeña a mediana.
+              Ideales para el día a día, viajes en metro y aventuras juntos. También perfectos para
+              perritos <strong>senior o con discapacidad</strong> — su uso terapéutico los hace sentir
+              seguros y amados. Disponibles en talla <strong>M</strong> (desde los 2 meses hasta 3,5 kg)
+              y talla <strong>L</strong> (hasta 10 kg, ¡caben 2 perritos pequeños!).
             </motion.p>
 
             {/* Quick stats row */}
@@ -91,12 +113,12 @@ export function Benefits() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.22 }}
-              className="flex gap-6"
+              className="flex gap-6 flex-wrap"
             >
               {[
                 { n: '4', u: 'modelos', label: 'disponibles' },
                 { n: '8+', u: 'colores', label: 'por modelo' },
-                { n: '3', u: 'tallas', label: 'S · M · L' },
+                { n: '2', u: 'tallas', label: 'M · L' },
               ].map((s) => (
                 <div key={s.label} className="flex flex-col">
                   <span className="font-heading text-2xl font-bold text-foreground">
@@ -136,7 +158,7 @@ export function Benefits() {
                 <div className="glass rounded-xl px-4 py-3 flex items-center gap-3">
                   <span className="text-xl">🇨🇱</span>
                   <div>
-                    <p className="text-xs font-bold text-gray-900">Nuestros clientes en Chile</p>
+                    <p className="text-xs font-bold text-gray-900">La familia Candy's Pet en Chile</p>
                     <p className="text-xs text-gray-500 mt-0.5">Paseos, salidas y aventuras juntos</p>
                   </div>
                 </div>
@@ -153,15 +175,63 @@ export function Benefits() {
           </div>
         </div>
 
+        {/* Size pricing strip */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.1 }}
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-14"
+        >
+          {[
+            {
+              talla: 'M',
+              precio: '$18.990',
+              desc: 'Desde los 2 meses hasta 3,5 kg',
+              detail: 'Talla única para razas toy y mini. Perfecta para cachorros.',
+              color: 'hsl(340 84% 50%)',
+              bg: 'hsl(340 84% 50% / 0.07)',
+              border: 'hsl(340 84% 50% / 0.25)',
+            },
+            {
+              talla: 'L',
+              precio: '$20.990',
+              desc: 'Hasta 10 kg — ¡caben 2 perritos!',
+              detail: 'Ideal para razas medianas, perritos senior o para llevar a tus 2 regalones juntos.',
+              color: 'hsl(270 70% 60%)',
+              bg: 'hsl(270 70% 60% / 0.07)',
+              border: 'hsl(270 70% 60% / 0.25)',
+            },
+          ].map((s) => (
+            <div
+              key={s.talla}
+              className="flex items-start gap-5 p-6 rounded-2xl border"
+              style={{ background: s.bg, borderColor: s.border }}
+            >
+              <div
+                className="w-14 h-14 rounded-2xl flex items-center justify-center font-heading text-2xl font-black text-white shrink-0 shadow-md"
+                style={{ background: s.color }}
+              >
+                {s.talla}
+              </div>
+              <div>
+                <p className="font-heading text-2xl font-bold text-foreground">{s.precio}</p>
+                <p className="text-sm font-semibold mt-0.5" style={{ color: s.color }}>{s.desc}</p>
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{s.detail}</p>
+              </div>
+            </div>
+          ))}
+        </motion.div>
+
         {/* Benefits grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {benefits.map((b, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 28 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
+              transition={{ delay: i * 0.07 }}
               className="gradient-border-card group p-8 rounded-3xl border border-border/50 bg-white hover:shadow-2xl transition-all duration-400 relative overflow-hidden cursor-default"
             >
               {/* Icon */}
