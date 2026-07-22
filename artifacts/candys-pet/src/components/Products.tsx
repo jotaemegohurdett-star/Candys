@@ -168,25 +168,58 @@ export function Products() {
     });
   }, [catalog.catalog.products]);
 
-  // ── Carousel ──
+  // ── Infinite Carousel ──
+  // We render [original + clone] side by side.
+  // When scroll reaches the clone half, we silently jump back to the same position in the original half.
   const trackRef = useRef<HTMLDivElement>(null);
+  const pausedRef = useRef(false);
   const [paused, setPaused] = useState(false);
+
+  // Keep ref in sync so the interval can read it without a stale closure
+  useEffect(() => { pausedRef.current = paused; }, [paused]);
+
+  // After render, jump to the start of the "real" half so we have room to scroll backwards
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    // Start at position 0 of the original half (no jump needed)
+  }, [products.length]);
+
+  // Silent scroll-position reset: when we enter the clone half, jump to original
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const onScroll = () => {
+      const half = track.scrollWidth / 2;
+      if (track.scrollLeft >= half) {
+        // Jump back by exactly one half, keeping relative position
+        track.scrollLeft -= half;
+      }
+    };
+    track.addEventListener('scroll', onScroll, { passive: true });
+    return () => track.removeEventListener('scroll', onScroll);
+  }, [products.length]);
+
+  // Auto-advance: move by one card width every AUTO_ADVANCE_MS ms
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (pausedRef.current) return;
+      const track = trackRef.current;
+      if (!track) return;
+      const card = track.querySelector<HTMLElement>('[data-card]');
+      const step = card ? card.offsetWidth + 24 : 320;
+      track.scrollBy({ left: step, behavior: 'smooth' });
+    }, AUTO_ADVANCE_MS);
+    return () => clearInterval(id);
+  }, [products.length]);
 
   const scrollByCard = (dir: 1 | -1) => {
     const track = trackRef.current;
     if (!track) return;
     const card = track.querySelector<HTMLElement>('[data-card]');
     const step = card ? card.offsetWidth + 24 : 320;
-    const atEnd = dir === 1 && track.scrollLeft + track.clientWidth >= track.scrollWidth - step / 2;
-    if (atEnd) track.scrollTo({ left: 0, behavior: 'smooth' });
-    else track.scrollBy({ left: step * dir, behavior: 'smooth' });
+    track.scrollBy({ left: step * dir, behavior: 'smooth' });
   };
-
-  useEffect(() => {
-    if (paused) return;
-    const id = setInterval(() => scrollByCard(1), AUTO_ADVANCE_MS);
-    return () => clearInterval(id);
-  }, [paused, products.length]);
 
   return (
     <section id="products" className="py-24" style={{ background: 'hsl(220 25% 9%)' }}>
@@ -270,17 +303,28 @@ export function Products() {
             <ChevronRight className="w-5 h-5" />
           </button>
 
-          {/* Track */}
+          {/* Track — original + clone for seamless infinite loop */}
           <div
             ref={trackRef}
-            className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', scrollSnapType: 'none' }}
           >
+            {/* Original set */}
             {products.map((product, index) => (
               <div
                 key={product.id}
                 data-card
-                className="snap-start shrink-0 w-[78vw] sm:w-[320px] lg:w-[300px]"
+                className="shrink-0 w-[78vw] sm:w-[320px] lg:w-[300px]"
+              >
+                <ProductCard product={product} index={index} stock={stock} catalog={catalog} />
+              </div>
+            ))}
+            {/* Clone set — aria-hidden so screen readers ignore duplicates */}
+            {products.map((product, index) => (
+              <div
+                key={`clone-${product.id}`}
+                aria-hidden="true"
+                className="shrink-0 w-[78vw] sm:w-[320px] lg:w-[300px]"
               >
                 <ProductCard product={product} index={index} stock={stock} catalog={catalog} />
               </div>
