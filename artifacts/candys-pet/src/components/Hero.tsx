@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowDown, Star, Instagram, Sparkles } from 'lucide-react';
-import heroImg from '@assets/Screenshot_20260722-005838_Instagram~3_1784698640046.jpg';
+import heroImg from '@assets/Screenshot_20260722-051201_WhatsApp~2_1784713749256.jpg';
 
 const HEADLINE = [
   { text: 'El abrazo que', italic: false },
@@ -43,7 +43,7 @@ export function Hero() {
           className="w-full h-full object-cover"
           fetchPriority="high"
           decoding="async"
-          style={{ objectPosition: 'center 8%' }}
+          style={{ objectPosition: 'center 30%' }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[hsl(220_25%_7%)] via-[hsl(220_25%_7%/0.78)] to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-t from-[hsl(220_25%_7%/0.5)] to-transparent" />
@@ -87,10 +87,10 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.72 }}
-            className="text-white/58 text-lg leading-relaxed mb-10 max-w-md"
-            style={{ color: 'rgba(255,255,255,0.58)' }}
+            className="text-lg leading-relaxed mb-10 max-w-md"
+            style={{ color: 'rgba(255,255,255,0.62)' }}
           >
-            Porta mascotas tipo banano para perritos y gatitos. Cómodos, seguros y con mucho estilo. Diseñados por Lorena Abarca para que lleves a tu regalón a todas partes.
+            Tu mascota no va dentro de un bolso — va contigo, cerca, protegida y tranquila. Reduce su estrés. Fabricación chilena 🇨🇱 · También para mascotas con movilidad reducida 🧡
           </motion.p>
 
           {/* CTAs */}

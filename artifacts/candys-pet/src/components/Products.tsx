@@ -12,10 +12,10 @@ import {
   DialogTrigger,
   DialogDescription,
 } from './ui/dialog';
-import p1Img from '@assets/Screenshot_20260722-005620_Instagram~2_1784698640494.jpg';
+import p1Img from '@assets/Screenshot_20260722-051400_WhatsApp~2_1784713749406.jpg';
 import p2Img from '@assets/Screenshot_20260722-005735_Instagram~2_1784698640108.jpg';
-import p3Img from '@assets/Screenshot_20260722-005601_Instagram~2_1784698640610.jpg';
-import p4Img from '@assets/Screenshot_20260722-005653_Instagram~2_1784698640237.jpg';
+import p3Img from '@assets/Screenshot_20260722-051510_WhatsApp_1784713749468.jpg';
+import p4Img from '@assets/Screenshot_20260722-051201_WhatsApp~2_1784713749256.jpg';
 
 const products = [
   {
@@ -27,7 +27,7 @@ const products = [
     description:
       'Nuestro modelo insignia tipo banano. Tela de algodón suave y transpirable, ideal para el día a día. Incluye gancho de seguridad interior para el collar de tu peludo.',
     image: p1Img,
-    imgPosition: 'center 22%',
+    imgPosition: 'center 18%',
     colors: ['Rosa', 'Rosa Chicle', 'Lila', 'Azul Cielo', 'Azul Rey', 'Negro', 'Gris', 'Marino'],
     colorSwatches: ['#F9A8C9', '#FF69B4', '#C3A6E8', '#87CEEB', '#4169E1', '#222222', '#9E9E9E', '#1B2A4A'],
     sizes: ['S', 'M', 'L'],
@@ -69,7 +69,7 @@ const products = [
     description:
       'Diseños únicos con estampados florales, animal print y motivos especiales. Colaboraciones exclusivas con @ClubChihuauaChile y @club_poodlechile.',
     image: p3Img,
-    imgPosition: 'center 20%',
+    imgPosition: 'center 15%',
     colors: ['Floral Rosa', 'Floral Azul', 'Animal Print', 'Patitas', 'Mickey'],
     colorSwatches: ['#F9A8C9', '#87CEEB', '#8B5E3C', '#FF69B4', '#1B2A4A'],
     sizes: ['S', 'M', 'L'],
@@ -90,7 +90,7 @@ const products = [
     description:
       'Diseño unisex, ideal para hombres y mujeres. Cómodo, transpirable y resistente. ¡Transporta incluso dos perritos pequeños al mismo tiempo!',
     image: p4Img,
-    imgPosition: 'center 42%',
+    imgPosition: 'center 25%',
     colors: ['Negro', 'Gris', 'Marino', 'Café'],
     colorSwatches: ['#111111', '#9E9E9E', '#1B2A4A', '#7B5C3E'],
     sizes: ['S', 'M', 'L'],

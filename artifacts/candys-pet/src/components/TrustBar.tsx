@@ -8,7 +8,8 @@ const items = [
   { icon: '✂️', label: 'Fabricación a pedido' },
   { icon: '💕', label: '100% Artesanal' },
   { icon: '🔄', label: 'Cambios sin costo' },
-  { icon: '⚡', label: 'Respuesta inmediata' },
+  { icon: '⚡', label: 'Atención 24 horas' },
+  { icon: '🧡', label: 'Apto para mascotas con discapacidad' },
 ];
 
 const track = [...items, ...items];

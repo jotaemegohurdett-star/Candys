@@ -3,11 +3,11 @@ import useEmblaCarousel from 'embla-carousel-react';
 import { motion } from 'framer-motion';
 import { Star, ChevronLeft, ChevronRight, Instagram } from 'lucide-react';
 
-import photo1 from '@assets/Screenshot_20260722-005626_Instagram~2_1784698639916.jpg';
-import photo2 from '@assets/Screenshot_20260722-005657_Instagram~2_1784698640170.jpg';
-import photo3 from '@assets/Screenshot_20260722-005653_Instagram~2_1784698640237.jpg';
-import photo4 from '@assets/Screenshot_20260722-005838_Instagram~3_1784698640046.jpg';
-import photo5 from '@assets/Screenshot_20260722-005735_Instagram~2_1784698640108.jpg';
+import photo1 from '@assets/Screenshot_20260722-051201_WhatsApp~2_1784713749256.jpg';
+import photo2 from '@assets/Screenshot_20260722-051400_WhatsApp~2_1784713749406.jpg';
+import photo3 from '@assets/Screenshot_20260722-051510_WhatsApp_1784713749468.jpg';
+import photo4 from '@assets/Screenshot_20260722-051518_WhatsApp_1784713749524.jpg';
+import photo5 from '@assets/Screenshot_20260722-051400_WhatsApp~2_1784713749406.jpg';
 
 const testimonials = [
   {
@@ -17,7 +17,7 @@ const testimonials = [
     pet: 'Chihuahua bebé',
     text: 'Muchas gracias, es muy cómodo y seguro CANDY\'S PET 🐾 Ahora mi mamita maneja conmigo sin que me pase nada :)',
     photo: photo1,
-    photoPosition: 'center 15%',
+    photoPosition: 'center 28%',
     rating: 5,
     location: 'Santiago',
   },
@@ -28,7 +28,7 @@ const testimonials = [
     pet: 'Bichón Frisé',
     text: 'Mi amiguita CLOE feliz con su porta mascota 💥❤️👌 ¡Gracias amiguita! El chiporro es súper suave y ella no se quiere bajar 😍',
     photo: photo2,
-    photoPosition: 'center 12%',
+    photoPosition: 'center 18%',
     rating: 5,
     location: 'RM, Chile',
   },
@@ -39,7 +39,7 @@ const testimonials = [
     pet: 'Colaboración oficial',
     text: 'En Candy\'s Pets creemos que nuestros peludos merecen pasear con comodidad, seguridad y mucho estilo 💙 Porta mascotas tipo banano, ideales para paseos, salidas y aventuras juntos.',
     photo: photo3,
-    photoPosition: 'center 10%',
+    photoPosition: 'center 20%',
     rating: 5,
     location: 'Chile',
   },
@@ -50,7 +50,7 @@ const testimonials = [
     pet: 'Chihuahua 2 meses',
     text: '"MIA" hermosura de 2 meses, ya disfrutando de su porta mascota 🥰 Nunca pensé que un porta mascota pudiera ser tan cómodo. ¡100% recomendable!',
     photo: photo4,
-    photoPosition: 'center 8%',
+    photoPosition: 'center 22%',
     rating: 5,
     location: 'Chile',
   },
@@ -61,7 +61,7 @@ const testimonials = [
     pet: 'Colaboración oficial',
     text: 'Nuestros porta mascotas tipo banano están diseñados para mantener a tu compañero cerca de ti, ideales para paseos, salidas y aventuras juntos. ¡Juntos por nuestros peludos! 💕',
     photo: photo5,
-    photoPosition: 'center 12%',
+    photoPosition: 'center 18%',
     rating: 5,
     location: 'Chile',
   },

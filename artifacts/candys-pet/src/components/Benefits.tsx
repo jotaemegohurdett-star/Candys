@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Heart, ShieldCheck, Feather, Sparkles } from 'lucide-react';
-import lifestyleImg from '@assets/Screenshot_20260722-005607_Instagram~2_1784698640547.jpg';
+import lifestyleImg from '@assets/Screenshot_20260722-051518_WhatsApp_1784713749524.jpg';
 
 const benefits = [
   {
@@ -38,7 +38,7 @@ const benefits = [
     hoverBg: 'hsl(186 96% 43% / 0.18)',
     title: 'Calidad Premium',
     description:
-      'Diseños exclusivos, telas suaves seleccionadas. Hecho con mucho amor 💕, pensado para ellos.',
+      'Tela suave, segura y resistente. Forrado con algodón. Hecho con amor 💕, pensado para ellos — también para mascotas con movilidad reducida 🧡',
   },
 ];
 
@@ -126,7 +126,7 @@ export function Benefits() {
                 className="w-full h-full object-cover"
                 loading="lazy"
                 decoding="async"
-                style={{ objectPosition: 'center 18%' }}
+                style={{ objectPosition: 'center 30%' }}
               />
               {/* Gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />

@@ -32,7 +32,7 @@ const contactItems = [
     color: 'hsl(186 96% 38%)',
     bg: 'hsl(186 96% 43% / 0.1)',
     title: 'Atención',
-    value: 'Lun–Vie 10–19h · Sáb 10–14h',
+    value: 'Abierto las 24 horas, todos los días',
     link: null,
   },
   {
