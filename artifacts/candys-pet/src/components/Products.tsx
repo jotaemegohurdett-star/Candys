@@ -231,6 +231,7 @@ function ProductCard({
   catalog: ReturnType<typeof useCatalog>;
 }) {
   const { addToCart, openCart } = useCart();
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedSize, setSelectedSize] = useState<'M' | 'L'>('M');
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
@@ -268,13 +269,16 @@ function ProductCard({
     });
     toast.success('¡Agregado al carrito! 🐾', {
       description: `${product.name} · Talla ${selectedSize} · ${selectedColor}`,
-      action: { label: 'Ver carrito', onClick: openCart },
+      action: {
+        label: 'Ver carrito',
+        onClick: () => { setDialogOpen(false); openCart(); },
+      },
       duration: 4000,
     });
   };
 
   return (
-    <Dialog>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         {/* Scroll-in wrapper */}
         <motion.div
@@ -344,22 +348,6 @@ function ProductCard({
                   </div>
                 ) : null}
 
-                {/* Stock por talla — siempre visible cuando hay datos */}
-                {!stock.loading && !(stock.isOutOfStock(product.id, 'M') && stock.isOutOfStock(product.id, 'L')) && (
-                  <div className="absolute bottom-14 left-3 right-3 flex gap-1.5 justify-end">
-                    {(['M', 'L'] as const).map(sz => {
-                      const qty = stock.getQty(product.id, sz);
-                      const oos = qty === 0;
-                      const low = qty > 0 && qty <= 3;
-                      return (
-                        <span key={sz} className="px-2 py-0.5 rounded text-[10px] font-bold text-white"
-                          style={{ background: oos ? 'hsl(0 72% 35%)' : low ? 'hsl(38 92% 35%)' : 'rgba(0,0,0,0.55)', backdropFilter: 'blur(4px)' }}>
-                          {sz}: {oos ? 'Agotado' : `${qty} ud.`}
-                        </span>
-                      );
-                    })}
-                  </div>
-                )}
               </div>
 
               {/* Info */}
@@ -546,7 +534,40 @@ function ProductCard({
             </div>
 
             <div className="mt-auto pt-6 border-t border-gray-100 space-y-3">
-              {/* Stock status */}
+
+              {/* Stock por talla — visible siempre que haya datos */}
+              {!stock.loading && (
+                <div className="flex gap-3">
+                  {(['M', 'L'] as const).map(sz => {
+                    const qty = stock.getQty(product.id, sz);
+                    const oos = qty === 0;
+                    const low = qty > 0 && qty <= 3;
+                    return (
+                      <div key={sz}
+                        className="flex-1 flex flex-col items-center py-3 rounded-2xl border-2"
+                        style={{
+                          borderColor: oos ? '#fca5a5' : low ? '#fcd34d' : '#bbf7d0',
+                          background: oos ? '#fef2f2' : low ? '#fffbeb' : '#f0fdf4',
+                        }}>
+                        <span className="text-xs font-bold uppercase tracking-wider mb-1"
+                          style={{ color: oos ? '#dc2626' : low ? '#d97706' : '#16a34a' }}>
+                          Talla {sz}
+                        </span>
+                        <span className="text-2xl font-black"
+                          style={{ color: oos ? '#dc2626' : low ? '#d97706' : '#15803d' }}>
+                          {oos ? '0' : qty}
+                        </span>
+                        <span className="text-xs font-semibold mt-0.5"
+                          style={{ color: oos ? '#ef4444' : low ? '#f59e0b' : '#22c55e' }}>
+                          {oos ? 'Agotado' : low ? 'últimas' : 'disponibles'}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Alerta talla seleccionada */}
               {outOfStock ? (
                 <div className="flex items-center gap-2 text-sm font-medium text-red-500 bg-red-50 rounded-xl px-4 py-2.5">
                   <AlertTriangle className="w-4 h-4 shrink-0" />
