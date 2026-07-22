@@ -10,10 +10,10 @@ import {
   DialogTrigger,
   DialogDescription,
 } from './ui/dialog';
-import p1Img from '@assets/Screenshot_20260721-205845_Instagram_1784688487317.jpg';
-import p2Img from '@assets/Screenshot_20260721-205908_Instagram_1784688487514.jpg';
-import p3Img from '@assets/Screenshot_20260721-205702_Instagram_1784688486685.jpg';
-import p4Img from '@assets/Screenshot_20260721-205928_Instagram_1784688487737.jpg';
+import p1Img from '@assets/Screenshot_20260721-205818_Instagram_1784688487169.jpg';
+import p2Img from '@assets/Screenshot_20260721-205920_Instagram_1784688487619.jpg';
+import p3Img from '@assets/Screenshot_20260721-205707_Instagram_1784688486738.jpg';
+import p4Img from '@assets/Screenshot_20260721-205831_Instagram_1784688487248.jpg';
 
 const products = [
   {
@@ -24,6 +24,7 @@ const products = [
     description:
       'Nuestro modelo insignia tipo banano. Tela de algodón suave y transpirable, ideal para el día a día. Incluye gancho de seguridad interior para el collar de tu peludo.',
     image: p1Img,
+    imgPosition: 'center 22%',
     colors: ['Rosa', 'Rosa Chicle', 'Lila', 'Azul Cielo', 'Azul Rey', 'Negro', 'Gris', 'Marino'],
     colorSwatches: ['#F9A8C9', '#FF69B4', '#C3A6E8', '#87CEEB', '#4169E1', '#222222', '#9E9E9E', '#1B2A4A'],
     sizes: ['S', 'M', 'L'],
@@ -43,6 +44,7 @@ const products = [
     description:
       'Interior de corderito (chiporro sintético) extra suave y cálido. Perfecto para días fríos. Tu regalón no querrá salir. Exterior liso y resistente.',
     image: p2Img,
+    imgPosition: 'center 38%',
     colors: ['Azul Marino', 'Gris Marengo', 'Negro', 'Azul Celeste', 'Café'],
     colorSwatches: ['#1B2A4A', '#4A4A4A', '#111111', '#6BBFDF', '#7B5C3E'],
     sizes: ['S', 'M', 'L'],
@@ -62,6 +64,7 @@ const products = [
     description:
       'Diseños únicos con estampados florales, animal print y motivos especiales. Colaboraciones exclusivas con @ClubChihuauaChile y @club_poodlechile.',
     image: p3Img,
+    imgPosition: 'center 20%',
     colors: ['Floral Rosa', 'Floral Azul', 'Animal Print', 'Patitas', 'Mickey'],
     colorSwatches: ['#F9A8C9', '#87CEEB', '#8B5E3C', '#FF69B4', '#1B2A4A'],
     sizes: ['S', 'M', 'L'],
@@ -81,6 +84,7 @@ const products = [
     description:
       'Diseño unisex, ideal para hombres y mujeres. Cómodo, transpirable y resistente. ¡Transporta incluso dos perritos pequeños al mismo tiempo!',
     image: p4Img,
+    imgPosition: 'center 42%',
     colors: ['Negro', 'Gris', 'Marino', 'Café'],
     colorSwatches: ['#111111', '#9E9E9E', '#1B2A4A', '#7B5C3E'],
     sizes: ['S', 'M', 'L'],
@@ -200,7 +204,8 @@ function ProductCard({ product, index }: { product: (typeof products)[0]; index:
             <img
               src={product.image}
               alt={product.name}
-              className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              style={{ objectPosition: product.imgPosition }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
@@ -251,7 +256,8 @@ function ProductCard({ product, index }: { product: (typeof products)[0]; index:
             <img
               src={product.image}
               alt={product.name}
-              className="w-full h-full object-cover object-top absolute inset-0"
+              className="w-full h-full object-cover absolute inset-0"
+              style={{ objectPosition: product.imgPosition }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
             <div

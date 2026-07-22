@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Heart, ShieldCheck, Feather, Sparkles } from 'lucide-react';
-import lifestyleImg from '@assets/Screenshot_20260721-205728_Instagram_1784688486972.jpg';
+import lifestyleImg from '@assets/Screenshot_20260721-205734_Instagram_1784688487030.jpg';
 
 const benefits = [
   {
@@ -84,7 +84,8 @@ export function Benefits() {
               <img
                 src={lifestyleImg}
                 alt="Clientes felices usando sus porta mascotas Candy's Pet"
-                className="w-full h-full object-cover object-top"
+                className="w-full h-full object-cover"
+                style={{ objectPosition: 'center 18%' }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
               <div className="absolute bottom-5 left-5 right-5">

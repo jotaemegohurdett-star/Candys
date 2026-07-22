@@ -45,7 +45,7 @@ export function Header() {
             <img
               src={logoImg}
               alt="Candy's Pet logo"
-              className="w-10 h-10 rounded-full object-cover group-hover:scale-105 transition-transform"
+              className="w-14 h-14 rounded-full object-cover group-hover:scale-105 transition-transform"
             />
             <span
               className={`font-heading text-xl font-bold transition-colors duration-300 ${
@@ -140,7 +140,7 @@ export function Header() {
 
             {/* Logo */}
             <div className="flex items-center gap-3 mb-12">
-              <img src={logoImg} alt="Candy's Pet" className="w-10 h-10 rounded-full object-cover" />
+              <img src={logoImg} alt="Candy's Pet" className="w-14 h-14 rounded-full object-cover" />
               <span className="font-heading text-white text-xl font-bold">
                 Candy's <span className="italic" style={{ color: 'hsl(340 84% 60%)' }}>Pet</span>
               </span>
