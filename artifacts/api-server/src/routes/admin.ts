@@ -106,6 +106,78 @@ router.put("/settings/:key", adminGuard, async (req, res) => {
   }
 });
 
+/* ──────────────────── PRODUCTS (CRUD) ──────────────────── */
+
+/** Returns unique products [{id, name}] derived from the stock table */
+router.get("/products", adminGuard, async (_req, res) => {
+  try {
+    const rows = await db.select().from(stockTable).orderBy(asc(stockTable.productId));
+    const seen = new Set<string>();
+    const products: { id: string; name: string }[] = [];
+    for (const r of rows) {
+      if (!seen.has(r.productId)) {
+        seen.add(r.productId);
+        products.push({ id: r.productId, name: r.productName });
+      }
+    }
+    res.json(products);
+  } catch (err) {
+    logger.error({ err }, "admin: products fetch failed");
+    res.status(500).json({ error: "DB_ERROR" });
+  }
+});
+
+/** Create a new product — inserts M + L stock rows with qty 0 */
+router.post("/products", adminGuard, async (req, res) => {
+  const { name } = req.body as { name?: string };
+  if (!name?.trim()) { res.status(400).json({ error: "MISSING_NAME" }); return; }
+
+  try {
+    // Determine next product ID (find max pN number)
+    const rows = await db.select({ id: stockTable.productId }).from(stockTable);
+    const nums = [...new Set(rows.map(r => r.id))]
+      .map(id => { const m = id.match(/^p(\d+)$/); return m ? parseInt(m[1]) : 0; });
+    const nextN = (nums.length ? Math.max(...nums) : 4) + 1;
+    const productId = `p${nextN}`;
+
+    await db.insert(stockTable).values([
+      { id: `${productId}-M`, productId, productName: name.trim(), size: "M", qty: 0 },
+      { id: `${productId}-L`, productId, productName: name.trim(), size: "L", qty: 0 },
+    ]);
+    res.json({ ok: true, id: productId, name: name.trim() });
+  } catch (err) {
+    logger.error({ err }, "admin: product create failed");
+    res.status(500).json({ error: "DB_ERROR" });
+  }
+});
+
+/** Rename a product — updates productName in all its stock rows */
+router.put("/products/:id/name", adminGuard, async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body as { name?: string };
+  if (!name?.trim()) { res.status(400).json({ error: "MISSING_NAME" }); return; }
+  try {
+    await db.update(stockTable).set({ productName: name.trim() }).where(eq(stockTable.productId, id));
+    res.json({ ok: true });
+  } catch (err) {
+    logger.error({ err }, "admin: product rename failed");
+    res.status(500).json({ error: "DB_ERROR" });
+  }
+});
+
+/** Delete a product — removes all its stock rows and images */
+router.delete("/products/:id", adminGuard, async (req, res) => {
+  const { id } = req.params;
+  try {
+    await db.delete(stockTable).where(eq(stockTable.productId, id));
+    await db.delete(productImagesTable).where(eq(productImagesTable.productId, id));
+    res.json({ ok: true });
+  } catch (err) {
+    logger.error({ err }, "admin: product delete failed");
+    res.status(500).json({ error: "DB_ERROR" });
+  }
+});
+
 /* ──────────────────── PRODUCT IMAGES ──────────────────── */
 
 router.get("/images", adminGuard, async (_req, res) => {
