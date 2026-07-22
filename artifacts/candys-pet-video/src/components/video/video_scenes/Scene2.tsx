@@ -3,8 +3,6 @@ import { useEffect, useState } from 'react';
 import {
   sceneTransitions,
   springs,
-  containerVariants,
-  itemVariants
 } from '@/lib/video/animations';
 import { HeartHandshake, Feather, Droplets } from 'lucide-react';
 
@@ -28,30 +26,33 @@ export function Scene2() {
     >
       {/* Background Graphic */}
       <motion.div
-        className="absolute w-[150vw] h-[150vw] bg-bg-muted rounded-full"
+        className="absolute w-[200vw] h-[200vw] bg-bg-muted rounded-full"
         initial={{ scale: 0, x: '-50%', y: '-50%' }}
         animate={{ scale: 1, x: '-20%', y: '-10%' }}
         transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
       />
 
-      <div className="relative z-10 w-full max-w-6xl px-12 flex items-center justify-between">
-        {/* Left Side: Product Image */}
+      {/* Responsive layout: column on mobile, row on wider */}
+      <div className="relative z-10 w-full max-w-6xl px-5 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+
+        {/* Product Image */}
         <motion.div
-          className="w-[45%] relative"
-          initial={{ opacity: 0, x: -100, rotate: -10 }}
+          className="w-full sm:w-[42%] relative shrink-0"
+          initial={{ opacity: 0, x: -60, rotate: -10 }}
           animate={{ opacity: 1, x: 0, rotate: -2 }}
           transition={{ ...springs.bouncy, delay: 0.2 }}
         >
-          <div className="absolute inset-0 bg-primary/20 rounded-[3rem] -rotate-3 scale-105" />
+          <div className="absolute inset-0 bg-primary/20 rounded-[2rem] -rotate-3 scale-105" />
           <motion.img
             src={`${import.meta.env.BASE_URL}images/dog-in-sling.jpg`}
             alt="Dog in sling"
-            className="w-full h-auto aspect-[4/5] object-cover rounded-[3rem] shadow-2xl relative z-10 border-8 border-white"
-            animate={{ y: [0, -15, 0] }}
+            className="w-full h-auto aspect-[4/5] object-cover rounded-[2rem] shadow-2xl relative z-10 border-4 sm:border-8 border-white"
+            animate={{ y: [0, -10, 0] }}
             transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
           />
           <motion.div
-            className="absolute -bottom-8 -right-8 bg-secondary text-white font-display font-bold text-3xl px-8 py-4 rounded-full shadow-xl z-20 rotate-6"
+            className="absolute -bottom-4 -right-4 sm:-bottom-8 sm:-right-8 bg-secondary text-white font-display font-bold px-4 py-2 sm:px-8 sm:py-4 rounded-full shadow-xl z-20 rotate-6"
+            style={{ fontSize: 'clamp(0.8rem, 2.5vw, 1.4rem)' }}
             initial={{ scale: 0 }}
             animate={{ scale: phase >= 1 ? 1 : 0 }}
             transition={springs.poppy}
@@ -60,32 +61,34 @@ export function Scene2() {
           </motion.div>
         </motion.div>
 
-        {/* Right Side: Features */}
-        <div className="w-[50%] flex flex-col justify-center pl-12">
+        {/* Features */}
+        <div className="w-full sm:w-[54%] flex flex-col justify-center sm:pl-6">
           <motion.h2
-            className="font-display text-5xl md:text-6xl font-bold text-text-primary mb-12"
+            className="font-display font-bold text-text-primary mb-4 sm:mb-8"
+            style={{ fontSize: 'clamp(1.3rem, 4.5vw, 3rem)' }}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8, ease: 'circOut' }}
           >
-            Tu porta mascotas <span className="text-primary block mt-2">favorito</span>
+            Tu porta mascotas{' '}
+            <span className="text-primary block mt-1">favorito</span>
           </motion.h2>
 
-          <div className="space-y-8 font-body">
+          <div className="space-y-4 sm:space-y-6 font-body">
             <FeatureRow
-              icon={<HeartHandshake size={32} className="text-white" />}
+              icon={<HeartHandshake className="text-white" style={{ width: 'clamp(18px,3vw,28px)', height: 'clamp(18px,3vw,28px)' }} />}
               title="Diseño ergonómico"
               visible={phase >= 1}
               color="bg-accent"
             />
             <FeatureRow
-              icon={<Feather size={32} className="text-white" />}
+              icon={<Feather className="text-white" style={{ width: 'clamp(18px,3vw,28px)', height: 'clamp(18px,3vw,28px)' }} />}
               title="100% Algodón transpirable"
               visible={phase >= 2}
               color="bg-primary"
             />
             <FeatureRow
-              icon={<Droplets size={32} className="text-white" />}
+              icon={<Droplets className="text-white" style={{ width: 'clamp(18px,3vw,28px)', height: 'clamp(18px,3vw,28px)' }} />}
               title="Lavable a máquina a 30°"
               visible={phase >= 3}
               color="bg-secondary"
@@ -100,15 +103,18 @@ export function Scene2() {
 function FeatureRow({ icon, title, visible, color }: { icon: React.ReactNode, title: string, visible: boolean, color: string }) {
   return (
     <motion.div
-      className="flex items-center gap-6"
+      className="flex items-center gap-3 sm:gap-5"
       initial={{ opacity: 0, x: 50 }}
       animate={visible ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
-      transition={springs.snappy}
+      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
     >
-      <div className={`w-16 h-16 rounded-2xl ${color} flex items-center justify-center shadow-lg rotate-3`}>
+      <div className={`shrink-0 rounded-xl ${color} flex items-center justify-center shadow-lg rotate-3`}
+        style={{ width: 'clamp(36px,6vw,56px)', height: 'clamp(36px,6vw,56px)', padding: 'clamp(6px,1.2vw,10px)' }}>
         {icon}
       </div>
-      <p className="text-3xl font-bold text-text-secondary">{title}</p>
+      <p className="font-bold text-text-secondary" style={{ fontSize: 'clamp(0.85rem, 2.8vw, 1.6rem)' }}>
+        {title}
+      </p>
     </motion.div>
   );
 }
