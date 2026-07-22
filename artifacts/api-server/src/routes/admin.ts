@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { createHmac } from "crypto";
 import { db, stockTable, settingsTable, productImagesTable } from "@workspace/db";
-import { eq, asc } from "drizzle-orm";
+import { eq, asc, max } from "drizzle-orm";
 import { randomUUID } from "crypto";
 import { logger } from "../lib/logger";
 import { adminGuard, signToken } from "../middleware/adminAuth";
@@ -123,7 +123,14 @@ router.post("/images", adminGuard, async (req, res) => {
   if (!productId || !url) { res.status(400).json({ error: "MISSING_FIELDS" }); return; }
   const id = randomUUID();
   try {
-    await db.insert(productImagesTable).values({ id, productId, url, position: 0, updatedAt: new Date() });
+    // Calculate next position so images maintain insertion order
+    const [maxRow] = await db
+      .select({ maxPos: max(productImagesTable.position) })
+      .from(productImagesTable)
+      .where(eq(productImagesTable.productId, productId));
+    const nextPosition = (maxRow?.maxPos ?? -1) + 1;
+
+    await db.insert(productImagesTable).values({ id, productId, url, position: nextPosition, updatedAt: new Date() });
     res.json({ ok: true, id });
   } catch (err) {
     logger.error({ err }, "admin: image insert failed");
