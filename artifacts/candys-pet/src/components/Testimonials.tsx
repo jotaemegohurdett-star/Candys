@@ -3,14 +3,12 @@ import useEmblaCarousel from 'embla-carousel-react';
 import { motion } from 'framer-motion';
 import { Star, ChevronLeft, ChevronRight, Instagram } from 'lucide-react';
 
-// Real lifestyle photos for testimonial visual anchors
 import photo1 from '@assets/Screenshot_20260722-005626_Instagram~2_1784698639916.jpg';
 import photo2 from '@assets/Screenshot_20260722-005657_Instagram~2_1784698640170.jpg';
 import photo3 from '@assets/Screenshot_20260722-005653_Instagram~2_1784698640237.jpg';
 import photo4 from '@assets/Screenshot_20260722-005838_Instagram~3_1784698640046.jpg';
 import photo5 from '@assets/Screenshot_20260722-005735_Instagram~2_1784698640108.jpg';
 
-/* Real testimonials sourced from Instagram @candys_pets1 comments and captions */
 const testimonials = [
   {
     id: 1,
@@ -21,7 +19,7 @@ const testimonials = [
     photo: photo1,
     photoPosition: 'center 15%',
     rating: 5,
-    location: 'Santiago, Chile',
+    location: 'Santiago',
   },
   {
     id: 2,
@@ -87,7 +85,7 @@ export function Testimonials() {
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
   return (
-    <section id="testimonials" className="py-24 bg-white">
+    <section id="testimonials" className="py-24 overflow-hidden" style={{ background: 'hsl(220 25% 7%)' }}>
       <div className="container mx-auto px-6 sm:px-10">
 
         {/* Header */}
@@ -98,7 +96,7 @@ export function Testimonials() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-5"
-              style={{ background: 'hsl(340 84% 50% / 0.1)', color: 'hsl(340 84% 45%)' }}
+              style={{ background: 'hsl(340 84% 50% / 0.14)', color: 'hsl(340 84% 68%)' }}
             >
               <Instagram className="w-3.5 h-3.5" />
               @candys_pets1
@@ -108,10 +106,10 @@ export function Testimonials() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="font-heading text-4xl md:text-5xl font-bold text-foreground"
+              className="font-heading text-4xl md:text-5xl font-bold text-white"
             >
               Lo que dicen{' '}
-              <span className="italic" style={{ color: 'hsl(340 84% 50%)' }}>
+              <span className="italic" style={{ color: 'hsl(340 84% 65%)' }}>
                 nuestros clientes
               </span>
             </motion.h2>
@@ -121,17 +119,16 @@ export function Testimonials() {
           <div className="flex items-center gap-3">
             <button
               onClick={scrollPrev}
-              className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-foreground hover:text-white hover:border-transparent transition-all"
-              onMouseEnter={e => (e.currentTarget.style.background = 'hsl(340 84% 50%)')}
-              onMouseLeave={e => (e.currentTarget.style.background = '')}
+              className="w-12 h-12 rounded-full border border-white/15 flex items-center justify-center text-white/50 hover:text-white hover:border-white/40 transition-all hover:bg-white/5"
+              aria-label="Anterior"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               onClick={scrollNext}
-              className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-foreground hover:text-white hover:border-transparent transition-all"
-              onMouseEnter={e => (e.currentTarget.style.background = 'hsl(340 84% 50%)')}
-              onMouseLeave={e => (e.currentTarget.style.background = '')}
+              className="w-12 h-12 rounded-full flex items-center justify-center text-white transition-all"
+              style={{ background: 'hsl(340 84% 50%)', boxShadow: '0 4px 20px hsl(340 84% 50% / 0.4)' }}
+              aria-label="Siguiente"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -151,51 +148,97 @@ export function Testimonials() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.06 }}
-                  className="rounded-3xl overflow-hidden border border-border/60 shadow-sm h-full flex flex-col relative group hover:shadow-xl transition-shadow duration-300"
+                  className="rounded-3xl overflow-hidden h-full flex flex-col group hover:scale-[1.01] transition-transform duration-300"
+                  style={{
+                    background: 'hsl(220 25% 12%)',
+                    border: '1px solid hsl(220 25% 18%)',
+                    boxShadow: '0 0 0 0 hsl(340 84% 50% / 0)',
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLDivElement).style.boxShadow = '0 20px 60px hsl(220 25% 4% / 0.5)';
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLDivElement).style.boxShadow = '0 0 0 0 hsl(340 84% 50% / 0)';
+                  }}
                 >
                   {/* Photo strip */}
-                  <div className="relative h-52 overflow-hidden bg-gray-100">
+                  <div className="relative h-52 overflow-hidden bg-gray-900">
                     <img
                       src={t.photo}
                       alt={`${t.name} — cliente Candy's Pet`}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-106"
                       loading="lazy"
                       decoding="async"
                       style={{ objectPosition: t.photoPosition }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
+
                     {/* Stars overlay */}
                     <div className="absolute bottom-4 left-4 flex gap-1">
                       {[...Array(5)].map((_, si) => (
-                        <Star
-                          key={si}
-                          className="w-3.5 h-3.5 drop-shadow"
-                          style={{ fill: 'hsl(43 100% 56%)', color: 'hsl(43 100% 56%)' }}
-                        />
+                        <Star key={si} className="w-3.5 h-3.5 drop-shadow-md"
+                          style={{ fill: 'hsl(43 100% 56%)', color: 'hsl(43 100% 56%)' }} />
                       ))}
+                    </div>
+
+                    {/* Pet label */}
+                    <div className="absolute top-4 right-4">
+                      <span
+                        className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full text-white"
+                        style={{ background: 'hsl(340 84% 50% / 0.85)', backdropFilter: 'blur(8px)' }}
+                      >
+                        {t.pet}
+                      </span>
                     </div>
                   </div>
 
                   {/* Content */}
-                  <div className="bg-background flex flex-col flex-1 p-6 relative overflow-hidden">
-                    {/* Quote */}
-                    <p className="text-foreground/80 leading-relaxed mb-5 flex-1 text-sm">
-                      "{t.text}"
+                  <div className="flex flex-col flex-1 p-6 relative overflow-hidden">
+                    {/* Giant decorative quote */}
+                    <div
+                      className="absolute -top-2 -left-1 font-heading text-9xl font-bold leading-none select-none pointer-events-none"
+                      style={{ color: 'hsl(340 84% 50% / 0.12)' }}
+                      aria-hidden="true"
+                    >
+                      "
+                    </div>
+
+                    {/* Quote text */}
+                    <p
+                      className="relative z-10 leading-relaxed mb-5 flex-1 text-sm"
+                      style={{ color: 'rgba(255,255,255,0.72)' }}
+                    >
+                      {t.text}
                     </p>
 
                     {/* Author */}
-                    <div className="flex items-center gap-2 pt-4 border-t border-border/50">
+                    <div
+                      className="flex items-center gap-3 pt-4"
+                      style={{ borderTop: '1px solid hsl(220 25% 22%)' }}
+                    >
+                      {/* Avatar initials */}
+                      <div
+                        className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
+                        style={{ background: 'linear-gradient(135deg, hsl(340 84% 50%), hsl(186 96% 43%))' }}
+                      >
+                        {t.name[0]}
+                      </div>
                       <div className="min-w-0 flex-1">
-                        <h4 className="font-bold text-foreground text-sm truncate">{t.name}</h4>
+                        <h4 className="font-bold text-white text-sm truncate">{t.name}</h4>
                         <div className="flex items-center gap-1.5">
                           <Instagram className="w-3 h-3 text-pink-400 shrink-0" />
-                          <p className="text-xs text-muted-foreground truncate">{t.handle}</p>
+                          <p className="text-xs truncate" style={{ color: 'rgba(255,255,255,0.42)' }}>
+                            {t.handle}
+                          </p>
                         </div>
                       </div>
-                      <span className="text-xs text-muted-foreground shrink-0">{t.location}</span>
+                      <span className="text-xs shrink-0" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                        {t.location}
+                      </span>
                     </div>
 
-                    {/* Glow */}
+                    {/* Subtle glow on hover */}
                     <div
                       className="absolute -bottom-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-500 pointer-events-none"
                       style={{ background: 'hsl(340 84% 50%)' }}
@@ -218,8 +261,8 @@ export function Testimonials() {
             href="https://www.instagram.com/candys_pets1"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm font-semibold hover:underline transition-colors"
-            style={{ color: 'hsl(340 84% 50%)' }}
+            className="inline-flex items-center gap-2 text-sm font-semibold transition-colors hover:opacity-80"
+            style={{ color: 'hsl(340 84% 60%)' }}
           >
             <Instagram className="w-4 h-4" />
             Ver más reseñas en Instagram @candys_pets1

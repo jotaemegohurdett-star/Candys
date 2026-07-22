@@ -9,11 +9,11 @@ const contactItems = [
     bg: 'hsl(340 84% 50% / 0.1)',
     title: 'WhatsApp',
     value: '+56 9 3669 3300',
-    link: 'https://wa.me/56936693300?text=Hola%20Candy\'s%20Pet!%20Me%20gustar%C3%ADa%20consultar%20sobre%20sus%20porta%20mascotas%20%F0%9F%90%BE',
+    link: "https://wa.me/56936693300?text=Hola%20Candy's%20Pet!%20Me%20gustar%C3%ADa%20consultar%20sobre%20sus%20porta%20mascotas%20%F0%9F%90%BE",
   },
   {
     icon: <Instagram className="w-5 h-5" />,
-    color: 'hsl(186 96% 43%)',
+    color: 'hsl(186 96% 38%)',
     bg: 'hsl(186 96% 43% / 0.1)',
     title: 'Instagram',
     value: '@candys_pets1',
@@ -29,7 +29,7 @@ const contactItems = [
   },
   {
     icon: <Clock className="w-5 h-5" />,
-    color: 'hsl(186 96% 43%)',
+    color: 'hsl(186 96% 38%)',
     bg: 'hsl(186 96% 43% / 0.1)',
     title: 'Atención',
     value: 'Lun–Vie 10–19h · Sáb 10–14h',
@@ -51,7 +51,7 @@ export function Location() {
       <div className="container mx-auto px-6 sm:px-10">
         <div className="flex flex-col lg:flex-row gap-12 items-center">
 
-          {/* Left — text */}
+          {/* Left — text + contact */}
           <div className="lg:w-1/2">
             <motion.span
               initial={{ opacity: 0, y: 12 }}
@@ -87,25 +87,33 @@ export function Location() {
             </motion.p>
 
             {/* Contact items */}
-            <div className="space-y-4">
+            <div className="space-y-3">
               {contactItems.map((item, i) => {
                 const Inner = (
                   <div className="flex items-center gap-4">
                     <div
-                      className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
+                      className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 duration-200"
                       style={{ background: item.bg, color: item.color }}
                     >
                       {item.icon}
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-0.5">{item.title}</p>
+                      <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-0.5">
+                        {item.title}
+                      </p>
                       <p className="font-semibold text-foreground">{item.value}</p>
                     </div>
                     {item.link && (
-                      <div className="ml-auto">
-                        <svg className="w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
+                      <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div
+                          className="w-8 h-8 rounded-full flex items-center justify-center text-white"
+                          style={{ background: item.color }}
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5}
+                              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                          </svg>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -124,12 +132,13 @@ export function Location() {
                         href={item.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="block p-4 rounded-2xl border border-border/60 bg-background hover:shadow-md hover:border-border transition-all duration-200"
+                        className="group block p-4 rounded-2xl border border-border/60 bg-background hover:shadow-lg hover:border-transparent transition-all duration-250"
+                        style={{ '--hover-border': item.color } as React.CSSProperties}
                       >
                         {Inner}
                       </a>
                     ) : (
-                      <div className="p-4 rounded-2xl border border-border/60 bg-background">
+                      <div className="group p-4 rounded-2xl border border-border/60 bg-background">
                         {Inner}
                       </div>
                     )}
@@ -139,27 +148,44 @@ export function Location() {
             </div>
           </div>
 
-          {/* Right — big CTA card */}
+          {/* Right — CTA card */}
           <div className="lg:w-1/2">
             <motion.div
               initial={{ opacity: 0, scale: 0.96 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="rounded-3xl overflow-hidden shadow-2xl"
-              style={{ background: 'hsl(220 25% 9%)' }}
+              className="relative rounded-3xl overflow-hidden shadow-2xl"
             >
-              <div className="p-10 md:p-12">
+              {/* Background gradient */}
+              <div
+                className="absolute inset-0"
+                style={{
+                  background: 'linear-gradient(145deg, hsl(220 25% 11%), hsl(220 25% 8%))',
+                }}
+              />
+              {/* Decorative orbs */}
+              <div
+                className="absolute -top-20 -right-20 w-64 h-64 rounded-full opacity-20 pointer-events-none"
+                style={{ background: 'radial-gradient(circle, hsl(340 84% 55%), transparent 70%)' }}
+              />
+              <div
+                className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full opacity-15 pointer-events-none"
+                style={{ background: 'radial-gradient(circle, hsl(186 96% 50%), transparent 70%)' }}
+              />
+
+              <div className="relative p-10 md:p-12">
                 <div
                   className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mb-8"
                   style={{ background: 'hsl(340 84% 50% / 0.15)' }}
                 >
                   🐾
                 </div>
-                <h3 className="font-heading text-3xl font-bold text-white mb-4">
+
+                <h3 className="font-heading text-3xl font-bold text-white mb-4 leading-tight">
                   ¿Lista para llevar a tu regalón a todas partes?
                 </h3>
-                <p className="text-white/60 text-base leading-relaxed mb-8">
+                <p className="leading-relaxed mb-8 text-base" style={{ color: 'rgba(255,255,255,0.58)' }}>
                   Escríbenos por WhatsApp y te ayudamos a elegir el porta mascota perfecto para tu peludo. Atención personalizada, envíos a todo Chile.
                 </p>
 
@@ -168,8 +194,11 @@ export function Location() {
                     href="https://wa.me/56936693300?text=Hola%20Candy's%20Pet!%20Me%20gustar%C3%ADa%20pedir%20un%20porta%20mascota%20%F0%9F%90%BE"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-4 rounded-full font-bold text-base text-white transition-all hover:opacity-90 active:scale-95"
-                    style={{ background: 'hsl(340 84% 50%)', boxShadow: '0 8px 28px hsl(340 84% 50% / 0.4)' }}
+                    className="btn-shimmer flex items-center justify-center gap-2 w-full py-4 rounded-full font-bold text-base text-white transition-all hover:opacity-90 active:scale-95"
+                    style={{
+                      background: 'linear-gradient(135deg, hsl(340 84% 52%), hsl(340 84% 42%))',
+                      boxShadow: '0 8px 32px hsl(340 84% 50% / 0.45)',
+                    }}
                   >
                     💬 Escribir por WhatsApp
                   </a>
@@ -177,14 +206,14 @@ export function Location() {
                     href="https://www.instagram.com/candys_pets1"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-4 rounded-full font-semibold text-sm text-white border border-white/20 hover:bg-white/10 transition-all active:scale-95"
+                    className="flex items-center justify-center gap-2 w-full py-4 rounded-full font-semibold text-sm text-white border border-white/20 hover:bg-white/8 transition-all active:scale-95"
                   >
                     <Instagram className="w-4 h-4" />
                     Seguir en Instagram
                   </a>
                 </div>
 
-                <p className="text-white/30 text-xs text-center mt-6">
+                <p className="text-xs text-center mt-6" style={{ color: 'rgba(255,255,255,0.28)' }}>
                   Lorena Abarca · Candy's Pet · Santiago, Chile 🇨🇱
                 </p>
               </div>
