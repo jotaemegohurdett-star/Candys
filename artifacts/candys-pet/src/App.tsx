@@ -28,8 +28,8 @@ function StoreFront() {
           <Hero />
           <TrustBar />
           <VideoSection />
-          <Benefits />
           <Products />
+          <Benefits />
           <SizeGuide />
           <Testimonials />
           <Partnerships />
