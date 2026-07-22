@@ -127,7 +127,7 @@ export function VideoSection() {
         />
         <iframe
           ref={iframeRef}
-          src="/candys-pet-video/"
+          src="/candys-pet-video/?embed=1"
           allow="autoplay"
           title="Candy's Pet — video"
           style={{

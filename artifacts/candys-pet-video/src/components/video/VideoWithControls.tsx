@@ -7,7 +7,9 @@ const TOTAL_DURATION_MS = Object.values(SCENE_DURATIONS).reduce((a, b) => a + b,
 type RecordState = 'idle' | 'countdown' | 'recording' | 'done';
 
 export default function VideoWithControls() {
-  const isIframed = typeof window !== 'undefined' && window.self !== window.top;
+  // embed=1 means we're inside the store's iframe — hide the download button there
+  const isEmbedded = typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('embed') === '1';
 
   const { sceneKeys, activeIndex, locked, mountKey, tick, durations, activeDuration, onSceneChange, jumpTo, toggleLock } =
     useSceneControls(SCENE_DURATIONS);
@@ -23,7 +25,7 @@ export default function VideoWithControls() {
 
   // Listen for mute/unmute commands from parent page via postMessage
   useEffect(() => {
-    if (!isIframed) return;
+    if (!isEmbedded) return;
     const handler = (e: MessageEvent) => {
       if (e.data?.type === 'CANDY_UNMUTE') {
         jumpTo(0);
@@ -33,7 +35,7 @@ export default function VideoWithControls() {
     };
     window.addEventListener('message', handler);
     return () => window.removeEventListener('message', handler);
-  }, [isIframed]);
+  }, [isEmbedded]);
 
   async function startDownload() {
     try {
@@ -98,8 +100,8 @@ export default function VideoWithControls() {
     }
   }
 
-  // Iframed path: audio controlled by parent scroll
-  if (isIframed) {
+  // Embedded in store: audio controlled by parent scroll, no download button
+  if (isEmbedded) {
     return (
       <div className="relative w-full h-screen">
         <VideoTemplate
