@@ -28,43 +28,47 @@ export function Scene5() {
       <div className="absolute inset-0 bg-bg-dark/40" />
 
       {/* Foreground Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center">
-        
+      <div className="relative z-10 flex flex-col items-center justify-center px-4 text-center">
+
         <motion.div
-          className="bg-white text-primary rounded-full p-6 shadow-2xl mb-8"
+          className="bg-white text-primary rounded-full shadow-2xl mb-4 sm:mb-6"
+          style={{ padding: 'clamp(12px,3vw,24px)' }}
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ ...springs.bouncy, delay: 0.2 }}
         >
-          <PawPrint size={64} fill="currentColor" />
+          <PawPrint
+            fill="currentColor"
+            style={{ width: 'clamp(28px,6vw,56px)', height: 'clamp(28px,6vw,56px)' }}
+          />
         </motion.div>
 
         <motion.h1
-          className="text-7xl md:text-9xl font-display font-bold text-white tracking-tight drop-shadow-2xl mb-6"
+          className="font-display font-bold text-white tracking-tight drop-shadow-2xl mb-4"
+          style={{ fontSize: 'clamp(2.2rem, 9vw, 6rem)' }}
           variants={staggerConfigs.charFast}
           initial="hidden"
           animate="visible"
         >
           {brand.split('').map((char, i) => (
-            <motion.span
-              key={i}
-              className="inline-block"
-              variants={charVariants}
-            >
+            <motion.span key={i} className="inline-block" variants={charVariants}>
               {char === ' ' ? '\u00A0' : char}
             </motion.span>
           ))}
         </motion.h1>
 
         <motion.div
-          className="bg-secondary text-white px-8 py-4 rounded-full font-body font-bold text-3xl shadow-xl"
+          className="bg-secondary text-white rounded-full font-body font-bold shadow-xl"
+          style={{
+            fontSize: 'clamp(0.75rem, 2.5vw, 1.5rem)',
+            padding: 'clamp(6px,1.5vw,14px) clamp(14px,3vw,32px)',
+          }}
           initial={{ opacity: 0, y: 50, scale: 0.8 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ ...springs.poppy, delay: 1 }}
         >
           Siempre juntos, corazón a corazón
         </motion.div>
-
       </div>
     </motion.div>
   );
