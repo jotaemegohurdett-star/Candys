@@ -267,14 +267,16 @@ function ProductCard({
       size: selectedSize,
       color: selectedColor,
     });
-    toast.success('¡Agregado al carrito! 🐾', {
-      description: `${product.name} · Talla ${selectedSize} · ${selectedColor}`,
-      action: {
-        label: 'Ver carrito',
-        onClick: () => { setDialogOpen(false); openCart(); },
-      },
-      duration: 4000,
-    });
+    // Cerrar el modal primero para que el overlay no bloquee el toast
+    setDialogOpen(false);
+    // Pequeño delay para que el dialog se desmonte antes de mostrar el toast
+    setTimeout(() => {
+      toast.success('¡Agregado al carrito! 🐾', {
+        description: `${product.name} · Talla ${selectedSize} · ${selectedColor}`,
+        action: { label: 'Ver carrito', onClick: openCart },
+        duration: 5000,
+      });
+    }, 150);
   };
 
   return (
