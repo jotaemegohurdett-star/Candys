@@ -313,8 +313,20 @@ function ProductCard({
                   ))}
                 </div>
 
-                {/* Stock badge on card */}
-                {stock.isLowStock(product.id, 'M') || stock.isLowStock(product.id, 'L') ? (
+                {/* AGOTADO overlay — ambas tallas sin stock */}
+                {stock.isOutOfStock(product.id, 'M') && stock.isOutOfStock(product.id, 'L') ? (
+                  <>
+                    {/* Dim overlay */}
+                    <div className="absolute inset-0 bg-black/55" />
+                    {/* Badge central */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="px-5 py-2 rounded-full text-sm font-black tracking-widest uppercase text-white border-2 border-white/80"
+                        style={{ background: 'hsl(0 72% 42%)', letterSpacing: '0.2em', boxShadow: '0 4px 24px rgba(0,0,0,0.5)' }}>
+                        AGOTADO
+                      </span>
+                    </div>
+                  </>
+                ) : (stock.isLowStock(product.id, 'M') || stock.isLowStock(product.id, 'L')) ? (
                   <div className="absolute top-4 right-4 px-2.5 py-1 rounded-full text-[10px] font-bold text-white flex items-center gap-1"
                     style={{ background: 'hsl(38 92% 40%)' }}>
                     <AlertTriangle className="w-2.5 h-2.5" /> Últimas unidades
@@ -371,6 +383,15 @@ function ProductCard({
             >
               {product.badge}
             </div>
+            {/* AGOTADO en modal — talla seleccionada sin stock */}
+            {outOfStock && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                <span className="px-6 py-2.5 rounded-full font-black tracking-widest uppercase text-white border-2 border-white/80 text-sm"
+                  style={{ background: 'hsl(0 72% 42%)', letterSpacing: '0.2em', boxShadow: '0 4px 24px rgba(0,0,0,0.5)' }}>
+                  AGOTADO
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Info panel */}
