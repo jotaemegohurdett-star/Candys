@@ -1,0 +1,41 @@
+/**
+ * GET /api/catalog
+ * Public endpoint — returns prices and product images for the storefront.
+ * No auth required.
+ */
+import { Router, type IRouter } from "express";
+import { db, settingsTable, productImagesTable } from "@workspace/db";
+import { asc } from "drizzle-orm";
+import { logger } from "../lib/logger";
+
+const router: IRouter = Router();
+
+router.get("/", async (_req, res) => {
+  try {
+    const [settingsRows, imageRows] = await Promise.all([
+      db.select().from(settingsTable),
+      db.select().from(productImagesTable).orderBy(
+        asc(productImagesTable.productId),
+        asc(productImagesTable.position),
+      ),
+    ]);
+
+    // Build prices map: { price_m: "18990", price_l: "20990" }
+    const prices: Record<string, string> = {};
+    for (const r of settingsRows) prices[r.key] = r.value;
+
+    // Build images map: { p1: ["url1","url2"], p2: [], ... }
+    const images: Record<string, string[]> = {};
+    for (const r of imageRows) {
+      if (!images[r.productId]) images[r.productId] = [];
+      images[r.productId].push(r.url);
+    }
+
+    res.json({ prices, images });
+  } catch (err) {
+    logger.error({ err }, "Failed to fetch catalog");
+    res.status(500).json({ error: "CATALOG_ERROR" });
+  }
+});
+
+export default router;

@@ -4,6 +4,7 @@ import { ShoppingBag, Check, Star, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCart } from '../context/CartContext';
 import { useStock } from '../hooks/useStock';
+import { useCatalog } from '../hooks/useCatalog';
 import { waLink, scrollToId } from '../lib/constants';
 import {
   Dialog,
@@ -18,10 +19,12 @@ import p2Img from '@assets/Screenshot_20260722-005735_Instagram~2_1784698640108.
 import p3Img from '@assets/Screenshot_20260722-051510_WhatsApp_1784713749468.jpg';
 import p4Img from '@assets/Screenshot_20260722-051201_WhatsApp~2_1784713749256.jpg';
 
-/** Precios reales según talla */
-const PRICES: Record<string, number> = {
-  M: 18990,
-  L: 20990,
+/** Fallback local images used when no image is uploaded via admin panel */
+const LOCAL_IMAGES: Record<string, string> = {
+  p1: p1Img,
+  p2: p2Img,
+  p3: p3Img,
+  p4: p4Img,
 };
 
 const SIZE_INFO: Record<string, string> = {
@@ -118,6 +121,10 @@ const products = [
 
 export function Products() {
   const stock = useStock();
+  const catalog = useCatalog();
+
+  const priceM = catalog.getPrice('M');
+  const priceL = catalog.getPrice('L');
 
   return (
     <section id="products" className="py-24" style={{ background: 'hsl(220 25% 9%)' }}>
@@ -160,13 +167,13 @@ export function Products() {
                 className="px-3 py-1.5 rounded-full text-xs font-bold text-white"
                 style={{ background: 'hsl(340 84% 50%)' }}
               >
-                Talla M · $18.990
+                Talla M · ${priceM.toLocaleString('es-CL')}
               </span>
               <span
                 className="px-3 py-1.5 rounded-full text-xs font-bold text-white"
                 style={{ background: 'hsl(270 70% 55%)' }}
               >
-                Talla L · $20.990
+                Talla L · ${priceL.toLocaleString('es-CL')}
               </span>
             </div>
             <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
@@ -178,7 +185,7 @@ export function Products() {
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {products.map((product, index) => (
-            <ProductCard key={product.id} product={product} index={index} stock={stock} />
+            <ProductCard key={product.id} product={product} index={index} stock={stock} catalog={catalog} />
           ))}
         </div>
 
@@ -216,10 +223,12 @@ function ProductCard({
   product,
   index,
   stock,
+  catalog,
 }: {
   product: (typeof products)[0];
   index: number;
   stock: ReturnType<typeof useStock>;
+  catalog: ReturnType<typeof useCatalog>;
 }) {
   const { addToCart, openCart } = useCart();
   const [selectedSize, setSelectedSize] = useState<'M' | 'L'>('M');
@@ -227,7 +236,11 @@ function ProductCard({
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const currentPrice = PRICES[selectedSize];
+  // Dynamic price from DB, fallback to local constant
+  const currentPrice = catalog.getPrice(selectedSize);
+  // Dynamic image from admin panel, fallback to bundled asset
+  const displayImage = catalog.getPrimaryImage(product.id) ?? LOCAL_IMAGES[product.id];
+
   const outOfStock = stock.isOutOfStock(product.id, selectedSize);
   const lowStock = stock.isLowStock(product.id, selectedSize);
   const qtyLeft = stock.getQty(product.id, selectedSize);
@@ -249,7 +262,7 @@ function ProductCard({
       productId: product.id,
       name: product.name,
       price: currentPrice,
-      image: product.image,
+      image: displayImage,
       size: selectedSize,
       color: selectedColor,
     });
@@ -284,7 +297,7 @@ function ProductCard({
               {/* Image */}
               <div className="relative aspect-[3/4] overflow-hidden">
                 <img
-                  src={product.image}
+                  src={displayImage}
                   alt={product.name}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-107"
                   loading="lazy"
@@ -338,9 +351,9 @@ function ProductCard({
               <div className="p-5 flex flex-col flex-1">
                 <h3 className="font-heading text-white text-lg font-bold mb-1">{product.name}</h3>
 
-                {/* Price range */}
+                {/* Price range — dynamic from DB */}
                 <p className="text-sm font-bold mb-3" style={{ color: 'hsl(340 84% 62%)' }}>
-                  Desde $18.990
+                  Desde ${catalog.getPrice('M').toLocaleString('es-CL')}
                 </p>
 
                 {/* Color dots */}
@@ -371,7 +384,7 @@ function ProductCard({
           {/* Image panel */}
           <div className="w-full md:w-1/2 relative bg-gray-100 min-h-[280px]">
             <img
-              src={product.image}
+              src={displayImage}
               alt={product.name}
               className="w-full h-full object-cover absolute inset-0"
               style={{ objectPosition: product.imgPosition }}
@@ -478,7 +491,7 @@ function ProductCard({
                       >
                         <span className="text-lg font-black leading-none">{size}</span>
                         <span className="text-[10px] font-bold mt-1 opacity-80">
-                          ${PRICES[size].toLocaleString('es-CL')}
+                          ${catalog.getPrice(size).toLocaleString('es-CL')}
                         </span>
                         <span className="text-[9px] mt-0.5 leading-tight max-w-[80px] text-center opacity-65">
                           {SIZE_INFO[size]}

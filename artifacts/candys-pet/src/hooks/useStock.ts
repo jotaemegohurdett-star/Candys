@@ -28,15 +28,22 @@ export function useStock() {
     return () => clearInterval(interval);
   }, [fetchStock]);
 
-  const getQty = (productId: string, size: string): number =>
-    stock[`${productId}-${size}`] ?? 99;
+  /**
+   * Returns qty. While loading, returns Infinity so UI doesn't block purchases.
+   * After load, missing keys return 0 (assume out of stock — safer than 99).
+   */
+  const getQty = (productId: string, size: string): number => {
+    const key = `${productId}-${size}`;
+    if (loading) return Infinity;
+    return stock[key] ?? 0;
+  };
 
   const isOutOfStock = (productId: string, size: string): boolean =>
     getQty(productId, size) === 0;
 
   const isLowStock = (productId: string, size: string): boolean => {
     const qty = getQty(productId, size);
-    return qty > 0 && qty <= 3;
+    return qty > 0 && qty !== Infinity && qty <= 3;
   };
 
   return { stock, loading, getQty, isOutOfStock, isLowStock, refresh: fetchStock };
