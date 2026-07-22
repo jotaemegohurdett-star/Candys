@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Ruler } from 'lucide-react';
 import sizeImg from '@assets/Screenshot_20260722-005631_Instagram~2_1784698640443.jpg';
+import dogGuideImg from '@assets/IMG-20260722-WA0033(1)_1784750410384.jpg';
+import catGuideImg from '@assets/IMG-20260722-WA0039_1784750410492.jpg';
 
 const sizes = [
   {
@@ -143,31 +145,38 @@ export function SizeGuide() {
             </div>
           </div>
 
-          {/* Right — real size guide image from Instagram */}
+          {/* Right — measurement guides */}
           <div className="lg:w-1/2">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="relative rounded-3xl overflow-hidden shadow-2xl border border-border/50"
-            >
-              <img
-                src={sizeImg}
-                alt="Guía de cómo medir a tu mascota — Candy's Pet"
-                className="w-full object-cover"
-                loading="lazy"
-                decoding="async"
-                style={{ objectPosition: 'left 22%' }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-              <div className="absolute bottom-5 left-5 right-5">
-                <div className="glass rounded-2xl px-4 py-3 text-center">
-                  <p className="text-xs font-bold text-gray-900">📏 Cómo medir a tu mascota</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Desde el cuello hasta donde comienza la cola</p>
-                </div>
-              </div>
-            </motion.div>
+            {/* How-to-measure cards: dog + cat */}
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              {[
+                { src: dogGuideImg, label: '🐶 Perros' },
+                { src: catGuideImg, label: '🐱 Gatos' },
+              ].map(({ src, label }, i) => (
+                <motion.div
+                  key={label}
+                  initial={{ opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.15 + i * 0.1 }}
+                  className="rounded-2xl overflow-hidden shadow-xl border border-border/40"
+                >
+                  <img
+                    src={src}
+                    alt={`Cómo medir a tu mascota — ${label}`}
+                    className="w-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <div
+                    className="px-3 py-2 text-center text-xs font-bold"
+                    style={{ background: 'hsl(340 84% 50% / 0.08)', color: 'hsl(340 84% 45%)' }}
+                  >
+                    {label}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
 
             {/* WhatsApp help */}
             <motion.div
