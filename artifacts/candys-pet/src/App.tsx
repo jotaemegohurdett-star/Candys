@@ -13,6 +13,7 @@ import { PaymentMethods } from './components/PaymentMethods';
 import { Footer } from './components/Footer';
 import { FloatingWhatsApp } from './components/FloatingWhatsApp';
 import { CartDrawer } from './components/CartDrawer';
+import { PaymentResult } from './components/PaymentResult';
 import { CartProvider } from './context/CartContext';
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
 
         <Footer />
         <FloatingWhatsApp />
+        <PaymentResult />
         <CartDrawer />
         <Toaster
           position="bottom-right"

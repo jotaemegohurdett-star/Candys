@@ -1,8 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingBag, Check, Star } from 'lucide-react';
+import { ShoppingBag, Check, Star, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCart } from '../context/CartContext';
+import { useStock } from '../hooks/useStock';
 import { waLink, scrollToId } from '../lib/constants';
 import {
   Dialog,
@@ -116,6 +117,8 @@ const products = [
 ];
 
 export function Products() {
+  const stock = useStock();
+
   return (
     <section id="products" className="py-24" style={{ background: 'hsl(220 25% 9%)' }}>
       <div className="container mx-auto px-6 sm:px-10">
@@ -175,7 +178,7 @@ export function Products() {
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {products.map((product, index) => (
-            <ProductCard key={product.id} product={product} index={index} />
+            <ProductCard key={product.id} product={product} index={index} stock={stock} />
           ))}
         </div>
 
@@ -209,7 +212,15 @@ export function Products() {
   );
 }
 
-function ProductCard({ product, index }: { product: (typeof products)[0]; index: number }) {
+function ProductCard({
+  product,
+  index,
+  stock,
+}: {
+  product: (typeof products)[0];
+  index: number;
+  stock: ReturnType<typeof useStock>;
+}) {
   const { addToCart, openCart } = useCart();
   const [selectedSize, setSelectedSize] = useState<'M' | 'L'>('M');
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
@@ -217,6 +228,9 @@ function ProductCard({ product, index }: { product: (typeof products)[0]; index:
   const cardRef = useRef<HTMLDivElement>(null);
 
   const currentPrice = PRICES[selectedSize];
+  const outOfStock = stock.isOutOfStock(product.id, selectedSize);
+  const lowStock = stock.isLowStock(product.id, selectedSize);
+  const qtyLeft = stock.getQty(product.id, selectedSize);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -227,7 +241,12 @@ function ProductCard({ product, index }: { product: (typeof products)[0]; index:
   };
 
   const handleAddToCart = () => {
+    if (outOfStock) {
+      toast.error('Sin stock disponible para esta talla 😔', { duration: 4000 });
+      return;
+    }
     addToCart({
+      productId: product.id,
       name: product.name,
       price: currentPrice,
       image: product.image,
@@ -293,6 +312,14 @@ function ProductCard({ product, index }: { product: (typeof products)[0]; index:
                     <Star key={i} className="w-3 h-3 fill-amber-400 text-amber-400" />
                   ))}
                 </div>
+
+                {/* Stock badge on card */}
+                {stock.isLowStock(product.id, 'M') || stock.isLowStock(product.id, 'L') ? (
+                  <div className="absolute top-4 right-4 px-2.5 py-1 rounded-full text-[10px] font-bold text-white flex items-center gap-1"
+                    style={{ background: 'hsl(38 92% 40%)' }}>
+                    <AlertTriangle className="w-2.5 h-2.5" /> Últimas unidades
+                  </div>
+                ) : null}
               </div>
 
               {/* Info */}
@@ -410,33 +437,41 @@ function ProductCard({ product, index }: { product: (typeof products)[0]; index:
                   </button>
                 </div>
                 <div className="flex gap-3">
-                  {(['M', 'L'] as const).map((size) => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className="flex flex-col items-center px-5 py-3 rounded-2xl border-2 transition-all text-left"
-                      style={
-                        selectedSize === size
-                          ? {
-                              background: 'hsl(340 84% 50%)',
-                              borderColor: 'transparent',
-                              color: 'white',
-                              boxShadow: '0 4px 16px hsl(340 84% 50% / 0.4)',
-                            }
-                          : { background: 'white', borderColor: '#e5e7eb', color: '#374151' }
-                      }
-                    >
-                      <span className="text-lg font-black leading-none">{size}</span>
-                      <span className="text-[10px] font-bold mt-1 opacity-80">
-                        ${PRICES[size].toLocaleString('es-CL')}
-                      </span>
-                      <span
-                        className="text-[9px] mt-0.5 leading-tight max-w-[80px] text-center opacity-65"
+                  {(['M', 'L'] as const).map((size) => {
+                    const oos = stock.isOutOfStock(product.id, size);
+                    const low = stock.isLowStock(product.id, size);
+                    const qty = stock.getQty(product.id, size);
+                    return (
+                      <button
+                        key={size}
+                        onClick={() => !oos && setSelectedSize(size)}
+                        disabled={oos}
+                        className="flex flex-col items-center px-5 py-3 rounded-2xl border-2 transition-all text-left relative"
+                        style={
+                          oos
+                            ? { background: '#f5f5f5', borderColor: '#e5e7eb', color: '#aaa', cursor: 'not-allowed', opacity: 0.6 }
+                            : selectedSize === size
+                              ? { background: 'hsl(340 84% 50%)', borderColor: 'transparent', color: 'white', boxShadow: '0 4px 16px hsl(340 84% 50% / 0.4)' }
+                              : { background: 'white', borderColor: '#e5e7eb', color: '#374151' }
+                        }
                       >
-                        {SIZE_INFO[size]}
-                      </span>
-                    </button>
-                  ))}
+                        <span className="text-lg font-black leading-none">{size}</span>
+                        <span className="text-[10px] font-bold mt-1 opacity-80">
+                          ${PRICES[size].toLocaleString('es-CL')}
+                        </span>
+                        <span className="text-[9px] mt-0.5 leading-tight max-w-[80px] text-center opacity-65">
+                          {SIZE_INFO[size]}
+                        </span>
+                        {oos ? (
+                          <span className="text-[9px] mt-1 font-bold text-red-400">Sin stock</span>
+                        ) : low ? (
+                          <span className="text-[9px] mt-1 font-bold" style={{ color: 'hsl(38 92% 45%)' }}>
+                            ¡Solo {qty}!
+                          </span>
+                        ) : null}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -462,15 +497,31 @@ function ProductCard({ product, index }: { product: (typeof products)[0]; index:
             </div>
 
             <div className="mt-auto pt-6 border-t border-gray-100 space-y-3">
+              {/* Stock status */}
+              {outOfStock ? (
+                <div className="flex items-center gap-2 text-sm font-medium text-red-500 bg-red-50 rounded-xl px-4 py-2.5">
+                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                  Sin stock para talla {selectedSize}. Consúltanos por WhatsApp.
+                </div>
+              ) : lowStock ? (
+                <div className="flex items-center gap-2 text-sm font-medium bg-amber-50 rounded-xl px-4 py-2.5"
+                  style={{ color: 'hsl(38 92% 38%)' }}>
+                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                  ¡Solo quedan {qtyLeft} unidades en talla {selectedSize}!
+                </div>
+              ) : null}
+
               <button
                 onClick={handleAddToCart}
-                className="btn-shimmer w-full py-4 rounded-full font-bold text-base text-white transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+                disabled={outOfStock}
+                className="btn-shimmer w-full py-4 rounded-full font-bold text-base text-white transition-all flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{
-                  background: 'linear-gradient(135deg, hsl(340 84% 52%), hsl(340 84% 43%))',
-                  boxShadow: '0 8px 28px hsl(340 84% 50% / 0.35)',
+                  background: outOfStock ? '#aaa' : 'linear-gradient(135deg, hsl(340 84% 52%), hsl(340 84% 43%))',
+                  boxShadow: outOfStock ? 'none' : '0 8px 28px hsl(340 84% 50% / 0.35)',
                 }}
               >
-                <ShoppingBag className="w-5 h-5" /> Agregar al Carrito — ${currentPrice.toLocaleString('es-CL')}
+                <ShoppingBag className="w-5 h-5" />
+                {outOfStock ? 'Sin stock' : `Agregar al Carrito — $${currentPrice.toLocaleString('es-CL')}`}
               </button>
               <a
                 href={waLink('Hola! Me interesa el porta mascota y quisiera más información 🐾')}

@@ -11,6 +11,7 @@ import { WA_NUMBER } from '../lib/constants';
 
 export interface CartItem {
   id: string;
+  productId: string;   // e.g. "p1", "p2" — needed for stock deduction
   name: string;
   price: number;
   quantity: number;
@@ -50,17 +51,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(loadSavedCart);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // Persist cart to localStorage on every change
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-    } catch {
-      // storage quota exceeded — ignore silently
-    }
+    } catch { /* storage quota exceeded */ }
   }, [items]);
 
   const addToCart = useCallback((newItem: Omit<CartItem, 'id' | 'quantity'>) => {
-    const id = `${newItem.name}-${newItem.size ?? ''}-${newItem.color ?? ''}`
+    const id = `${newItem.productId}-${newItem.size ?? ''}-${newItem.color ?? ''}`
       .replace(/\s+/g, '-')
       .toLowerCase();
 
@@ -134,17 +132,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       closeCart,
     }),
     [
-      items,
-      addToCart,
-      removeFromCart,
-      updateQuantity,
-      clearCart,
-      totalItems,
-      totalPrice,
-      generateWhatsAppLink,
-      isCartOpen,
-      openCart,
-      closeCart,
+      items, addToCart, removeFromCart, updateQuantity, clearCart,
+      totalItems, totalPrice, generateWhatsAppLink, isCartOpen, openCart, closeCart,
     ]
   );
 
