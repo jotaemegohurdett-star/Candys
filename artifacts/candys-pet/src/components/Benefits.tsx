@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Heart, ShieldCheck, Feather, Sparkles } from 'lucide-react';
-import lifestyleImg from '@assets/Screenshot_20260722-051518_WhatsApp_1784713749524.jpg';
+import lifestyleImg from '@assets/Screenshot_20260722-051400_WhatsApp~2_1784713749406.jpg';
 
 const benefits = [
   {
@@ -126,7 +126,7 @@ export function Benefits() {
                 className="w-full h-full object-cover"
                 loading="lazy"
                 decoding="async"
-                style={{ objectPosition: 'center 30%' }}
+                style={{ objectPosition: 'center 45%' }}
               />
               {/* Gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
