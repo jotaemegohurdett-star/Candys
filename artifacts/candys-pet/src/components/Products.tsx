@@ -17,26 +17,37 @@ import p2Img from '@assets/Screenshot_20260722-005735_Instagram~2_1784698640108.
 import p3Img from '@assets/Screenshot_20260722-051510_WhatsApp_1784713749468.jpg';
 import p4Img from '@assets/Screenshot_20260722-051201_WhatsApp~2_1784713749256.jpg';
 
+/** Precios reales según talla */
+const PRICES: Record<string, number> = {
+  M: 18990,
+  L: 20990,
+};
+
+const SIZE_INFO: Record<string, string> = {
+  M: 'Desde 2 meses · hasta 3,5 kg',
+  L: 'Hasta 10 kg · caben 2 perritos 🐾🐾',
+};
+
 const products = [
   {
     id: 'p1',
     name: 'Porta Mascota Clásico',
     badge: 'Más vendido',
     badgeStyle: { background: 'linear-gradient(135deg, hsl(340 84% 50%), hsl(340 84% 40%))' },
-    price: 35000,
     description:
-      'Nuestro modelo insignia tipo banano. Tela de algodón suave y transpirable, ideal para el día a día. Incluye gancho de seguridad interior para el collar de tu peludo.',
+      'Nuestro modelo insignia tipo sling. Tela de algodón suave y transpirable, ideal para el día a día. Incluye gancho de seguridad interior. Perfecto también para perritos senior o con movilidad reducida 🧡',
     image: p1Img,
     imgPosition: 'center 18%',
     colors: ['Rosa', 'Rosa Chicle', 'Lila', 'Azul Cielo', 'Azul Rey', 'Negro', 'Gris', 'Marino'],
     colorSwatches: ['#F9A8C9', '#FF69B4', '#C3A6E8', '#87CEEB', '#4169E1', '#222222', '#9E9E9E', '#1B2A4A'],
-    sizes: ['S', 'M', 'L'],
     features: [
       'Tela algodón 100% transpirable',
       'Lavable a máquina 30°',
-      'Soporta hasta 8 kg',
       'Gancho de seguridad interior',
-      'Apto para perros y gatos',
+      'Ideal para perritos senior o con discapacidad',
+      'Reduce el estrés y la ansiedad de tu mascota',
+      'Talla M: desde 2 meses hasta 3,5 kg',
+      'Talla L: hasta 10 kg — caben 2 perritos',
     ],
   },
   {
@@ -44,20 +55,20 @@ const products = [
     name: 'Porta Mascota Corderito',
     badge: 'Colección Invierno',
     badgeStyle: { background: 'linear-gradient(135deg, hsl(200 70% 45%), hsl(200 70% 35%))' },
-    price: 42000,
     description:
-      'Interior de corderito (chiporro sintético) extra suave y cálido. Perfecto para días fríos. Tu regalón no querrá salir. Exterior liso y resistente.',
+      'Interior de corderito (chiporro sintético) extra suave y cálido. Perfecto para días fríos. Tu regalón no querrá salir. Ideal para uso terapéutico, perritos senior o con movilidad reducida.',
     image: p2Img,
     imgPosition: 'center 20%',
     colors: ['Azul Marino', 'Gris Marengo', 'Negro', 'Azul Celeste', 'Café'],
     colorSwatches: ['#1B2A4A', '#4A4A4A', '#111111', '#6BBFDF', '#7B5C3E'],
-    sizes: ['S', 'M', 'L'],
     features: [
       'Interior corderito ultra suave',
       'Exterior tela resistente',
       'Correa ajustable acolchada',
-      'Soporta hasta 10 kg',
-      'Ideal para invierno',
+      'Ideal para perritos senior — uso terapéutico',
+      'Reduce ansiedad y estrés',
+      'Talla M: desde 2 meses hasta 3,5 kg',
+      'Talla L: hasta 10 kg — caben 2 perritos',
     ],
   },
   {
@@ -65,20 +76,20 @@ const products = [
     name: 'Porta Mascota Estampado',
     badge: 'Edición especial',
     badgeStyle: { background: 'linear-gradient(135deg, hsl(270 60% 55%), hsl(270 60% 45%))' },
-    price: 38000,
     description:
-      'Diseños únicos con estampados florales, animal print y motivos especiales. Colaboraciones exclusivas con @ClubChihuauaChile y @club_poodlechile.',
+      'Diseños únicos con estampados florales, animal print y motivos especiales. Colaboraciones exclusivas con @ClubChihuauaChile y @club_poodlechile. Mismo nivel de confort y seguridad.',
     image: p3Img,
     imgPosition: 'center 15%',
     colors: ['Floral Rosa', 'Floral Azul', 'Animal Print', 'Patitas', 'Mickey'],
     colorSwatches: ['#F9A8C9', '#87CEEB', '#8B5E3C', '#FF69B4', '#1B2A4A'],
-    sizes: ['S', 'M', 'L'],
     features: [
       "Diseños exclusivos Candy's Pet",
-      'Tela con estampado fijo',
-      'Lavable a mano',
-      'Soporta hasta 8 kg',
+      'Tela con estampado fijo · lavable a mano',
+      'Gancho de seguridad interior',
+      'Apto para perritos con discapacidad o senior',
       'Edición limitada',
+      'Talla M: desde 2 meses hasta 3,5 kg',
+      'Talla L: hasta 10 kg — caben 2 perritos',
     ],
   },
   {
@@ -86,20 +97,20 @@ const products = [
     name: 'Porta Mascota Unisex',
     badge: 'Para todos',
     badgeStyle: { background: 'linear-gradient(135deg, hsl(186 96% 38%), hsl(186 96% 30%))' },
-    price: 35000,
     description:
-      'Diseño unisex, ideal para hombres y mujeres. Cómodo, transpirable y resistente. ¡Transporta incluso dos perritos pequeños al mismo tiempo!',
+      'Diseño unisex, ideal para hombres y mujeres. Cómodo, transpirable y resistente. ¡En talla L transportas dos perritos pequeños al mismo tiempo! Muy usado con perritos senior.',
     image: p4Img,
     imgPosition: 'center 25%',
     colors: ['Negro', 'Gris', 'Marino', 'Café'],
     colorSwatches: ['#111111', '#9E9E9E', '#1B2A4A', '#7B5C3E'],
-    sizes: ['S', 'M', 'L'],
     features: [
       'Diseño unisex versátil',
       'Doble bolsillo lateral',
-      'Capacidad para 2 mascotas pequeñas',
+      'Capacidad talla L: 2 mascotas pequeñas 🐾🐾',
       'Correa reforzada extra larga',
       'Malla transpirable en zona mascota',
+      'Talla M: desde 2 meses hasta 3,5 kg',
+      'Talla L: hasta 10 kg — caben 2 perritos',
     ],
   },
 ];
@@ -134,16 +145,31 @@ export function Products() {
               </span>
             </motion.h2>
           </div>
-          <motion.p
+          <motion.div
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.15 }}
-            className="max-w-xs md:text-right leading-relaxed text-base"
-            style={{ color: 'rgba(255,255,255,0.45)' }}
+            className="flex flex-col sm:items-end gap-1"
           >
-            Cada porta mascota elaborado a mano con atención al más mínimo detalle.
-          </motion.p>
+            <div className="flex gap-3">
+              <span
+                className="px-3 py-1.5 rounded-full text-xs font-bold text-white"
+                style={{ background: 'hsl(340 84% 50%)' }}
+              >
+                Talla M · $18.990
+              </span>
+              <span
+                className="px-3 py-1.5 rounded-full text-xs font-bold text-white"
+                style={{ background: 'hsl(270 70% 55%)' }}
+              >
+                Talla L · $20.990
+              </span>
+            </div>
+            <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+              Cada porta mascota elaborado a mano con amor 💕
+            </p>
+          </motion.div>
         </div>
 
         {/* Grid */}
@@ -165,7 +191,7 @@ export function Products() {
           <div className="flex items-center gap-3">
             <span className="text-2xl">✨</span>
             <p className="text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>
-              ¿No encuentras tu talla o color? ¡Lo hacemos a pedido para ti!
+              ¿No encuentras tu color favorito? ¡Lo hacemos a pedido para ti!
             </p>
           </div>
           <a
@@ -185,10 +211,12 @@ export function Products() {
 
 function ProductCard({ product, index }: { product: (typeof products)[0]; index: number }) {
   const { addToCart, openCart } = useCart();
-  const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
+  const [selectedSize, setSelectedSize] = useState<'M' | 'L'>('M');
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const cardRef = useRef<HTMLDivElement>(null);
+
+  const currentPrice = PRICES[selectedSize];
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -201,7 +229,7 @@ function ProductCard({ product, index }: { product: (typeof products)[0]; index:
   const handleAddToCart = () => {
     addToCart({
       name: product.name,
-      price: product.price,
+      price: currentPrice,
       image: product.image,
       size: selectedSize,
       color: selectedColor,
@@ -270,8 +298,10 @@ function ProductCard({ product, index }: { product: (typeof products)[0]; index:
               {/* Info */}
               <div className="p-5 flex flex-col flex-1">
                 <h3 className="font-heading text-white text-lg font-bold mb-1">{product.name}</h3>
+
+                {/* Price range */}
                 <p className="text-sm font-bold mb-3" style={{ color: 'hsl(340 84% 62%)' }}>
-                  ${product.price.toLocaleString('es-CL')}
+                  Desde $18.990
                 </p>
 
                 {/* Color dots */}
@@ -322,9 +352,12 @@ function ProductCard({ product, index }: { product: (typeof products)[0]; index:
               <DialogTitle className="font-heading text-3xl md:text-4xl mb-2 text-gray-900">
                 {product.name}
               </DialogTitle>
+
+              {/* Dynamic price */}
               <div className="text-2xl font-bold mb-1" style={{ color: 'hsl(340 84% 50%)' }}>
-                ${product.price.toLocaleString('es-CL')}
+                ${currentPrice.toLocaleString('es-CL')}
               </div>
+
               {/* Stars */}
               <div className="flex gap-0.5 mb-3">
                 {[...Array(5)].map((_, i) => (
@@ -376,12 +409,12 @@ function ProductCard({ product, index }: { product: (typeof products)[0]; index:
                     Ver guía de tallas →
                   </button>
                 </div>
-                <div className="flex gap-2">
-                  {product.sizes.map((size) => (
+                <div className="flex gap-3">
+                  {(['M', 'L'] as const).map((size) => (
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}
-                      className="w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-all"
+                      className="flex flex-col items-center px-5 py-3 rounded-2xl border-2 transition-all text-left"
                       style={
                         selectedSize === size
                           ? {
@@ -393,7 +426,15 @@ function ProductCard({ product, index }: { product: (typeof products)[0]; index:
                           : { background: 'white', borderColor: '#e5e7eb', color: '#374151' }
                       }
                     >
-                      {size}
+                      <span className="text-lg font-black leading-none">{size}</span>
+                      <span className="text-[10px] font-bold mt-1 opacity-80">
+                        ${PRICES[size].toLocaleString('es-CL')}
+                      </span>
+                      <span
+                        className="text-[9px] mt-0.5 leading-tight max-w-[80px] text-center opacity-65"
+                      >
+                        {SIZE_INFO[size]}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -429,7 +470,7 @@ function ProductCard({ product, index }: { product: (typeof products)[0]; index:
                   boxShadow: '0 8px 28px hsl(340 84% 50% / 0.35)',
                 }}
               >
-                <ShoppingBag className="w-5 h-5" /> Agregar al Carrito
+                <ShoppingBag className="w-5 h-5" /> Agregar al Carrito — ${currentPrice.toLocaleString('es-CL')}
               </button>
               <a
                 href={waLink('Hola! Me interesa el porta mascota y quisiera más información 🐾')}

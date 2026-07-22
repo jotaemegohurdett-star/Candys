@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { motion } from 'framer-motion';
-import { Star, ChevronLeft, ChevronRight, Instagram } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight, Instagram, Heart } from 'lucide-react';
 
 import photo1 from '@assets/Screenshot_20260722-051201_WhatsApp~2_1784713749256.jpg';
 import photo2 from '@assets/Screenshot_20260722-051400_WhatsApp~2_1784713749406.jpg';
@@ -14,67 +14,97 @@ const testimonials = [
     id: 1,
     name: 'Mia La Chihuahua',
     handle: '@mia_lachihuahua',
-    pet: 'Chihuahua bebé',
-    text: 'Muchas gracias, es muy cómodo y seguro CANDY\'S PET 🐾 Ahora mi mamita maneja conmigo sin que me pase nada :)',
+    pet: 'Chihuahua 2 meses · Talla M',
+    text: 'Muchas gracias, es muy cómodo y seguro CANDY\'S PET 🐾 Ahora mi mamita maneja conmigo sin que me pase nada. Desde que tengo el sling ya no lloro de ansiedad 🥺💕',
     photo: photo1,
     photoPosition: 'center 28%',
     rating: 5,
     location: 'Santiago',
+    tag: '❤️ Reduce ansiedad',
   },
   {
     id: 2,
-    name: 'Cloe La Princesa',
-    handle: '@cloe_la_princesa_',
-    pet: 'Bichón Frisé',
-    text: 'Mi amiguita CLOE feliz con su porta mascota 💥❤️👌 ¡Gracias amiguita! El chiporro es súper suave y ella no se quiere bajar 😍',
+    name: 'Mamá de Lola',
+    handle: 'cliente verificada',
+    pet: 'Maltés 3 kg · Talla M',
+    text: 'Mi Lola es senior, tiene 14 años y le cuesta caminar. Con el porta mascota sale a pasear todos los días y está feliz 🧡 Es terapéutico de verdad, se relaja completamente dentro. ¡Gracias Candy\'s Pet!',
     photo: photo2,
     photoPosition: 'center 18%',
     rating: 5,
-    location: 'RM, Chile',
+    location: 'Providencia',
+    tag: '🧡 Uso terapéutico',
   },
   {
     id: 3,
     name: 'Club Poodle Chile',
     handle: '@club_poodlechile',
     pet: 'Colaboración oficial',
-    text: 'En Candy\'s Pets creemos que nuestros peludos merecen pasear con comodidad, seguridad y mucho estilo 💙 Porta mascotas tipo banano, ideales para paseos, salidas y aventuras juntos.',
+    text: 'En Candy\'s Pets creemos que nuestros peludos merecen pasear con comodidad, seguridad y mucho estilo 💙 Porta mascotas tipo sling ideales para paseos, salidas y aventuras juntos. ¡Los recomendamos!',
     photo: photo3,
     photoPosition: 'center 20%',
     rating: 5,
     location: 'Chile',
+    tag: '✅ Colaboración oficial',
   },
   {
     id: 4,
     name: 'MIA — 2 meses',
     handle: 'cliente verificada',
-    pet: 'Chihuahua 2 meses',
-    text: '"MIA" hermosura de 2 meses, ya disfrutando de su porta mascota 🥰 Nunca pensé que un porta mascota pudiera ser tan cómodo. ¡100% recomendable!',
+    pet: 'Chihuahua 2 meses · Talla M',
+    text: '"MIA" hermosura de 2 meses, ya disfrutando de su porta mascota 🥰 Nunca pensé que un porta mascota pudiera ser tan cómodo. Se quedó dormida en menos de 5 minutos. ¡100% recomendable!',
     photo: photo4,
     photoPosition: 'center 22%',
     rating: 5,
     location: 'Chile',
+    tag: '😴 Se duerme adentro',
   },
   {
     id: 5,
-    name: 'Club Chihuahua Chile',
-    handle: '@clubchihuahuachile',
-    pet: 'Colaboración oficial',
-    text: 'Nuestros porta mascotas tipo banano están diseñados para mantener a tu compañero cerca de ti, ideales para paseos, salidas y aventuras juntos. ¡Juntos por nuestros peludos! 💕',
+    name: 'Papá de Rocky y Coco',
+    handle: 'cliente verificado',
+    pet: '2 Chihuahuas · Talla L',
+    text: 'Lo que no sabía es que en la talla L cabían mis dos chihuahuas juntos 😂🐾🐾 Ahora salimos los tres a todas partes. Súper cómodo para mí y ellos se ven felicísimos. ¡Qué invento más genial!',
     photo: photo5,
     photoPosition: 'center 18%',
     rating: 5,
-    location: 'Chile',
+    location: 'Las Condes',
+    tag: '🐾🐾 2 perritos · Talla L',
   },
   {
     id: 6,
-    name: 'Cliente Feliz',
-    handle: 'reseña verificada',
-    pet: 'Yorkshire Terrier',
-    text: 'Variados colores y texturas para paseos con tus regalones, pero con estilo y seguridad!! 💥✨👌 Excelente atención por WhatsApp, me ayudaron a elegir la talla perfecta.',
+    name: 'Club Chihuahua Chile',
+    handle: '@clubchihuahuachile',
+    pet: 'Colaboración oficial',
+    text: 'Nuestros porta mascotas tipo sling están diseñados para mantener a tu compañero cerca de ti, ideales para paseos, salidas y aventuras juntos. ¡Juntos por nuestros peludos! 💕',
     photo: photo1,
     photoPosition: 'center 20%',
     rating: 5,
+    location: 'Chile',
+    tag: '✅ Colaboración oficial',
+  },
+  {
+    id: 7,
+    name: 'Mamá de Tobi',
+    handle: 'cliente verificada',
+    pet: 'Schnauzer mini · Talla L',
+    text: 'Tobi tiene displasia y antes sufría mucho en los paseos. Con el sling de Candy\'s Pet puede salir sin dolor y sin estrés 🌿 La atención fue increíble, me ayudaron a elegir la talla perfecta por WhatsApp.',
+    photo: photo2,
+    photoPosition: 'center 35%',
+    rating: 5,
+    location: 'Ñuñoa',
+    tag: '🌿 Terapéutico · displasia',
+  },
+  {
+    id: 8,
+    name: 'Cliente Feliz',
+    handle: 'reseña verificada',
+    pet: 'Yorkshire Terrier · Talla M',
+    text: 'Variados colores y texturas para paseos con tus regalones, pero con estilo y seguridad!! 💥✨👌 Excelente atención, me ayudaron a elegir el color ideal. ¡El chiporro es súper suave!',
+    photo: photo3,
+    photoPosition: 'center 20%',
+    rating: 5,
     location: 'Santiago',
+    tag: '✨ Súper suave',
   },
 ];
 
@@ -98,8 +128,8 @@ export function Testimonials() {
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-5"
               style={{ background: 'hsl(340 84% 50% / 0.14)', color: 'hsl(340 84% 68%)' }}
             >
-              <Instagram className="w-3.5 h-3.5" />
-              @candys_pets1
+              <Heart className="w-3.5 h-3.5" />
+              La familia Candy's Pet
             </motion.span>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
@@ -113,6 +143,16 @@ export function Testimonials() {
                 nuestros clientes
               </span>
             </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.18 }}
+              className="mt-3 text-sm leading-relaxed"
+              style={{ color: 'rgba(255,255,255,0.45)' }}
+            >
+              Cientos de familias ya forman parte de nuestra comunidad. Perritos felices, dueños tranquilos. 🐾
+            </motion.p>
           </div>
 
           {/* Nav buttons */}
@@ -203,6 +243,16 @@ export function Testimonials() {
                     >
                       "
                     </div>
+
+                    {/* Tag */}
+                    {t.tag && (
+                      <span
+                        className="relative z-10 self-start text-[10px] font-bold px-2.5 py-1 rounded-full mb-3"
+                        style={{ background: 'hsl(340 84% 50% / 0.14)', color: 'hsl(340 84% 65%)' }}
+                      >
+                        {t.tag}
+                      </span>
+                    )}
 
                     {/* Quote text */}
                     <p
