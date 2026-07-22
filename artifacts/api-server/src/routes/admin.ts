@@ -127,9 +127,15 @@ router.get("/products", adminGuard, async (_req, res) => {
   }
 });
 
-/** Create a new product — inserts M + L stock rows with qty 0 */
+/** Create a new product — inserts M + L stock rows with optional initial qty and prices */
 router.post("/products", adminGuard, async (req, res) => {
-  const { name } = req.body as { name?: string };
+  const { name, qtyM, qtyL, priceM, priceL } = req.body as {
+    name?: string;
+    qtyM?: number;
+    qtyL?: number;
+    priceM?: string;
+    priceL?: string;
+  };
   if (!name?.trim()) { res.status(400).json({ error: "MISSING_NAME" }); return; }
 
   try {
@@ -140,10 +146,30 @@ router.post("/products", adminGuard, async (req, res) => {
     const nextN = (nums.length ? Math.max(...nums) : 4) + 1;
     const productId = `p${nextN}`;
 
+    const initialQtyM = typeof qtyM === "number" && qtyM >= 0 ? qtyM : 0;
+    const initialQtyL = typeof qtyL === "number" && qtyL >= 0 ? qtyL : 0;
+
     await db.insert(stockTable).values([
-      { id: `${productId}-M`, productId, productName: name.trim(), size: "M", qty: 0 },
-      { id: `${productId}-L`, productId, productName: name.trim(), size: "L", qty: 0 },
+      { id: `${productId}-M`, productId, productName: name.trim(), size: "M", qty: initialQtyM },
+      { id: `${productId}-L`, productId, productName: name.trim(), size: "L", qty: initialQtyL },
     ]);
+
+    // Optionally update global prices
+    const priceUpdates: Promise<unknown>[] = [];
+    if (priceM?.trim()) {
+      priceUpdates.push(
+        db.insert(settingsTable).values({ key: "price_m", value: priceM.trim(), updatedAt: new Date() })
+          .onConflictDoUpdate({ target: settingsTable.key, set: { value: priceM.trim(), updatedAt: new Date() } })
+      );
+    }
+    if (priceL?.trim()) {
+      priceUpdates.push(
+        db.insert(settingsTable).values({ key: "price_l", value: priceL.trim(), updatedAt: new Date() })
+          .onConflictDoUpdate({ target: settingsTable.key, set: { value: priceL.trim(), updatedAt: new Date() } })
+      );
+    }
+    await Promise.all(priceUpdates);
+
     res.json({ ok: true, id: productId, name: name.trim() });
   } catch (err) {
     logger.error({ err }, "admin: product create failed");
