@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ShoppingBag, Check } from 'lucide-react';
+import { toast } from 'sonner';
 import { useCart } from '../context/CartContext';
+import { waLink, scrollToId } from '../lib/constants';
 import {
   Dialog,
   DialogContent,
@@ -172,10 +174,9 @@ export function Products() {
 }
 
 function ProductCard({ product, index }: { product: (typeof products)[0]; index: number }) {
-  const { addToCart } = useCart();
+  const { addToCart, openCart } = useCart();
   const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
-  const [added, setAdded] = useState(false);
 
   const handleAddToCart = () => {
     addToCart({
@@ -185,8 +186,11 @@ function ProductCard({ product, index }: { product: (typeof products)[0]; index:
       size: selectedSize,
       color: selectedColor,
     });
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
+    toast.success('¡Agregado al carrito! 🐾', {
+      description: `${product.name} · Talla ${selectedSize} · ${selectedColor}`,
+      action: { label: 'Ver carrito', onClick: openCart },
+      duration: 4000,
+    });
   };
 
   return (
@@ -205,6 +209,8 @@ function ProductCard({ product, index }: { product: (typeof products)[0]; index:
               src={product.image}
               alt={product.name}
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              loading="lazy"
+              decoding="async"
               style={{ objectPosition: product.imgPosition }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -294,7 +300,9 @@ function ProductCard({ product, index }: { product: (typeof products)[0]; index:
                       key={color}
                       onClick={() => setSelectedColor(color)}
                       title={color}
-                      className={`w-8 h-8 rounded-full border-2 transition-all ${
+                      aria-label={`Color: ${color}${selectedColor === color ? ' (seleccionado)' : ''}`}
+                      aria-pressed={selectedColor === color}
+                      className={`w-8 h-8 rounded-full border-2 transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 ${
                         selectedColor === color ? 'border-gray-900 scale-110 shadow-md' : 'border-transparent'
                       }`}
                       style={{ background: product.colorSwatches[i] }}
@@ -308,7 +316,7 @@ function ProductCard({ product, index }: { product: (typeof products)[0]; index:
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400">Talla</h4>
                   <button
-                    onClick={() => document.querySelector('#size-guide')?.scrollIntoView({ behavior: 'smooth' })}
+                    onClick={() => scrollToId('size-guide')}
                     className="text-xs font-medium hover:underline"
                     style={{ color: 'hsl(340 84% 50%)' }}
                   >
@@ -351,16 +359,12 @@ function ProductCard({ product, index }: { product: (typeof products)[0]; index:
               <button
                 onClick={handleAddToCart}
                 className="w-full py-4 rounded-full font-bold text-base text-white transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
-                style={{ background: added ? 'hsl(142 72% 45%)' : 'hsl(340 84% 50%)', boxShadow: '0 8px 24px hsl(340 84% 50% / 0.3)' }}
+                style={{ background: 'hsl(340 84% 50%)', boxShadow: '0 8px 24px hsl(340 84% 50% / 0.3)' }}
               >
-                {added ? (
-                  <><Check className="w-5 h-5" /> ¡Agregado al carrito!</>
-                ) : (
-                  <><ShoppingBag className="w-5 h-5" /> Agregar al Carrito</>
-                )}
+                <ShoppingBag className="w-5 h-5" /> Agregar al Carrito
               </button>
               <a
-                href="https://wa.me/56936693300?text=Hola!%20Me%20interesa%20el%20porta%20mascota%20y%20quisiera%20m%C3%A1s%20informaci%C3%B3n%20%F0%9F%90%BE"
+                href={waLink('Hola! Me interesa el porta mascota y quisiera más información 🐾')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full py-3.5 rounded-full font-semibold text-sm text-center border border-gray-200 text-gray-700 hover:border-gray-400 transition-all flex items-center justify-center gap-2"

@@ -99,6 +99,26 @@ export function Footer() {
           ))}
         </div>
 
+        {/* Trust badges */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
+          {[
+            { icon: '🔒', title: 'Pago Seguro', desc: 'Transferencia o efectivo coordinado' },
+            { icon: '📦', title: 'Envío a todo Chile', desc: 'Starken · Correos · Retiro en Santiago' },
+            { icon: '🔄', title: 'Cambios sin costo', desc: 'Si la talla no queda perfecta' },
+            { icon: '✂️', title: 'Hecho a pedido', desc: 'Colores y telas personalizadas' },
+          ].map((b) => (
+            <div
+              key={b.title}
+              className="flex flex-col items-center text-center gap-2 p-4 rounded-2xl"
+              style={{ background: 'hsl(220 25% 12%)', border: '1px solid hsl(220 25% 18%)' }}
+            >
+              <span className="text-2xl">{b.icon}</span>
+              <p className="text-white font-semibold text-xs">{b.title}</p>
+              <p className="text-white/35 text-xs leading-relaxed">{b.desc}</p>
+            </div>
+          ))}
+        </div>
+
         {/* WhatsApp CTA strip */}
         <div
           className="rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 mb-10"

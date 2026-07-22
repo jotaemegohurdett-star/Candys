@@ -156,6 +156,8 @@ export function SizeGuide() {
                 src={sizeImg}
                 alt="Guía de cómo medir a tu mascota — Candy's Pet"
                 className="w-full object-cover"
+                loading="lazy"
+                decoding="async"
                 style={{ objectPosition: 'left 22%' }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />

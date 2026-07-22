@@ -159,6 +159,8 @@ export function Testimonials() {
                       src={t.photo}
                       alt={`${t.name} — cliente Candy's Pet`}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      loading="lazy"
+                      decoding="async"
                       style={{ objectPosition: t.photoPosition }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />

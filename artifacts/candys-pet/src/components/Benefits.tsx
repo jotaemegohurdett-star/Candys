@@ -85,6 +85,8 @@ export function Benefits() {
                 src={lifestyleImg}
                 alt="Clientes felices usando sus porta mascotas Candy's Pet"
                 className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
                 style={{ objectPosition: 'center 18%' }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />

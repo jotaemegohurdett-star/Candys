@@ -72,10 +72,10 @@ export function Partnerships() {
             className="grid grid-cols-2 gap-4"
           >
             <div className="aspect-[3/4] rounded-3xl overflow-hidden">
-              <img src={colabImg} alt="Colaboración Candy's Pet x Club Chihuahua Chile" className="w-full h-full object-cover" style={{ objectPosition: 'right 48%' }} />
+              <img src={colabImg} alt="Colaboración Candy's Pet x Club Chihuahua Chile" className="w-full h-full object-cover" loading="lazy" decoding="async" style={{ objectPosition: 'right 48%' }} />
             </div>
             <div className="aspect-[3/4] rounded-3xl overflow-hidden mt-8">
-              <img src={poodleImg} alt="Colaboración Candy's Pet x Club Poodle Chile" className="w-full h-full object-cover" style={{ objectPosition: 'right 64%' }} />
+              <img src={poodleImg} alt="Colaboración Candy's Pet x Club Poodle Chile" className="w-full h-full object-cover" loading="lazy" decoding="async" style={{ objectPosition: 'right 64%' }} />
             </div>
           </motion.div>
 

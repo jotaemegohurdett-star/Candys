@@ -12,6 +12,8 @@ export function Hero() {
           src={heroImg}
           alt="Porta mascota Candy's Pet — perrito en sling azul marino"
           className="w-full h-full object-cover"
+          fetchPriority="high"
+          decoding="async"
           style={{ objectPosition: 'center 8%' }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[hsl(220_25%_9%)] via-[hsl(220_25%_9%/0.7)] to-transparent" />

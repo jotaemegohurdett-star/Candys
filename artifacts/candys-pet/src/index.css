@@ -133,3 +133,18 @@
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.6);
 }
+
+/* Trust bar infinite marquee */
+@keyframes trust-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.trust-bar-track {
+  animation: trust-scroll 28s linear infinite;
+  will-change: transform;
+}
+
+.trust-bar-track:hover {
+  animation-play-state: paused;
+}
