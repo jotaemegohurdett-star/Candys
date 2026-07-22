@@ -84,7 +84,7 @@ export function VideoSection() {
         style={{
           position: 'relative',
           margin: '0 auto',
-          width: 'min(92vw, 560px)',
+          width: 'min(94vw, 900px)',
           borderRadius: 20,
           overflow: 'hidden',
           boxShadow: '0 0 0 1px rgba(232,121,160,0.18), 0 32px 80px rgba(0,0,0,0.65)',
@@ -106,7 +106,7 @@ export function VideoSection() {
         <div
           style={{
             width: '100%',
-            paddingBottom: '56.25%',
+            height: 'clamp(340px, 52vw, 520px)',
             position: 'relative',
           }}
         >
