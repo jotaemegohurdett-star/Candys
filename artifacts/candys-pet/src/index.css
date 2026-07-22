@@ -265,3 +265,6 @@
   to   { transform: rotate(360deg); }
 }
 .spin-slow { animation: spin-slow 12s linear infinite; }
+
+/* Hide horizontal scrollbar on carousel track */
+.scrollbar-hide::-webkit-scrollbar { display: none; }

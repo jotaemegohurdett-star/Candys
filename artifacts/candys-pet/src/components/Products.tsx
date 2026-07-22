@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingBag, Check, Star, AlertTriangle } from 'lucide-react';
+import { ShoppingBag, Check, Star, AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCart } from '../context/CartContext';
 import { useStock } from '../hooks/useStock';
@@ -32,7 +32,8 @@ const SIZE_INFO: Record<string, string> = {
   L: 'Hasta 10 kg · caben 2 perritos 🐾🐾',
 };
 
-const products = [
+/** Rich presentation data for the original products. Dynamic products get generic defaults. */
+const KNOWN_PRODUCTS = [
   {
     id: 'p1',
     name: 'Porta Mascota Clásico',
@@ -119,12 +120,73 @@ const products = [
   },
 ];
 
+type ProductData = (typeof KNOWN_PRODUCTS)[0];
+
+const DEFAULT_COLORS = ['Rosa', 'Lila', 'Azul Cielo', 'Negro', 'Gris'];
+const DEFAULT_SWATCHES = ['#F9A8C9', '#C3A6E8', '#87CEEB', '#222222', '#9E9E9E'];
+const DEFAULT_FEATURES = [
+  'Tela algodón 100% transpirable',
+  'Hecho a mano en Chile 🇨🇱',
+  'Gancho de seguridad interior',
+  'Ideal para perritos senior o con discapacidad',
+  'Talla M: desde 2 meses hasta 3,5 kg',
+  'Talla L: hasta 10 kg — caben 2 perritos',
+];
+
+/** Builds a generic card for admin-created products without hardcoded data */
+function makeGenericProduct(id: string, name: string): ProductData {
+  return {
+    id,
+    name,
+    badge: 'Nuevo',
+    badgeStyle: { background: 'linear-gradient(135deg, hsl(150 65% 40%), hsl(150 65% 30%))' },
+    description:
+      'Porta mascota tipo sling hecho a mano en Chile. Tela suave, segura y transpirable con gancho de seguridad interior. Consulta colores disponibles por WhatsApp 🐾',
+    image: '',
+    imgPosition: 'center',
+    colors: DEFAULT_COLORS,
+    colorSwatches: DEFAULT_SWATCHES,
+    features: DEFAULT_FEATURES,
+  };
+}
+
+const AUTO_ADVANCE_MS = 4000;
+
 export function Products() {
   const stock = useStock();
   const catalog = useCatalog();
 
   const priceM = catalog.getPrice('M');
   const priceL = catalog.getPrice('L');
+
+  // Merge: DB products drive the list; known products keep their rich data (name from DB wins)
+  const products = useMemo<ProductData[]>(() => {
+    if (!catalog.catalog.products.length) return KNOWN_PRODUCTS;
+    return catalog.catalog.products.map(({ id, name }) => {
+      const known = KNOWN_PRODUCTS.find(k => k.id === id);
+      return known ? { ...known, name } : makeGenericProduct(id, name);
+    });
+  }, [catalog.catalog.products]);
+
+  // ── Carousel ──
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [paused, setPaused] = useState(false);
+
+  const scrollByCard = (dir: 1 | -1) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const card = track.querySelector<HTMLElement>('[data-card]');
+    const step = card ? card.offsetWidth + 24 : 320;
+    const atEnd = dir === 1 && track.scrollLeft + track.clientWidth >= track.scrollWidth - step / 2;
+    if (atEnd) track.scrollTo({ left: 0, behavior: 'smooth' });
+    else track.scrollBy({ left: step * dir, behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    if (paused) return;
+    const id = setInterval(() => scrollByCard(1), AUTO_ADVANCE_MS);
+    return () => clearInterval(id);
+  }, [paused, products.length]);
 
   return (
     <section id="products" className="py-24" style={{ background: 'hsl(220 25% 9%)' }}>
@@ -182,11 +244,48 @@ export function Products() {
           </motion.div>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product, index) => (
-            <ProductCard key={product.id} product={product} index={index} stock={stock} catalog={catalog} />
-          ))}
+        {/* Carousel */}
+        <div
+          className="relative"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+          onTouchStart={() => setPaused(true)}
+          onTouchEnd={() => setTimeout(() => setPaused(false), 6000)}
+        >
+          {/* Arrows */}
+          <button
+            onClick={() => scrollByCard(-1)}
+            aria-label="Anterior"
+            className="hidden md:flex absolute -left-5 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full items-center justify-center text-white transition-all hover:scale-110"
+            style={{ background: 'hsl(340 84% 50%)', boxShadow: '0 6px 20px hsl(340 84% 50%/0.4)' }}
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => scrollByCard(1)}
+            aria-label="Siguiente"
+            className="hidden md:flex absolute -right-5 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full items-center justify-center text-white transition-all hover:scale-110"
+            style={{ background: 'hsl(340 84% 50%)', boxShadow: '0 6px 20px hsl(340 84% 50%/0.4)' }}
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+
+          {/* Track */}
+          <div
+            ref={trackRef}
+            className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {products.map((product, index) => (
+              <div
+                key={product.id}
+                data-card
+                className="snap-start shrink-0 w-[78vw] sm:w-[320px] lg:w-[300px]"
+              >
+                <ProductCard product={product} index={index} stock={stock} catalog={catalog} />
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* CTA strip */}
@@ -225,7 +324,7 @@ function ProductCard({
   stock,
   catalog,
 }: {
-  product: (typeof products)[0];
+  product: ProductData;
   index: number;
   stock: ReturnType<typeof useStock>;
   catalog: ReturnType<typeof useCatalog>;
@@ -240,7 +339,7 @@ function ProductCard({
   // Dynamic price from DB, fallback to local constant
   const currentPrice = catalog.getPrice(selectedSize);
   // Dynamic image from admin panel, fallback to bundled asset
-  const displayImage = catalog.getPrimaryImage(product.id) ?? LOCAL_IMAGES[product.id];
+  const displayImage = catalog.getPrimaryImage(product.id) ?? LOCAL_IMAGES[product.id] ?? p1Img;
 
   const outOfStock = stock.isOutOfStock(product.id, selectedSize);
   const lowStock = stock.isLowStock(product.id, selectedSize);
