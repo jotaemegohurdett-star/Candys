@@ -1,15 +1,16 @@
-# [Project name]
+# Candy's Pet
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A pet store landing page with cart, WhatsApp integration, testimonials, and a size guide — backed by an Express API server.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- **Frontend** (`Candy's Pet` workflow) — `PORT=25253 BASE_PATH=/ pnpm --filter @workspace/candys-pet run dev` — serves the React/Vite storefront on port 25253
+- **API Server** (`API Server` workflow) — `PORT=8080 DATABASE_URL=$DATABASE_URL pnpm --filter @workspace/api-server run dev` — Express 5 API on port 8080
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Required env: `DATABASE_URL` — Postgres connection string (already set in Replit secrets)
 
 ## Stack
 
