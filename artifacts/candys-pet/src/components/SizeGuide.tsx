@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Ruler } from 'lucide-react';
 import sizeImg from '@assets/Screenshot_20260722-005631_Instagram~2_1784698640443.jpg';
-import dogGuideImg from '@assets/IMG-20260722-WA0033(1)_1784750410384.jpg';
+import dogGuideImg from '@assets/IMG-20260722-WA0080_1784752935187.jpg';
 import catGuideImg from '@assets/IMG-20260722-WA0039_1784750410492.jpg';
 
 const sizes = [
