@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "Candy's Pet"
+version = "1.0.0"
+id = "artifacts/candys-pet"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25253
+
+[services.development]
+run = "pnpm --filter @workspace/candys-pet run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/candys-pet", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/candys-pet/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25253"
+BASE_PATH = "/"
