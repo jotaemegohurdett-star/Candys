@@ -5,6 +5,8 @@ import { toast } from 'sonner';
 import { useCart } from '../context/CartContext';
 import { WA_NUMBER } from '../lib/constants';
 
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
+
 type PaymentMethod = 'mercadopago' | 'transfer' | 'presencial';
 
 const METHODS: { id: PaymentMethod; icon: React.ReactNode; label: string; sub: string }[] = [
@@ -30,7 +32,7 @@ const METHODS: { id: PaymentMethod; icon: React.ReactNode; label: string; sub: s
 
 const METHOD_INFO: Record<PaymentMethod, string> = {
   mercadopago:
-    'Serás redirigido a MercadoPago. Acepta tarjetas de crédito/débito y billetera MP. 100% seguro.',
+    'Serás redirigido a MercadoPago. Acepta tarjetas de crédito/débito, cuotas y billetera MP. 100% seguro.',
   transfer:
     'Irás a WhatsApp con el resumen del pedido. Te enviamos los datos bancarios para transferir y confirmamos tu reserva.',
   presencial:
@@ -43,7 +45,6 @@ export function CartDrawer() {
     removeFromCart,
     updateQuantity,
     totalPrice,
-    generateWhatsAppLink,
     isCartOpen,
     closeCart,
   } = useCart();
@@ -51,7 +52,6 @@ export function CartDrawer() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('mercadopago');
   const [loadingMp, setLoadingMp] = useState(false);
 
-  /** Builds a WhatsApp link that includes the selected payment method */
   const buildWaLink = useCallback(
     (method: PaymentMethod) => {
       if (items.length === 0)
@@ -82,17 +82,20 @@ export function CartDrawer() {
   const handleMpCheckout = useCallback(async () => {
     setLoadingMp(true);
     try {
-      const res = await fetch('/api/payment/preference', {
+      const res = await fetch(`${BASE}/api/payment/preference`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           items: items.map((item) => ({
+            productId: item.productId,
             title: [item.name, item.size && `Talla ${item.size}`, item.color].filter(Boolean).join(' · '),
             quantity: item.quantity,
             unit_price: item.price,
             currency_id: 'CLP',
+            size: item.size ?? 'M',
+            color: item.color,
           })),
-          back_url: window.location.origin,
+          back_url: window.location.origin + import.meta.env.BASE_URL,
         }),
       });
 
@@ -100,10 +103,13 @@ export function CartDrawer() {
 
       if (!res.ok) {
         if (data.error === 'MP_NOT_CONFIGURED') {
-          // Graceful fallback — open WhatsApp mentioning MP
           window.open(buildWaLink('mercadopago'), '_blank');
           closeCart();
           toast.info('MercadoPago aún no está activado. Te redirigimos a WhatsApp para coordinar.');
+          return;
+        }
+        if (data.error === 'OUT_OF_STOCK') {
+          toast.error(`Sin stock: ${data.message}`, { duration: 6000 });
           return;
         }
         throw new Error(data.message ?? 'Error desconocido');
@@ -294,7 +300,7 @@ export function CartDrawer() {
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
                           </svg>
-                          Cargando…
+                          Procesando…
                         </span>
                       ) : (
                         <>
