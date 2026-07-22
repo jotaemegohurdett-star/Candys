@@ -14,7 +14,11 @@ export default function VideoWithControls() {
   useEffect(() => {
     if (!isIframed) return;
     const handler = (e: MessageEvent) => {
-      if (e.data?.type === 'CANDY_UNMUTE') setMuted(false);
+      if (e.data?.type === 'CANDY_UNMUTE') {
+        // Restart from scene 1 so the music plays from the beginning to the end
+        jumpTo(0);
+        setMuted(false);
+      }
       if (e.data?.type === 'CANDY_MUTE') setMuted(true);
     };
     window.addEventListener('message', handler);
