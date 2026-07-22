@@ -1,5 +1,6 @@
 import React from 'react';
 import { Instagram, Heart, ExternalLink } from 'lucide-react';
+import { useLocation } from 'wouter';
 import logoImg from '@assets/Screenshot_20260721-214654_Instagram_2-removebg-preview_1784688274639.png';
 
 const navColumns = [
@@ -32,6 +33,7 @@ const trustBadges = [
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const [, navigate] = useLocation();
 
   return (
     <footer
@@ -172,7 +174,14 @@ export function Footer() {
           style={{ borderTop: '1px solid hsl(220 25% 12%)' }}
         >
           <p className="text-xs" style={{ color: 'rgba(255,255,255,0.28)' }}>
-            © {currentYear} Candy's Pet — Lorena Abarca. Todos los derechos reservados.
+            <button
+              onClick={() => navigate('/admin')}
+              className="cursor-default hover:cursor-default focus:outline-none"
+              style={{ color: 'inherit', background: 'none', border: 'none', padding: 0 }}
+              aria-hidden="true"
+              tabIndex={-1}
+            >©</button>
+            {' '}{currentYear} Candy's Pet — Lorena Abarca. Todos los derechos reservados.
           </p>
           <p className="text-xs flex items-center gap-1" style={{ color: 'rgba(255,255,255,0.28)' }}>
             Hecho con{' '}
