@@ -1,0 +1,161 @@
+import { Router, type IRouter } from "express";
+import { createHmac } from "crypto";
+import { db, stockTable, settingsTable, productImagesTable } from "@workspace/db";
+import { eq, asc } from "drizzle-orm";
+import { randomUUID } from "crypto";
+import { logger } from "../lib/logger";
+import { adminGuard, signToken } from "../middleware/adminAuth";
+
+const router: IRouter = Router();
+
+const SECRET   = process.env["SESSION_SECRET"] ?? "dev-secret";
+const PASSWORD = process.env["ADMIN_PASSWORD"] ?? "candys2025";
+
+/* ──────────────────── AUTH ──────────────────── */
+
+router.post("/login", (req, res) => {
+  const { password } = req.body as { password?: string };
+  if (!password) { res.status(400).json({ error: "MISSING_PASSWORD" }); return; }
+
+  // Constant-time compare
+  const expected = createHmac("sha256", SECRET).update(PASSWORD).digest("hex");
+  const received = createHmac("sha256", SECRET).update(password).digest("hex");
+  if (expected !== received) {
+    res.status(401).json({ error: "WRONG_PASSWORD" });
+    return;
+  }
+
+  const ts  = Date.now();
+  const sig = signToken(ts);
+  res.cookie("admin_token", `${ts}:${sig}`, {
+    httpOnly: true,
+    sameSite: "lax",
+    maxAge: 8 * 60 * 60 * 1000, // 8 h
+    secure: process.env["NODE_ENV"] === "production",
+  });
+  res.json({ ok: true });
+});
+
+router.post("/logout", (_req, res) => {
+  res.clearCookie("admin_token");
+  res.json({ ok: true });
+});
+
+router.get("/me", adminGuard, (_req, res) => {
+  res.json({ authenticated: true });
+});
+
+/* ──────────────────── STOCK ──────────────────── */
+
+router.get("/stock", adminGuard, async (_req, res) => {
+  try {
+    const rows = await db.select().from(stockTable).orderBy(asc(stockTable.id));
+    res.json(rows);
+  } catch (err) {
+    logger.error({ err }, "admin: stock fetch failed");
+    res.status(500).json({ error: "DB_ERROR" });
+  }
+});
+
+router.put("/stock/:id", adminGuard, async (req, res) => {
+  const { id } = req.params;
+  const { qty } = req.body as { qty: number };
+  if (typeof qty !== "number" || qty < 0) {
+    res.status(400).json({ error: "INVALID_QTY" });
+    return;
+  }
+  try {
+    await db
+      .update(stockTable)
+      .set({ qty, updatedAt: new Date() })
+      .where(eq(stockTable.id, id));
+    res.json({ ok: true });
+  } catch (err) {
+    logger.error({ err }, "admin: stock update failed");
+    res.status(500).json({ error: "DB_ERROR" });
+  }
+});
+
+/* ──────────────────── SETTINGS (precios) ──────────────────── */
+
+router.get("/settings", adminGuard, async (_req, res) => {
+  try {
+    const rows = await db.select().from(settingsTable);
+    const map: Record<string, string> = {};
+    for (const r of rows) map[r.key] = r.value;
+    res.json(map);
+  } catch (err) {
+    logger.error({ err }, "admin: settings fetch failed");
+    res.status(500).json({ error: "DB_ERROR" });
+  }
+});
+
+router.put("/settings/:key", adminGuard, async (req, res) => {
+  const { key } = req.params;
+  const { value } = req.body as { value: string };
+  if (!value) { res.status(400).json({ error: "MISSING_VALUE" }); return; }
+  try {
+    await db
+      .insert(settingsTable)
+      .values({ key, value, updatedAt: new Date() })
+      .onConflictDoUpdate({ target: settingsTable.key, set: { value, updatedAt: new Date() } });
+    res.json({ ok: true });
+  } catch (err) {
+    logger.error({ err }, "admin: settings update failed");
+    res.status(500).json({ error: "DB_ERROR" });
+  }
+});
+
+/* ──────────────────── PRODUCT IMAGES ──────────────────── */
+
+router.get("/images", adminGuard, async (_req, res) => {
+  try {
+    const rows = await db.select().from(productImagesTable).orderBy(asc(productImagesTable.productId), asc(productImagesTable.position));
+    res.json(rows);
+  } catch (err) {
+    logger.error({ err }, "admin: images fetch failed");
+    res.status(500).json({ error: "DB_ERROR" });
+  }
+});
+
+router.post("/images", adminGuard, async (req, res) => {
+  const { productId, url } = req.body as { productId: string; url: string };
+  if (!productId || !url) { res.status(400).json({ error: "MISSING_FIELDS" }); return; }
+  const id = randomUUID();
+  try {
+    await db.insert(productImagesTable).values({ id, productId, url, position: 0, updatedAt: new Date() });
+    res.json({ ok: true, id });
+  } catch (err) {
+    logger.error({ err }, "admin: image insert failed");
+    res.status(500).json({ error: "DB_ERROR" });
+  }
+});
+
+router.put("/images/:id", adminGuard, async (req, res) => {
+  const { id } = req.params;
+  const { url } = req.body as { url: string };
+  if (!url) { res.status(400).json({ error: "MISSING_URL" }); return; }
+  try {
+    await db
+      .update(productImagesTable)
+      .set({ url, updatedAt: new Date() })
+      .where(eq(productImagesTable.id, id));
+    res.json({ ok: true });
+  } catch (err) {
+    logger.error({ err }, "admin: image update failed");
+    res.status(500).json({ error: "DB_ERROR" });
+  }
+});
+
+router.delete("/images/:id", adminGuard, async (req, res) => {
+  const { id } = req.params;
+  try {
+    await db.delete(productImagesTable).where(eq(productImagesTable.id, id));
+    res.json({ ok: true });
+  } catch (err) {
+    logger.error({ err }, "admin: image delete failed");
+    res.status(500).json({ error: "DB_ERROR" });
+  }
+});
+
+export default router;

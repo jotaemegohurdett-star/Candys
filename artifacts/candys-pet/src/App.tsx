@@ -1,4 +1,5 @@
 import React from 'react';
+import { Switch, Route } from 'wouter';
 import { Toaster } from 'sonner';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
@@ -15,13 +16,13 @@ import { FloatingWhatsApp } from './components/FloatingWhatsApp';
 import { CartDrawer } from './components/CartDrawer';
 import { PaymentResult } from './components/PaymentResult';
 import { CartProvider } from './context/CartContext';
+import { AdminPage } from './pages/AdminPage';
 
-function App() {
+function StoreFront() {
   return (
     <CartProvider>
       <div className="min-h-screen bg-background font-sans text-foreground overflow-x-hidden selection:bg-primary/20 selection:text-primary">
         <Header />
-
         <main>
           <Hero />
           <TrustBar />
@@ -33,7 +34,6 @@ function App() {
           <Location />
           <PaymentMethods />
         </main>
-
         <Footer />
         <FloatingWhatsApp />
         <PaymentResult />
@@ -42,12 +42,19 @@ function App() {
           position="bottom-right"
           richColors
           closeButton
-          toastOptions={{
-            style: { fontFamily: 'var(--font-sans)' },
-          }}
+          toastOptions={{ style: { fontFamily: 'var(--font-sans)' } }}
         />
       </div>
     </CartProvider>
+  );
+}
+
+function App() {
+  return (
+    <Switch>
+      <Route path="/admin" component={AdminPage} />
+      <Route component={StoreFront} />
+    </Switch>
   );
 }
 
