@@ -113,22 +113,49 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
 }
 
 /* ─────────────── PRODUCTOS TAB ─────────────── */
+const EMPTY_FORM = { name: '', priceM: '', priceL: '', qtyM: '', qtyL: '' };
+
 function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: () => void }) {
-  const [newName, setNewName] = useState('');
+  const [form, setForm] = useState(EMPTY_FORM);
   const [creating, setCreating] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [deleting, setDeleting] = useState<Record<string, boolean>>({});
   const [renaming, setRenaming] = useState<Record<string, string>>({});
   const [savingName, setSavingName] = useState<Record<string, boolean>>({});
 
+  // Pre-fill current prices when opening the form
+  const openForm = async () => {
+    setShowForm(true);
+    try {
+      const settings = await api('GET', '/settings');
+      setForm(f => ({
+        ...f,
+        priceM: settings.price_m ?? '',
+        priceL: settings.price_l ?? '',
+      }));
+    } catch { /* leave blank */ }
+  };
+
+  const field = (key: keyof typeof EMPTY_FORM) => ({
+    value: form[key],
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+      setForm(f => ({ ...f, [key]: e.target.value })),
+  });
+
   const create = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newName.trim()) return;
+    if (!form.name.trim()) return;
     setCreating(true);
     try {
-      await api('POST', '/products', { name: newName.trim() });
-      toast.success(`Producto "${newName.trim()}" creado ✓`);
-      setNewName('');
+      await api('POST', '/products', {
+        name: form.name.trim(),
+        qtyM: form.qtyM !== '' ? Number(form.qtyM) : 0,
+        qtyL: form.qtyL !== '' ? Number(form.qtyL) : 0,
+        priceM: form.priceM.trim() || undefined,
+        priceL: form.priceL.trim() || undefined,
+      });
+      toast.success(`Producto "${form.name.trim()}" creado ✓`);
+      setForm(EMPTY_FORM);
       setShowForm(false);
       onRefresh();
     } catch { toast.error('Error al crear el producto'); }
@@ -163,10 +190,10 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
-          Creá, renombrá o eliminá espacios de producto. El stock e imágenes se gestionan en las otras pestañas.
+          Creá, renombrá o eliminá productos. Stock e imágenes se gestionan en las otras pestañas.
         </p>
         <button
-          onClick={() => setShowForm(s => !s)}
+          onClick={() => { if (showForm) { setShowForm(false); setForm(EMPTY_FORM); } else openForm(); }}
           className="flex items-center gap-1.5 px-4 py-2 rounded-xl font-semibold text-sm text-white transition-all"
           style={{ background: showForm ? 'hsl(220 25% 20%)' : 'hsl(340 84% 50%)', boxShadow: showForm ? 'none' : '0 4px 16px hsl(340 84% 50%/0.3)' }}
         >
@@ -181,26 +208,95 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
           <motion.form
             initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
             onSubmit={create}
-            className="flex gap-2 p-4 rounded-2xl"
+            className="space-y-3 p-5 rounded-2xl"
             style={{ background: 'hsl(220 25% 12%)', border: '1px solid hsl(340 84% 50%/0.4)' }}
           >
-            <input
-              autoFocus
-              value={newName}
-              onChange={e => setNewName(e.target.value)}
-              placeholder="Nombre del producto (ej: Porta Mascota Premium)"
-              maxLength={80}
-              className="flex-1 px-4 py-2.5 rounded-xl text-white text-sm focus:outline-none"
-              style={{ background: 'hsl(220 25% 8%)', border: '1px solid hsl(220 25% 25%)' }}
-            />
+            {/* Nombre */}
+            <div>
+              <label className="block text-xs font-semibold mb-1.5" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                Nombre del producto
+              </label>
+              <input
+                autoFocus
+                {...field('name')}
+                placeholder="Ej: Porta Mascota Tejido Premium"
+                maxLength={80}
+                required
+                className="w-full px-4 py-2.5 rounded-xl text-white text-sm focus:outline-none"
+                style={{ background: 'hsl(220 25% 8%)', border: '1px solid hsl(220 25% 25%)' }}
+              />
+            </div>
+
+            {/* Precios */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-semibold mb-1.5" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                  Precio Talla M (CLP)
+                </label>
+                <input
+                  {...field('priceM')}
+                  placeholder="18990"
+                  inputMode="numeric"
+                  className="w-full px-4 py-2.5 rounded-xl text-white text-sm focus:outline-none"
+                  style={{ background: 'hsl(220 25% 8%)', border: '1px solid hsl(220 25% 25%)' }}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold mb-1.5" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                  Precio Talla L (CLP)
+                </label>
+                <input
+                  {...field('priceL')}
+                  placeholder="20990"
+                  inputMode="numeric"
+                  className="w-full px-4 py-2.5 rounded-xl text-white text-sm focus:outline-none"
+                  style={{ background: 'hsl(220 25% 8%)', border: '1px solid hsl(220 25% 25%)' }}
+                />
+              </div>
+            </div>
+
+            {/* Stock inicial */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-semibold mb-1.5" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                  Stock inicial M
+                </label>
+                <input
+                  {...field('qtyM')}
+                  placeholder="0"
+                  inputMode="numeric"
+                  min={0}
+                  className="w-full px-4 py-2.5 rounded-xl text-white text-sm focus:outline-none"
+                  style={{ background: 'hsl(220 25% 8%)', border: '1px solid hsl(220 25% 25%)' }}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold mb-1.5" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                  Stock inicial L
+                </label>
+                <input
+                  {...field('qtyL')}
+                  placeholder="0"
+                  inputMode="numeric"
+                  min={0}
+                  className="w-full px-4 py-2.5 rounded-xl text-white text-sm focus:outline-none"
+                  style={{ background: 'hsl(220 25% 8%)', border: '1px solid hsl(220 25% 25%)' }}
+                />
+              </div>
+            </div>
+
+            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
+              * Los precios aplican globalmente a todas las tallas M y L de la tienda.
+            </p>
+
             <button
               type="submit"
-              disabled={creating || !newName.trim()}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm text-white transition-all disabled:opacity-50"
-              style={{ background: 'hsl(340 84% 50%)' }}
+              disabled={creating || !form.name.trim()}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm text-white transition-all disabled:opacity-50"
+              style={{ background: 'hsl(340 84% 50%)', boxShadow: '0 4px 16px hsl(340 84% 50%/0.3)' }}
             >
               {creating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-              Crear
+              Crear producto
             </button>
           </motion.form>
         )}
