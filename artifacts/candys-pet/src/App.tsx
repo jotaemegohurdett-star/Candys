@@ -9,6 +9,7 @@ import { SizeGuide } from './components/SizeGuide';
 import { Testimonials } from './components/Testimonials';
 import { Partnerships } from './components/Partnerships';
 import { Location } from './components/Location';
+import { PaymentMethods } from './components/PaymentMethods';
 import { Footer } from './components/Footer';
 import { FloatingWhatsApp } from './components/FloatingWhatsApp';
 import { CartDrawer } from './components/CartDrawer';
@@ -29,6 +30,7 @@ function App() {
           <Testimonials />
           <Partnerships />
           <Location />
+          <PaymentMethods />
         </main>
 
         <Footer />
