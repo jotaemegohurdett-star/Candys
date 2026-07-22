@@ -1,9 +1,29 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+// The video scenes are designed for a desktop-like viewport.
+// We render the iframe at a fixed design size and scale it down to fit,
+// so the content always keeps its exact layout and format — never cropped.
+const DESIGN_WIDTH = 960;
+const DESIGN_HEIGHT = 540; // 16:9
 
 export function VideoSection() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const frameRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
 
+  // Keep the iframe scaled to the frame width
+  useEffect(() => {
+    const frame = frameRef.current;
+    if (!frame) return;
+    const update = () => setScale(frame.clientWidth / DESIGN_WIDTH);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(frame);
+    return () => ro.disconnect();
+  }, []);
+
+  // Unmute (and restart from the beginning) when the section scrolls into view
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -79,12 +99,14 @@ export function VideoSection() {
         </h2>
       </div>
 
-      {/* Video frame */}
+      {/* Video frame — fixed 16:9, content scaled to fit (never cropped) */}
       <div
+        ref={frameRef}
         style={{
           position: 'relative',
           margin: '0 auto',
           width: 'min(94vw, 900px)',
+          aspectRatio: '16 / 9',
           borderRadius: 20,
           overflow: 'hidden',
           boxShadow: '0 0 0 1px rgba(232,121,160,0.18), 0 32px 80px rgba(0,0,0,0.65)',
@@ -103,29 +125,24 @@ export function VideoSection() {
             zIndex: 2,
           }}
         />
-        <div
+        <iframe
+          ref={iframeRef}
+          src="/candys-pet-video/"
+          allow="autoplay"
+          title="Candy's Pet — video"
           style={{
-            width: '100%',
-            height: 'clamp(340px, 52vw, 520px)',
-            position: 'relative',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: DESIGN_WIDTH,
+            height: DESIGN_HEIGHT,
+            border: 'none',
+            display: 'block',
+            transform: `scale(${scale})`,
+            transformOrigin: 'top left',
+            pointerEvents: 'none',
           }}
-        >
-          <iframe
-            ref={iframeRef}
-            src="/candys-pet-video/"
-            allow="autoplay"
-            title="Candy's Pet — video"
-            style={{
-              position: 'absolute',
-              inset: 0,
-              width: '100%',
-              height: '100%',
-              border: 'none',
-              display: 'block',
-              borderRadius: 20,
-            }}
-          />
-        </div>
+        />
       </div>
 
       {/* Subtitle below video */}
