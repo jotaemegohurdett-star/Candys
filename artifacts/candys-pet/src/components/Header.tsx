@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { Logo3D } from './Logo3D';
+import { CartIcon3D } from './CartIcon3D';
 import logoImg from '@assets/Screenshot_20260721-214654_Instagram_2-removebg-preview_1784688274639.png';
 
 const navLinks = [
@@ -73,23 +74,8 @@ export function Header() {
 
           {/* Right actions */}
           <div className="flex items-center gap-3">
-            {/* Cart */}
-            <button
-              onClick={openCart}
-              className={`relative p-2 transition-colors ${
-                isScrolled ? 'text-gray-600 hover:text-gray-900' : 'text-white/70 hover:text-white'
-              }`}
-            >
-              <ShoppingBag className="w-6 h-6" />
-              {totalItems > 0 && (
-                <span
-                  className="absolute top-0 right-0 text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full text-white translate-x-1 -translate-y-1"
-                  style={{ background: 'hsl(340 84% 50%)' }}
-                >
-                  {totalItems}
-                </span>
-              )}
-            </button>
+            {/* Cart 3D */}
+            <CartIcon3D count={totalItems} isScrolled={isScrolled} onClick={openCart} />
 
             {/* WhatsApp pill — desktop */}
             <a
