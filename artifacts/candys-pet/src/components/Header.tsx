@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Menu, X } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { Logo3D } from './Logo3D';
 import logoImg from '@assets/Screenshot_20260721-214654_Instagram_2-removebg-preview_1784688274639.png';
 
 const navLinks = [
@@ -41,12 +42,8 @@ export function Header() {
         <div className="container mx-auto px-6 sm:px-10 flex items-center justify-between">
 
           {/* Logo */}
-          <button onClick={() => scrollTo('#home')} className="flex items-center gap-2.5 group">
-            <img
-              src={logoImg}
-              alt="Candy's Pet logo"
-              className="w-14 h-14 rounded-full object-cover group-hover:scale-105 transition-transform"
-            />
+          <button onClick={() => scrollTo('#home')} className="flex items-center gap-3">
+            <Logo3D src={logoImg} alt="Candy's Pet logo" size={isScrolled ? 64 : 80} />
             <span
               className={`font-heading text-xl font-bold transition-colors duration-300 ${
                 isScrolled ? 'text-gray-900' : 'text-white'
@@ -140,7 +137,7 @@ export function Header() {
 
             {/* Logo */}
             <div className="flex items-center gap-3 mb-12">
-              <img src={logoImg} alt="Candy's Pet" className="w-14 h-14 rounded-full object-cover" />
+              <Logo3D src={logoImg} alt="Candy's Pet" size={72} />
               <span className="font-heading text-white text-xl font-bold">
                 Candy's <span className="italic" style={{ color: 'hsl(340 84% 60%)' }}>Pet</span>
               </span>

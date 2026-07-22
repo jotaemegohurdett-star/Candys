@@ -148,3 +148,20 @@
 .trust-bar-track:hover {
   animation-play-state: paused;
 }
+
+/* 3-D logo orbital rings */
+@keyframes logo-ring-y {
+  0%   { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
+}
+
+/* Ring with pre-tilted X so it reads as a Saturn-like inclined orbit */
+@keyframes logo-ring-y-tilted {
+  0%   { transform: rotateX(38deg) rotateY(0deg); }
+  100% { transform: rotateX(38deg) rotateY(360deg); }
+}
+
+@keyframes logo-ring-y-tilted2 {
+  0%   { transform: rotateX(-55deg) rotateY(0deg); }
+  100% { transform: rotateX(-55deg) rotateY(360deg); }
+}
