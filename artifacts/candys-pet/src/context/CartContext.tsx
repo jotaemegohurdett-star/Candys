@@ -19,6 +19,9 @@ interface CartContextType {
   totalItems: number;
   totalPrice: number;
   generateWhatsAppLink: () => string;
+  isCartOpen: boolean;
+  openCart: () => void;
+  closeCart: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -27,6 +30,10 @@ const WHATSAPP_NUMBER = '56936693300'; // Lorena Abarca — Candy's Pet
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
+  const openCart = () => setIsCartOpen(true);
+  const closeCart = () => setIsCartOpen(false);
 
   const addToCart = (newItem: Omit<CartItem, 'id' | 'quantity'>) => {
     setItems((prev) => {
@@ -89,6 +96,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         totalItems,
         totalPrice,
         generateWhatsAppLink,
+        isCartOpen,
+        openCart,
+        closeCart,
       }}
     >
       {children}

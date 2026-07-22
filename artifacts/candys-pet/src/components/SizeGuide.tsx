@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Ruler } from 'lucide-react';
-import sizeImg from '@assets/Screenshot_20260722-005631_Instagram_1784696503515.jpg';
+import sizeImg from '@assets/Screenshot_20260722-005631_Instagram~2_1784698640443.jpg';
 
 const sizes = [
   {

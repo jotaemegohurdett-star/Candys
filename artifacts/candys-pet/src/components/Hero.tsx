@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowDown, Star, Instagram } from 'lucide-react';
-import heroImg from '@assets/Screenshot_20260722-005838_Instagram_1784696503100.jpg';
+import heroImg from '@assets/Screenshot_20260722-005838_Instagram~3_1784698640046.jpg';
 
 export function Hero() {
   return (

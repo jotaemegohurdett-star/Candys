@@ -1,30 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
 export function CartDrawer() {
-  const [isOpen, setIsOpen] = useState(false);
-  const { items, removeFromCart, updateQuantity, totalPrice, generateWhatsAppLink } = useCart();
+  const { items, removeFromCart, updateQuantity, totalPrice, generateWhatsAppLink, isCartOpen, closeCart } = useCart();
 
-  // We need a hidden button that the Header can trigger
   return (
     <>
-      <button 
-        id="cart-drawer" 
-        className="hidden" 
-        onClick={() => setIsOpen(true)}
-        aria-hidden="true"
-      />
-
       <AnimatePresence>
-        {isOpen && (
+        {isCartOpen && (
           <>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setIsOpen(false)}
+              onClick={closeCart}
               className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100]"
             />
             <motion.div
@@ -42,7 +33,7 @@ export function CartDrawer() {
                   <h2 className="text-xl font-heading font-bold">Tu Carrito</h2>
                 </div>
                 <button
-                  onClick={() => setIsOpen(false)}
+                  onClick={closeCart}
                   className="p-2 rounded-full hover:bg-muted text-muted-foreground transition-colors"
                 >
                   <X className="w-5 h-5" />
@@ -57,7 +48,7 @@ export function CartDrawer() {
                     <p className="text-sm text-muted-foreground">¡Agrega algunos slings increíbles para tu mascota!</p>
                     <button 
                       onClick={() => {
-                        setIsOpen(false);
+                        closeCart();
                         document.querySelector('#products')?.scrollIntoView({ behavior: 'smooth' });
                       }}
                       className="mt-6 px-6 py-2 bg-primary/10 text-primary rounded-full font-medium hover:bg-primary/20 transition-colors"
@@ -129,7 +120,7 @@ export function CartDrawer() {
                     href={generateWhatsAppLink()}
                     target="_blank"
                     rel="noopener noreferrer"
-                    onClick={() => setIsOpen(false)}
+                    onClick={closeCart}
                     className="w-full py-4 bg-primary text-primary-foreground rounded-full font-bold text-lg hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-[0.98]"
                   >
                     Hacer Pedido por WhatsApp

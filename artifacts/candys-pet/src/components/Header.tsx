@@ -16,7 +16,7 @@ const navLinks = [
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { totalItems } = useCart();
+  const { totalItems, openCart } = useCart();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 30);
@@ -78,7 +78,7 @@ export function Header() {
           <div className="flex items-center gap-3">
             {/* Cart */}
             <button
-              onClick={() => document.getElementById('cart-drawer')?.click()}
+              onClick={openCart}
               className={`relative p-2 transition-colors ${
                 isScrolled ? 'text-gray-600 hover:text-gray-900' : 'text-white/70 hover:text-white'
               }`}

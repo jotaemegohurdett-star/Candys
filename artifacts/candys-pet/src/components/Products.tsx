@@ -10,10 +10,10 @@ import {
   DialogTrigger,
   DialogDescription,
 } from './ui/dialog';
-import p1Img from '@assets/Screenshot_20260722-005620_Instagram_1784696503686.jpg';
-import p2Img from '@assets/Screenshot_20260722-005908_Instagram_1784696502984.jpg';
-import p3Img from '@assets/Screenshot_20260722-005601_Instagram_1784696503852.jpg';
-import p4Img from '@assets/Screenshot_20260722-005653_Instagram_1784696503335.jpg';
+import p1Img from '@assets/Screenshot_20260722-005620_Instagram~2_1784698640494.jpg';
+import p2Img from '@assets/Screenshot_20260722-005735_Instagram~2_1784698640108.jpg';
+import p3Img from '@assets/Screenshot_20260722-005601_Instagram~2_1784698640610.jpg';
+import p4Img from '@assets/Screenshot_20260722-005653_Instagram~2_1784698640237.jpg';
 
 const products = [
   {
@@ -44,7 +44,7 @@ const products = [
     description:
       'Interior de corderito (chiporro sintético) extra suave y cálido. Perfecto para días fríos. Tu regalón no querrá salir. Exterior liso y resistente.',
     image: p2Img,
-    imgPosition: 'center 38%',
+    imgPosition: 'center 20%',
     colors: ['Azul Marino', 'Gris Marengo', 'Negro', 'Azul Celeste', 'Café'],
     colorSwatches: ['#1B2A4A', '#4A4A4A', '#111111', '#6BBFDF', '#7B5C3E'],
     sizes: ['S', 'M', 'L'],

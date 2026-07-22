@@ -3,6 +3,13 @@ import useEmblaCarousel from 'embla-carousel-react';
 import { motion } from 'framer-motion';
 import { Star, ChevronLeft, ChevronRight, Instagram } from 'lucide-react';
 
+// Real lifestyle photos for testimonial visual anchors
+import photo1 from '@assets/Screenshot_20260722-005626_Instagram~2_1784698639916.jpg';
+import photo2 from '@assets/Screenshot_20260722-005657_Instagram~2_1784698640170.jpg';
+import photo3 from '@assets/Screenshot_20260722-005653_Instagram~2_1784698640237.jpg';
+import photo4 from '@assets/Screenshot_20260722-005838_Instagram~3_1784698640046.jpg';
+import photo5 from '@assets/Screenshot_20260722-005735_Instagram~2_1784698640108.jpg';
+
 /* Real testimonials sourced from Instagram @candys_pets1 comments and captions */
 const testimonials = [
   {
@@ -11,7 +18,8 @@ const testimonials = [
     handle: '@mia_lachihuahua',
     pet: 'Chihuahua bebé',
     text: 'Muchas gracias, es muy cómodo y seguro CANDY\'S PET 🐾 Ahora mi mamita maneja conmigo sin que me pase nada :)',
-    emoji: '🐕',
+    photo: photo1,
+    photoPosition: 'center 15%',
     rating: 5,
     location: 'Santiago, Chile',
   },
@@ -21,7 +29,8 @@ const testimonials = [
     handle: '@cloe_la_princesa_',
     pet: 'Bichón Frisé',
     text: 'Mi amiguita CLOE feliz con su porta mascota 💥❤️👌 ¡Gracias amiguita! El chiporro es súper suave y ella no se quiere bajar 😍',
-    emoji: '🐩',
+    photo: photo2,
+    photoPosition: 'center 12%',
     rating: 5,
     location: 'RM, Chile',
   },
@@ -31,7 +40,8 @@ const testimonials = [
     handle: '@club_poodlechile',
     pet: 'Colaboración oficial',
     text: 'En Candy\'s Pets creemos que nuestros peludos merecen pasear con comodidad, seguridad y mucho estilo 💙 Porta mascotas tipo banano, ideales para paseos, salidas y aventuras juntos.',
-    emoji: '🐾',
+    photo: photo3,
+    photoPosition: 'center 10%',
     rating: 5,
     location: 'Chile',
   },
@@ -41,7 +51,8 @@ const testimonials = [
     handle: 'cliente verificada',
     pet: 'Chihuahua 2 meses',
     text: '"MIA" hermosura de 2 meses, ya disfrutando de su porta mascota 🥰 Nunca pensé que un porta mascota pudiera ser tan cómodo. ¡100% recomendable!',
-    emoji: '🧡',
+    photo: photo4,
+    photoPosition: 'center 8%',
     rating: 5,
     location: 'Chile',
   },
@@ -51,7 +62,8 @@ const testimonials = [
     handle: '@clubchihuahuachile',
     pet: 'Colaboración oficial',
     text: 'Nuestros porta mascotas tipo banano están diseñados para mantener a tu compañero cerca de ti, ideales para paseos, salidas y aventuras juntos. ¡Juntos por nuestros peludos! 💕',
-    emoji: '🐕‍🦺',
+    photo: photo5,
+    photoPosition: 'center 12%',
     rating: 5,
     location: 'Chile',
   },
@@ -61,7 +73,8 @@ const testimonials = [
     handle: 'reseña verificada',
     pet: 'Yorkshire Terrier',
     text: 'Variados colores y texturas para paseos con tus regalones, pero con estilo y seguridad!! 💥✨👌 Excelente atención por WhatsApp, me ayudaron a elegir la talla perfecta.',
-    emoji: '💛',
+    photo: photo1,
+    photoPosition: 'center 20%',
     rating: 5,
     location: 'Santiago',
   },
@@ -109,7 +122,6 @@ export function Testimonials() {
             <button
               onClick={scrollPrev}
               className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-foreground hover:text-white hover:border-transparent transition-all"
-              style={{ ['--hover-bg' as string]: 'hsl(340 84% 50%)' }}
               onMouseEnter={e => (e.currentTarget.style.background = 'hsl(340 84% 50%)')}
               onMouseLeave={e => (e.currentTarget.style.background = '')}
             >
@@ -139,47 +151,54 @@ export function Testimonials() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.06 }}
-                  className="bg-background rounded-3xl p-7 border border-border/60 shadow-sm h-full flex flex-col relative overflow-hidden group hover:shadow-lg transition-shadow duration-300"
+                  className="rounded-3xl overflow-hidden border border-border/60 shadow-sm h-full flex flex-col relative group hover:shadow-xl transition-shadow duration-300"
                 >
-                  {/* Stars */}
-                  <div className="flex gap-1 mb-5">
-                    {[...Array(5)].map((_, si) => (
-                      <Star
-                        key={si}
-                        className="w-4 h-4"
-                        style={si < t.rating ? { fill: 'hsl(43 100% 56%)', color: 'hsl(43 100% 56%)' } : { color: '#d1d5db' }}
-                      />
-                    ))}
+                  {/* Photo strip */}
+                  <div className="relative h-52 overflow-hidden bg-gray-100">
+                    <img
+                      src={t.photo}
+                      alt={`${t.name} — cliente Candy's Pet`}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      style={{ objectPosition: t.photoPosition }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                    {/* Stars overlay */}
+                    <div className="absolute bottom-4 left-4 flex gap-1">
+                      {[...Array(5)].map((_, si) => (
+                        <Star
+                          key={si}
+                          className="w-3.5 h-3.5 drop-shadow"
+                          style={{ fill: 'hsl(43 100% 56%)', color: 'hsl(43 100% 56%)' }}
+                        />
+                      ))}
+                    </div>
                   </div>
 
-                  {/* Quote */}
-                  <p className="text-foreground/80 leading-relaxed mb-6 flex-1 text-sm">
-                    "{t.text}"
-                  </p>
+                  {/* Content */}
+                  <div className="bg-background flex flex-col flex-1 p-6 relative overflow-hidden">
+                    {/* Quote */}
+                    <p className="text-foreground/80 leading-relaxed mb-5 flex-1 text-sm">
+                      "{t.text}"
+                    </p>
 
-                  {/* Author */}
-                  <div className="flex items-center gap-3 mt-auto pt-5 border-t border-border/50">
-                    <div
-                      className="w-11 h-11 rounded-full flex items-center justify-center text-xl shrink-0"
-                      style={{ background: 'hsl(340 84% 50% / 0.1)' }}
-                    >
-                      {t.emoji}
-                    </div>
-                    <div className="min-w-0">
-                      <h4 className="font-bold text-foreground text-sm truncate">{t.name}</h4>
-                      <div className="flex items-center gap-1.5">
-                        <Instagram className="w-3 h-3 text-pink-400 shrink-0" />
-                        <p className="text-xs text-muted-foreground truncate">{t.handle}</p>
+                    {/* Author */}
+                    <div className="flex items-center gap-2 pt-4 border-t border-border/50">
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-bold text-foreground text-sm truncate">{t.name}</h4>
+                        <div className="flex items-center gap-1.5">
+                          <Instagram className="w-3 h-3 text-pink-400 shrink-0" />
+                          <p className="text-xs text-muted-foreground truncate">{t.handle}</p>
+                        </div>
                       </div>
+                      <span className="text-xs text-muted-foreground shrink-0">{t.location}</span>
                     </div>
-                    <span className="ml-auto text-xs text-muted-foreground shrink-0">{t.location}</span>
-                  </div>
 
-                  {/* Glow */}
-                  <div
-                    className="absolute -bottom-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-500 pointer-events-none"
-                    style={{ background: 'hsl(340 84% 50%)' }}
-                  />
+                    {/* Glow */}
+                    <div
+                      className="absolute -bottom-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-500 pointer-events-none"
+                      style={{ background: 'hsl(340 84% 50%)' }}
+                    />
+                  </div>
                 </motion.div>
               </div>
             ))}
