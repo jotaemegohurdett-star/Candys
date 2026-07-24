@@ -36,7 +36,7 @@ const METHOD_INFO: Record<PaymentMethod, string> = {
   transfer:
     'Irás a WhatsApp con el resumen del pedido. Te enviamos los datos bancarios para transferir y confirmamos tu reserva.',
   presencial:
-    'Irás a WhatsApp. Coordinamos punto de entrega en Santiago y pagas en efectivo o tarjeta al momento de retiro.',
+    'Previa coordinación por WhatsApp. Acordamos punto de entrega en Santiago y pagas en efectivo o tarjeta al momento del retiro.',
 };
 
 export function CartDrawer() {
