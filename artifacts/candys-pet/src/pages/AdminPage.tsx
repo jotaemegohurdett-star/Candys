@@ -235,7 +235,7 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
                 </label>
                 <input
                   {...field('priceM')}
-                  placeholder="18990"
+                  placeholder="17990"
                   inputMode="numeric"
                   className="w-full px-4 py-2.5 rounded-xl text-white text-sm focus:outline-none"
                   style={{ background: 'hsl(220 25% 8%)', border: '1px solid hsl(220 25% 25%)' }}
@@ -247,7 +247,7 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
                 </label>
                 <input
                   {...field('priceL')}
-                  placeholder="20990"
+                  placeholder="19990"
                   inputMode="numeric"
                   className="w-full px-4 py-2.5 rounded-xl text-white text-sm focus:outline-none"
                   style={{ background: 'hsl(220 25% 8%)', border: '1px solid hsl(220 25% 25%)' }}
