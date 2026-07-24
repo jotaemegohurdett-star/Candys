@@ -16,14 +16,12 @@ import {
 } from './ui/dialog';
 import p1Img from '@assets/Screenshot_20260722-051400_WhatsApp~2_1784713749406.jpg';
 import p2Img from '@assets/Screenshot_20260722-005735_Instagram~2_1784698640108.jpg';
-import p3Img from '@assets/Screenshot_20260722-051510_WhatsApp_1784713749468.jpg';
 import p4Img from '@assets/Screenshot_20260722-051201_WhatsApp~2_1784713749256.jpg';
 
 /** Fallback local images used when no image is uploaded via admin panel */
 const LOCAL_IMAGES: Record<string, string> = {
   p1: p1Img,
   p2: p2Img,
-  p3: p3Img,
   p4: p4Img,
 };
 
@@ -73,27 +71,6 @@ const KNOWN_PRODUCTS = [
       'Correa ajustable acolchada',
       'Ideal para perritos senior — uso terapéutico',
       'Reduce ansiedad y estrés',
-      'Paseos cotidianos: útil en lugares con mucha gente, transporte público o cuando tu mascota se cansa de caminar',
-      'Talla M: desde 2 meses hasta 3,5 kg',
-      'Talla L: hasta 10 kg — caben 2 perritos',
-    ],
-  },
-  {
-    id: 'p3',
-    name: 'Porta Mascota Estampado',
-    badge: 'Edición especial',
-    badgeStyle: { background: 'linear-gradient(135deg, hsl(270 60% 55%), hsl(270 60% 45%))' },
-    description:
-      'Diseños únicos con motivos especiales. Colaboraciones exclusivas con @ClubChihuahuaChile y @club_poodlechile. Mismo nivel de confort y seguridad.',
-    image: p3Img,
-    imgPosition: 'center 15%',
-    colors: ['Patitas', 'Mickey'],
-    colorSwatches: ['#FF69B4', '#1B2A4A'],
-    features: [
-      "Diseños exclusivos Candy's Pet",
-      'Tela con estampado fijo · lavable a mano',
-      'Gancho de seguridad interior',
-      'Apto para perritos con discapacidad o senior',
       'Paseos cotidianos: útil en lugares con mucha gente, transporte público o cuando tu mascota se cansa de caminar',
       'Talla M: desde 2 meses hasta 3,5 kg',
       'Talla L: hasta 10 kg — caben 2 perritos',
