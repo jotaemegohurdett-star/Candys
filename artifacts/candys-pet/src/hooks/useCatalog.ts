@@ -15,7 +15,7 @@ export interface CatalogData {
 }
 
 const DEFAULTS: CatalogData = {
-  prices: { price_m: 18990, price_l: 20990 },
+  prices: { price_m: 17990, price_l: 19990 },
   images: {},
   products: [],
 };
@@ -35,8 +35,8 @@ export function useCatalog() {
       };
       setCatalog({
         prices: {
-          price_m: parseInt(data.prices['price_m'] ?? '18990', 10) || 18990,
-          price_l: parseInt(data.prices['price_l'] ?? '20990', 10) || 20990,
+          price_m: parseInt(data.prices['price_m'] ?? '17990', 10) || 17990,
+          price_l: parseInt(data.prices['price_l'] ?? '19990', 10) || 19990,
         },
         images: data.images ?? {},
         products: data.products ?? [],
