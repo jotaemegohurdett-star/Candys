@@ -246,12 +246,11 @@ export function CartDrawer() {
               {/* Checkout panel */}
               {items.length > 0 && (
                 <div className="p-5 bg-white border-t border-border shadow-[0_-10px_20px_rgba(0,0,0,0.03)] space-y-4">
-                  {/* Shipping info */}
-                  <div className="rounded-xl border border-border/60 bg-muted/30 px-4 py-3 space-y-1 text-xs">
-                    <p className="font-bold text-foreground flex items-center gap-1.5">🚚 Costo de envío a domicilio</p>
-                    <p className="text-muted-foreground">Hasta la <span className="font-semibold text-foreground">XI Región</span>: $3.500</p>
+                  {/* Shipping / pickup info */}
+                  <div className="rounded-xl border border-border/60 bg-muted/30 px-4 py-3 space-y-2 text-xs">
+                    <p className="font-bold text-foreground flex items-center gap-1.5">🚚 Envío y retiro</p>
                     <p className="text-muted-foreground">
-                      XII Región en adelante:{' '}
+                      <span className="font-semibold text-foreground">Despacho</span> hasta XI Región: $3.500 · XII en adelante:{' '}
                       <a
                         href={`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent('Hola! Quisiera consultar el costo de envío a mi región 🚚')}`}
                         target="_blank"
@@ -259,7 +258,19 @@ export function CartDrawer() {
                         className="font-semibold underline"
                         style={{ color: 'hsl(340 84% 50%)' }}
                       >
-                        Consultar por WhatsApp
+                        consultar por WhatsApp
+                      </a>
+                    </p>
+                    <p className="text-muted-foreground">
+                      <span className="font-semibold text-foreground">Retiro</span> Santiago, comuna San Joaquín —{' '}
+                      <a
+                        href={`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent('Hola! Quisiera coordinar el retiro en San Joaquín 📍')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-semibold underline"
+                        style={{ color: 'hsl(340 84% 50%)' }}
+                      >
+                        pedir datos por WhatsApp
                       </a>
                     </p>
                   </div>
