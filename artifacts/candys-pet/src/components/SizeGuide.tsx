@@ -7,31 +7,22 @@ import catGuideImg from '@assets/IMG-20260722-WA0039_1784750410492.jpg';
 
 const sizes = [
   {
-    label: 'S',
-    name: 'Pequeño',
-    weight: 'hasta 4 kg',
-    length: '20 – 30 cm',
-    breeds: 'Chihuahua, Yorkshire Terrier, Gatos pequeños',
-    color: 'hsl(340 84% 50%)',
-    bg: 'hsl(340 84% 50% / 0.08)',
-  },
-  {
     label: 'M',
     name: 'Mediano',
-    weight: '4 – 7 kg',
-    length: '30 – 40 cm',
-    breeds: 'Poodle Toy, Maltés, Pug, Gatos adultos',
-    color: 'hsl(186 96% 43%)',
-    bg: 'hsl(186 96% 43% / 0.08)',
+    weight: 'hasta 3,5 kg · desde 2 meses',
+    length: '20 – 40 cm',
+    breeds: 'Chihuahua, Yorkshire Terrier, Poodle, Maltés, Pug, Boston Terrier, Gatos',
+    color: 'hsl(340 84% 50%)',
+    bg: 'hsl(340 84% 50% / 0.08)',
   },
   {
     label: 'L',
     name: 'Grande',
-    weight: '7 – 10 kg',
+    weight: 'hasta 10 kg',
     length: '40 – 50 cm',
-    breeds: 'Bulldog Francés, Schnauzer mini, Bichón Frisé',
-    color: 'hsl(340 84% 50%)',
-    bg: 'hsl(340 84% 50% / 0.08)',
+    breeds: 'Bulldog Francés, Schnauzer mini, Bichón Frisé · caben 2 perritos pequeños',
+    color: 'hsl(186 96% 43%)',
+    bg: 'hsl(186 96% 43% / 0.08)',
   },
 ];
 
