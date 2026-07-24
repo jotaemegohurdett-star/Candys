@@ -8,7 +8,7 @@ const partners = [
   {
     name: 'Club Chihuahua Chile',
     handle: '@clubchihuahuachile',
-    url: 'https://www.instagram.com/clubchihuahuachile',
+    url: 'https://www.instagram.com/clubchihuahuachile/',
     emoji: '🐕',
     desc: 'La comunidad más grande de amantes del Chihuahua en Chile.',
   },

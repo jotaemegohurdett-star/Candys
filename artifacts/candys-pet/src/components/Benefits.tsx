@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Heart, ShieldCheck, Feather, Sparkles, Brain, Wind } from 'lucide-react';
+import { Heart, ShieldCheck, Feather, Sparkles, Brain, Wind, MapPin } from 'lucide-react';
 import lifestyleImg from '@assets/Screenshot_20260722-051400_WhatsApp~2_1784713749406.jpg';
 
 const benefits = [
@@ -63,6 +63,16 @@ const benefits = [
     title: 'Calidad Premium',
     description:
       'Tela suave, segura y transpirable. Forrado con algodón. Hecho a mano con amor 💕, apto desde los 2 meses de vida.',
+  },
+  {
+    icon: MapPin,
+    color: '#34d399',
+    gradient: 'linear-gradient(135deg, rgba(52,211,153,0.13) 0%, rgba(52,211,153,0.03) 100%)',
+    border: 'rgba(52,211,153,0.22)',
+    glow: 'rgba(52,211,153,0.22)',
+    title: 'Paseos Cotidianos',
+    description:
+      'Ideal en lugares con mucha gente, transporte público o cuando tu mascota se cansa de caminar. Siempre cerca de ti, sin esfuerzo.',
   },
 ];
 

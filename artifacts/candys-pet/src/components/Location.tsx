@@ -39,8 +39,8 @@ const contactItems = [
     icon: <Package className="w-5 h-5" />,
     color: 'hsl(340 84% 50%)',
     bg: 'hsl(340 84% 50% / 0.1)',
-    title: 'Envíos',
-    value: 'Todo Chile · Retiro en Santiago',
+    title: 'Retiro / Envíos',
+    value: 'Retiro en San Joaquín · Metro Pedrero L6 · Envíos a todo Chile',
     link: null,
   },
 ];
@@ -83,7 +83,7 @@ export function Location() {
               transition={{ delay: 0.15 }}
               className="text-muted-foreground text-base leading-relaxed mb-10"
             >
-              Tienda 100% online con envíos a todo Chile. Te atendemos por WhatsApp e Instagram para cualquier consulta sobre tallas, colores, pedidos personalizados y despachos.
+              Tienda online con envíos a todo Chile. Retiro presencial en comuna San Joaquín, cercano a metro Pedrero Línea 6 — la dirección exacta se coordina por WhatsApp. Te atendemos para consultas de tallas, colores y pedidos personalizados.
             </motion.p>
 
             {/* Contact items */}

@@ -51,6 +51,7 @@ const KNOWN_PRODUCTS = [
       'Gancho de seguridad interior',
       'Ideal para perritos senior o con discapacidad',
       'Reduce el estrés y la ansiedad de tu mascota',
+      'Paseos cotidianos: útil en lugares con mucha gente, transporte público o cuando tu mascota se cansa de caminar',
       'Talla M: desde 2 meses hasta 3,5 kg',
       'Talla L: hasta 10 kg — caben 2 perritos',
     ],
@@ -72,6 +73,7 @@ const KNOWN_PRODUCTS = [
       'Correa ajustable acolchada',
       'Ideal para perritos senior — uso terapéutico',
       'Reduce ansiedad y estrés',
+      'Paseos cotidianos: útil en lugares con mucha gente, transporte público o cuando tu mascota se cansa de caminar',
       'Talla M: desde 2 meses hasta 3,5 kg',
       'Talla L: hasta 10 kg — caben 2 perritos',
     ],
@@ -82,17 +84,17 @@ const KNOWN_PRODUCTS = [
     badge: 'Edición especial',
     badgeStyle: { background: 'linear-gradient(135deg, hsl(270 60% 55%), hsl(270 60% 45%))' },
     description:
-      'Diseños únicos con estampados florales, animal print y motivos especiales. Colaboraciones exclusivas con @ClubChihuauaChile y @club_poodlechile. Mismo nivel de confort y seguridad.',
+      'Diseños únicos con motivos especiales. Colaboraciones exclusivas con @ClubChihuahuaChile y @club_poodlechile. Mismo nivel de confort y seguridad.',
     image: p3Img,
     imgPosition: 'center 15%',
-    colors: ['Floral Rosa', 'Floral Azul', 'Animal Print', 'Patitas', 'Mickey'],
-    colorSwatches: ['#F9A8C9', '#87CEEB', '#8B5E3C', '#FF69B4', '#1B2A4A'],
+    colors: ['Patitas', 'Mickey'],
+    colorSwatches: ['#FF69B4', '#1B2A4A'],
     features: [
       "Diseños exclusivos Candy's Pet",
       'Tela con estampado fijo · lavable a mano',
       'Gancho de seguridad interior',
       'Apto para perritos con discapacidad o senior',
-      'Edición limitada',
+      'Paseos cotidianos: útil en lugares con mucha gente, transporte público o cuando tu mascota se cansa de caminar',
       'Talla M: desde 2 meses hasta 3,5 kg',
       'Talla L: hasta 10 kg — caben 2 perritos',
     ],
@@ -110,10 +112,10 @@ const KNOWN_PRODUCTS = [
     colorSwatches: ['#111111', '#9E9E9E', '#1B2A4A', '#7B5C3E'],
     features: [
       'Diseño unisex versátil',
-      'Doble bolsillo lateral',
       'Capacidad talla L: 2 mascotas pequeñas 🐾🐾',
       'Correa reforzada extra larga',
-      'Malla transpirable en zona mascota',
+      'Tela algodón transpirable zona mascota',
+      'Paseos cotidianos: útil en lugares con mucha gente, transporte público o cuando tu mascota se cansa de caminar',
       'Talla M: desde 2 meses hasta 3,5 kg',
       'Talla L: hasta 10 kg — caben 2 perritos',
     ],
@@ -515,21 +517,9 @@ function ProductCard({
                   Desde ${catalog.getPrice('M').toLocaleString('es-CL')}
                 </p>
 
-                {/* Color dots */}
-                <div className="flex gap-1.5 mt-auto items-center">
-                  {product.colorSwatches.slice(0, 6).map((hex, i) => (
-                    <span
-                      key={i}
-                      className="w-4 h-4 rounded-full border border-white/20 transition-transform hover:scale-125"
-                      style={{ background: hex }}
-                    />
-                  ))}
-                  {product.colorSwatches.length > 6 && (
-                    <span className="text-xs ml-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                      +{product.colorSwatches.length - 6}
-                    </span>
-                  )}
-                </div>
+                <p className="text-xs mt-auto" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                  🎨 Consulta colores disponibles por WhatsApp
+                </p>
               </div>
             </div>
           </motion.div>
@@ -591,30 +581,12 @@ function ProductCard({
             </DialogHeader>
 
             <div className="space-y-6 mb-8">
-              {/* Color picker */}
-              <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider mb-3 text-gray-400">
-                  Color —{' '}
-                  <span className="text-gray-700 normal-case font-semibold">{selectedColor}</span>
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {product.colors.map((color, i) => (
-                    <button
-                      key={color}
-                      onClick={() => setSelectedColor(color)}
-                      title={color}
-                      aria-label={`Color: ${color}${selectedColor === color ? ' (seleccionado)' : ''}`}
-                      aria-pressed={selectedColor === color}
-                      className="w-8 h-8 rounded-full border-2 transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900"
-                      style={{
-                        background: product.colorSwatches[i],
-                        borderColor: selectedColor === color ? '#111' : 'transparent',
-                        transform: selectedColor === color ? 'scale(1.18)' : 'scale(1)',
-                        boxShadow: selectedColor === color ? '0 0 0 3px white, 0 0 0 5px #111' : 'none',
-                      }}
-                    />
-                  ))}
-                </div>
+              {/* Colores — consultar por WhatsApp */}
+              <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-pink-50 border border-pink-100">
+                <span className="text-xl">🎨</span>
+                <p className="text-sm text-gray-600">
+                  Consulta los <span className="font-semibold text-gray-800">colores disponibles</span> por WhatsApp antes de pedir.
+                </p>
               </div>
 
               {/* Size picker */}
