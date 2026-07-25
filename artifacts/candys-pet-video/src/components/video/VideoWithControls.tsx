@@ -4,7 +4,12 @@ import { useSceneControls } from './useSceneControls';
 
 const TOTAL_DURATION_MS = Object.values(SCENE_DURATIONS).reduce((a, b) => a + b, 0);
 
-type RecordState = 'idle' | 'countdown' | 'recording' | 'done';
+type RecordState = 'idle' | 'recording' | 'done' | 'mobile' | 'error';
+
+const isMobileDevice = () =>
+  typeof navigator !== 'undefined' &&
+  (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+    !navigator.mediaDevices?.getDisplayMedia);
 
 export default function VideoWithControls() {
   // embed=1 means we're inside the store's iframe — hide the download button there
@@ -18,8 +23,8 @@ export default function VideoWithControls() {
 
   // ── recording state (standalone only) ──
   const [recState, setRecState] = useState<RecordState>('idle');
-  const [countdown, setCountdown] = useState(3);
-  const [progress, setProgress] = useState(0); // 0–100
+  const [progress, setProgress] = useState(0);
+  const [videoKey, setVideoKey] = useState(0); // forces VideoTemplate remount
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
@@ -38,26 +43,24 @@ export default function VideoWithControls() {
   }, [isEmbedded]);
 
   async function startDownload() {
+    // Mobile / unsupported browser
+    if (isMobileDevice()) {
+      setRecState('mobile');
+      return;
+    }
+
     try {
-      // Ask user to share the tab/window
+      // Ask user to share THIS tab
       const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: { frameRate: 30 },
-        audio: true,
+        video: { frameRate: 30, displaySurface: 'browser' } as DisplayMediaStreamConstraints['video'],
+        audio: false,
       } as DisplayMediaStreamOptions);
 
-      // 3-second countdown so the user can switch back to this tab
-      setRecState('countdown');
-      setCountdown(3);
-      await new Promise<void>((res) => {
-        let c = 3;
-        const id = setInterval(() => {
-          c--;
-          setCountdown(c);
-          if (c <= 0) { clearInterval(id); res(); }
-        }, 1000);
-      });
+      // Restart the video from the beginning
+      setVideoKey(k => k + 1);
+      setProgress(0);
+      setRecState('recording');
 
-      // Start recording
       chunksRef.current = [];
       const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
         ? 'video/webm;codecs=vp9'
@@ -66,14 +69,12 @@ export default function VideoWithControls() {
       mediaRecorderRef.current = mr;
       mr.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
       mr.start(200);
-      setRecState('recording');
-      setProgress(0);
 
       // Progress bar
       const startTime = Date.now();
       const progInterval = setInterval(() => {
         const elapsed = Date.now() - startTime;
-        setProgress(Math.min(100, Math.round((elapsed / TOTAL_DURATION_MS) * 100)));
+        setProgress(Math.min(99, Math.round((elapsed / TOTAL_DURATION_MS) * 100)));
       }, 200);
 
       // Stop after full video duration
@@ -96,7 +97,8 @@ export default function VideoWithControls() {
         setTimeout(() => setRecState('idle'), 4000);
       };
     } catch {
-      setRecState('idle');
+      setRecState('error');
+      setTimeout(() => setRecState('idle'), 3000);
     }
   }
 
@@ -118,10 +120,11 @@ export default function VideoWithControls() {
   // Standalone path: video + download button
   return (
     <div className="relative w-full h-screen">
-      <VideoTemplate />
+      <VideoTemplate key={videoKey} />
 
       {/* Download overlay */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-3">
+
         {recState === 'idle' && (
           <button
             onClick={startDownload}
@@ -132,19 +135,10 @@ export default function VideoWithControls() {
           </button>
         )}
 
-        {recState === 'countdown' && (
-          <div
-            className="px-6 py-3 rounded-full font-bold text-white text-lg shadow-2xl"
-            style={{ background: 'hsl(220 25% 15% / 0.92)' }}
-          >
-            Volvé a esta pestaña en… {countdown}
-          </div>
-        )}
-
         {recState === 'recording' && (
           <div
-            className="flex flex-col items-center gap-2 px-6 py-3 rounded-2xl shadow-2xl"
-            style={{ background: 'hsl(220 25% 15% / 0.92)' }}
+            className="flex flex-col items-center gap-2 px-6 py-4 rounded-2xl shadow-2xl min-w-[220px]"
+            style={{ background: 'hsl(220 25% 10% / 0.95)' }}
           >
             <div className="flex items-center gap-2 text-white text-sm font-semibold">
               <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
@@ -152,10 +146,11 @@ export default function VideoWithControls() {
             </div>
             <div className="w-48 h-1.5 rounded-full bg-white/20 overflow-hidden">
               <div
-                className="h-full rounded-full transition-all"
+                className="h-full rounded-full transition-all duration-200"
                 style={{ width: `${progress}%`, background: 'hsl(340 84% 55%)' }}
               />
             </div>
+            <p className="text-[11px] text-white/50 text-center">No cierres esta pestaña</p>
           </div>
         )}
 
@@ -164,9 +159,37 @@ export default function VideoWithControls() {
             className="px-6 py-3 rounded-full font-bold text-white text-sm shadow-2xl"
             style={{ background: 'hsl(150 65% 35% / 0.95)' }}
           >
-            ✅ ¡Descarga lista!
+            ✅ ¡Descarga lista! Revisá tu carpeta de descargas
           </div>
         )}
+
+        {recState === 'error' && (
+          <div
+            className="px-6 py-3 rounded-2xl text-white text-sm shadow-2xl text-center max-w-[260px]"
+            style={{ background: 'hsl(0 70% 40% / 0.95)' }}
+          >
+            ❌ No se pudo iniciar. Asegurate de compartir <strong>esta pestaña</strong> cuando el navegador lo pida.
+          </div>
+        )}
+
+        {recState === 'mobile' && (
+          <div
+            className="px-6 py-4 rounded-2xl text-white text-sm shadow-2xl text-center max-w-[280px] space-y-1"
+            style={{ background: 'hsl(220 25% 12% / 0.97)' }}
+          >
+            <p className="font-bold text-base mb-1">📱 En celular</p>
+            <p className="text-white/80 text-xs leading-relaxed">
+              Usá la <strong>grabación de pantalla</strong> de tu teléfono mientras el video se reproduce.
+            </p>
+            <button
+              onClick={() => setRecState('idle')}
+              className="mt-2 text-xs underline text-white/50"
+            >
+              Cerrar
+            </button>
+          </div>
+        )}
+
       </div>
     </div>
   );
