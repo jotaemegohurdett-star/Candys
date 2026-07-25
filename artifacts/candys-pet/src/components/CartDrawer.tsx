@@ -26,7 +26,7 @@ const METHODS: { id: PaymentMethod; icon: React.ReactNode; label: string; sub: s
     id: 'presencial',
     icon: <Users className="w-5 h-5" />,
     label: 'Presencial',
-    sub: 'Retiro en Santiago',
+    sub: 'San Joaquín · Metro Pedrero L5',
   },
 ];
 
@@ -36,7 +36,7 @@ const METHOD_INFO: Record<PaymentMethod, string> = {
   transfer:
     'Irás a WhatsApp con el resumen del pedido. Te enviamos los datos bancarios para transferir y confirmamos tu reserva.',
   presencial:
-    'Previa coordinación por WhatsApp. Acordamos punto de entrega en Santiago y pagas en efectivo o tarjeta al momento del retiro.',
+    'Retiro en San Joaquín, a pasos del Metro Pedrero Línea 5. Pagas en efectivo o tarjeta al momento del retiro.',
 };
 
 export function CartDrawer() {
@@ -69,7 +69,7 @@ export function CartDrawer() {
       if (method === 'transfer') {
         message += `\n💸 Método de pago: Transferencia bancaria\nQuedo atento/a para recibir los datos y coordinar el envío. ✨`;
       } else if (method === 'presencial') {
-        message += `\n🤝 Método de pago: Retiro y pago presencial en Santiago\nQuedo atento/a para coordinar el encuentro. ✨`;
+        message += `\n🤝 Método de pago: Retiro presencial en San Joaquín (Metro Pedrero L5)\nQuedo atento/a para coordinar el retiro. ✨`;
       } else {
         message += `\n💳 Método de pago: MercadoPago\nQuedo atento/a para coordinar. ✨`;
       }
@@ -262,16 +262,7 @@ export function CartDrawer() {
                       </a>
                     </p>
                     <p className="text-muted-foreground">
-                      <span className="font-semibold text-foreground">Retiro</span> Santiago, comuna San Joaquín —{' '}
-                      <a
-                        href={`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent('Hola! Quisiera coordinar el retiro en San Joaquín 📍')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-semibold underline"
-                        style={{ color: 'hsl(340 84% 50%)' }}
-                      >
-                        pedir datos por WhatsApp
-                      </a>
+                      <span className="font-semibold text-foreground">Retiro</span> San Joaquín · a pasos Metro Pedrero Línea 5
                     </p>
                   </div>
 
