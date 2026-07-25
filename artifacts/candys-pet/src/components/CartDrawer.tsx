@@ -7,6 +7,8 @@ import { WA_NUMBER } from '../lib/constants';
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 
+const SHIPPING_COST = 3500;
+
 type PaymentMethod = 'mercadopago' | 'transfer' | 'presencial';
 
 const METHODS: { id: PaymentMethod; icon: React.ReactNode; label: string; sub: string }[] = [
@@ -51,6 +53,16 @@ export function CartDrawer() {
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('mercadopago');
   const [loadingMp, setLoadingMp] = useState(false);
+  const [wantsShipping, setWantsShipping] = useState(false);
+
+  // Retiro presencial nunca paga despacho
+  const shippingApplies = wantsShipping && paymentMethod !== 'presencial';
+  const grandTotal = totalPrice + (shippingApplies ? SHIPPING_COST : 0);
+
+  const handleSetPaymentMethod = (m: PaymentMethod) => {
+    setPaymentMethod(m);
+    if (m === 'presencial') setWantsShipping(false);
+  };
 
   const buildWaLink = useCallback(
     (method: PaymentMethod) => {
@@ -64,10 +76,13 @@ export function CartDrawer() {
         if (item.color) message += ` (Color: ${item.color})`;
         message += ` — $${(item.price * item.quantity).toLocaleString('es-CL')}\n`;
       }
-      message += `\nTotal: $${totalPrice.toLocaleString('es-CL')}\n`;
+      if (shippingApplies) {
+        message += `- Despacho — $${SHIPPING_COST.toLocaleString('es-CL')}\n`;
+      }
+      message += `\nTotal: $${grandTotal.toLocaleString('es-CL')}\n`;
 
       if (method === 'transfer') {
-        message += `\n💸 Método de pago: Transferencia bancaria\nQuedo atento/a para recibir los datos y coordinar el envío. ✨`;
+        message += `\n💸 Método de pago: Transferencia bancaria\nQuedo atento/a para recibir los datos y coordinar. ✨`;
       } else if (method === 'presencial') {
         message += `\n🤝 Método de pago: Retiro presencial en San Joaquín (Metro Pedrero L5)\nQuedo atento/a para coordinar el retiro. ✨`;
       } else {
@@ -76,7 +91,7 @@ export function CartDrawer() {
 
       return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`;
     },
-    [items, totalPrice],
+    [items, grandTotal, shippingApplies],
   );
 
   const handleMpCheckout = useCallback(async () => {
@@ -86,15 +101,24 @@ export function CartDrawer() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          items: items.map((item) => ({
-            productId: item.productId,
-            title: [item.name, item.size && `Talla ${item.size}`, item.color].filter(Boolean).join(' · '),
-            quantity: item.quantity,
-            unit_price: item.price,
-            currency_id: 'CLP',
-            size: item.size ?? 'M',
-            color: item.color,
-          })),
+          items: [
+            ...items.map((item) => ({
+              productId: item.productId,
+              title: [item.name, item.size && `Talla ${item.size}`, item.color].filter(Boolean).join(' · '),
+              quantity: item.quantity,
+              unit_price: item.price,
+              currency_id: 'CLP',
+              size: item.size ?? 'M',
+              color: item.color,
+            })),
+            ...(shippingApplies ? [{
+              productId: 'shipping',
+              title: 'Despacho',
+              quantity: 1,
+              unit_price: SHIPPING_COST,
+              currency_id: 'CLP',
+            }] : []),
+          ],
           back_url: window.location.origin + import.meta.env.BASE_URL,
         }),
       });
@@ -246,32 +270,59 @@ export function CartDrawer() {
               {/* Checkout panel */}
               {items.length > 0 && (
                 <div className="p-5 bg-white border-t border-border shadow-[0_-10px_20px_rgba(0,0,0,0.03)] space-y-4">
-                  {/* Shipping / pickup info */}
-                  <div className="rounded-xl border border-border/60 bg-muted/30 px-4 py-3 space-y-2 text-xs">
-                    <p className="font-bold text-foreground flex items-center gap-1.5">🚚 Envío y retiro</p>
-                    <p className="text-muted-foreground">
-                      <span className="font-semibold text-foreground">Despacho</span> hasta XI Región: $3.500 · XII en adelante:{' '}
-                      <a
-                        href={`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent('Hola! Quisiera consultar el costo de envío a mi región 🚚')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-semibold underline"
-                        style={{ color: 'hsl(340 84% 50%)' }}
-                      >
-                        consultar por WhatsApp
-                      </a>
-                    </p>
-                    <p className="text-muted-foreground">
-                      <span className="font-semibold text-foreground">Retiro</span> San Joaquín · a pasos Metro Pedrero Línea 5
-                    </p>
-                  </div>
+                  {/* Shipping toggle */}
+                  {paymentMethod !== 'presencial' ? (
+                    <button
+                      onClick={() => setWantsShipping(v => !v)}
+                      className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-all text-sm ${
+                        wantsShipping
+                          ? 'border-primary bg-primary/5 text-primary'
+                          : 'border-border bg-muted/30 text-foreground'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2 font-semibold">
+                        🚚 Agregar despacho
+                        <span className="text-xs font-normal text-muted-foreground">hasta XI Región</span>
+                      </span>
+                      <span className="flex items-center gap-2">
+                        <span className="font-bold">+$3.500</span>
+                        <span
+                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                            wantsShipping ? 'bg-primary border-primary' : 'border-border'
+                          }`}
+                        >
+                          {wantsShipping && (
+                            <svg className="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
+                              <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          )}
+                        </span>
+                      </span>
+                    </button>
+                  ) : (
+                    <div className="rounded-xl border border-border/60 bg-muted/30 px-4 py-3 text-xs text-muted-foreground">
+                      📍 <span className="font-semibold text-foreground">Retiro</span> San Joaquín · a pasos Metro Pedrero Línea 5
+                    </div>
+                  )}
 
                   {/* Total */}
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground text-sm">Total estimado</span>
-                    <span className="text-2xl font-bold font-heading">
-                      ${totalPrice.toLocaleString('es-CL')}
-                    </span>
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>Productos</span>
+                      <span>${totalPrice.toLocaleString('es-CL')}</span>
+                    </div>
+                    {shippingApplies && (
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span>Despacho</span>
+                        <span>+${SHIPPING_COST.toLocaleString('es-CL')}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between pt-1 border-t border-border/50">
+                      <span className="text-muted-foreground text-sm">Total</span>
+                      <span className="text-2xl font-bold font-heading">
+                        ${grandTotal.toLocaleString('es-CL')}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Payment selector */}
@@ -283,7 +334,7 @@ export function CartDrawer() {
                       {METHODS.map((m) => (
                         <button
                           key={m.id}
-                          onClick={() => setPaymentMethod(m.id)}
+                          onClick={() => handleSetPaymentMethod(m.id)}
                           className={`flex flex-col items-center gap-1.5 p-3 rounded-2xl border-2 transition-all text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                             paymentMethod === m.id
                               ? 'border-primary bg-primary/5 text-primary'
