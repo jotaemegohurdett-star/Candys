@@ -17,7 +17,7 @@ const contactItems = [
     bg: 'hsl(186 96% 43% / 0.1)',
     title: 'Instagram',
     value: '@candys_pets1',
-    link: 'https://www.instagram.com/candys_pets1',
+    link: 'https://www.instagram.com/candys_pets1/',
   },
   {
     icon: <MapPin className="w-5 h-5" />,
@@ -203,7 +203,7 @@ export function Location() {
                     💬 Escribir por WhatsApp
                   </a>
                   <a
-                    href="https://www.instagram.com/candys_pets1"
+                    href="https://www.instagram.com/candys_pets1/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 w-full py-4 rounded-full font-semibold text-sm text-white border border-white/20 hover:bg-white/8 transition-all active:scale-95"

@@ -75,7 +75,7 @@ export function Footer() {
             {/* Socials */}
             <div className="flex gap-3">
               <a
-                href="https://www.instagram.com/candys_pets1"
+                href="https://www.instagram.com/candys_pets1/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-11 h-11 rounded-full flex items-center justify-center border border-white/12 text-white/50 hover:border-transparent hover:text-white transition-all group"
