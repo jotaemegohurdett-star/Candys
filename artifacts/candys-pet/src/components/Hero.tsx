@@ -161,7 +161,7 @@ export function Hero() {
 
       {/* ── Instagram floating badge ─────────────────────── */}
       <motion.a
-        href="https://www.instagram.com/candys_pets1"
+        href="https://www.instagram.com/candys_pets1/"
         target="_blank"
         rel="noopener noreferrer"
         initial={{ opacity: 0, x: 20 }}

@@ -308,7 +308,7 @@ export function Testimonials() {
           className="mt-10 text-center"
         >
           <a
-            href="https://www.instagram.com/candys_pets1"
+            href="https://www.instagram.com/candys_pets1/"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-sm font-semibold transition-colors hover:opacity-80"
