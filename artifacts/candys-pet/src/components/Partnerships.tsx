@@ -7,8 +7,8 @@ import poodleImg from '@assets/Screenshot_20260722-005650_Instagram~4_1784698640
 const partners = [
   {
     name: 'Club Chihuahua Chile',
-    handle: '@clubchihuahuachile',
-    url: 'https://www.instagram.com/clubchihuahuachile/',
+    handle: '@clubchihuahuaschile',
+    url: 'https://www.instagram.com/clubchihuahuaschile/',
     emoji: '🐕',
     desc: 'La comunidad más grande de amantes del Chihuahua en Chile.',
   },
