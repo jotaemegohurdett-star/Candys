@@ -199,8 +199,8 @@ export function Benefits() {
               style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}
             >
               {[
-                { n: '4', u: 'modelos', label: 'disponibles' },
-                { n: '8+', u: 'colores', label: 'por modelo' },
+                { n: '2', u: 'modelos', label: 'disponibles' },
+                { n: '14', u: 'colores', label: 'disponibles' },
                 { n: '2', u: 'tallas', label: 'M · L' },
               ].map((s) => (
                 <div key={s.label}>
