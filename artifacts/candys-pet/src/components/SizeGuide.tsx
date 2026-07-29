@@ -11,7 +11,7 @@ const sizes = [
     name: 'Mediano',
     weight: 'hasta 3,5 kg · desde 2 meses',
     length: '20 – 40 cm',
-    breeds: 'Chihuahua, Yorkshire Terrier, Poodle, Maltés, Pug, Boston Terrier, Gatos',
+    breeds: 'Chihuahua, Yorkshire Terrier, Poodle, Maltés, Bichón Frisé, Gatos',
     color: 'hsl(340 84% 50%)',
     bg: 'hsl(340 84% 50% / 0.08)',
   },
@@ -20,7 +20,7 @@ const sizes = [
     name: 'Grande',
     weight: 'hasta 10 kg',
     length: '40 – 50 cm',
-    breeds: 'Bulldog Francés, Schnauzer mini, Bichón Frisé · caben 2 perritos pequeños',
+    breeds: 'Bulldog Francés, Schnauzer mini, Bichón Frisé, Pug, Shih Tzu · caben 2 perritos pequeños',
     color: 'hsl(186 96% 43%)',
     bg: 'hsl(186 96% 43% / 0.08)',
   },
@@ -131,7 +131,7 @@ export function SizeGuide() {
             <div className="mt-5 flex items-start gap-3 p-4 rounded-2xl bg-white border border-border/60">
               <span className="text-xl shrink-0">💡</span>
               <p className="text-sm text-foreground/80">
-                <span className="font-bold">Tip:</span> Si tu mascota es muy larga (como un Salchicha), sube una talla independientemente del peso. Para razas braquicéfalas como Pug, elige la talla por ancho de pecho.
+                <span className="font-bold">Tip:</span> Si tu mascota es muy larga (como un Salchicha), sube una talla independientemente del peso. Para razas braquicéfalas como Pug (Talla L), elige la talla por ancho de pecho.
               </p>
             </div>
           </div>
