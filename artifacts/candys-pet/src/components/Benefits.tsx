@@ -79,7 +79,7 @@ const benefits = [
 const sizes = [
   {
     talla: 'M',
-    precio: '$17.990',
+    precio: '$18.990',
     desc: 'Pequeños y Cachorros',
     detail: 'Hasta 3,5 kg · A partir de 2 meses · Ideal para razas mini',
     color: '#e879a0',
@@ -88,7 +88,7 @@ const sizes = [
   },
   {
     talla: 'L',
-    precio: '$19.990',
+    precio: '$20.990',
     desc: 'Medianos o Duplas',
     detail: 'Hasta 10 kg · Máxima resistencia · Caben 2 perritos pequeños',
     color: '#a78bfa',
