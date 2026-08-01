@@ -437,7 +437,7 @@ function ProductCard({
               <div className="relative aspect-[3/4] overflow-hidden">
                 <img
                   src={displayImage}
-                  alt={product.name}
+                  alt={`${product.name} — porta mascota para perros y gatos hecho a mano en Chile`}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-107"
                   loading="lazy"
                   decoding="async"
@@ -511,7 +511,7 @@ function ProductCard({
           <div className="w-full md:w-1/2 relative bg-gray-100 min-h-[280px]">
             <img
               src={displayImage}
-              alt={product.name}
+              alt={`${product.name} — porta mascota para perros y gatos hecho a mano en Chile`}
               className="w-full h-full object-cover absolute inset-0"
               style={{ objectPosition: product.imgPosition }}
             />
