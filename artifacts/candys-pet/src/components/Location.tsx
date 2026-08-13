@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Clock, Phone, Instagram, Package } from 'lucide-react';
+import { MapPin, Clock, Phone, Instagram, Package, Mail } from 'lucide-react';
 
 const contactItems = [
   {
@@ -10,6 +10,14 @@ const contactItems = [
     title: 'WhatsApp',
     value: '+56 9 3669 3300',
     link: "https://wa.me/56936693300?text=Hola%20Candy's%20Pet!%20Me%20gustar%C3%ADa%20consultar%20sobre%20sus%20porta%20mascotas%20%F0%9F%90%BE",
+  },
+  {
+    icon: <Mail className="w-5 h-5" />,
+    color: 'hsl(220 70% 55%)',
+    bg: 'hsl(220 70% 55% / 0.1)',
+    title: 'Correo',
+    value: 'contacto@candyspet.cl',
+    link: 'mailto:contacto@candyspet.cl',
   },
   {
     icon: <Instagram className="w-5 h-5" />,
