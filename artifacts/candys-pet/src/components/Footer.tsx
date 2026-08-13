@@ -1,5 +1,5 @@
 import React from 'react';
-import { Instagram, Heart, ExternalLink } from 'lucide-react';
+import { Instagram, Heart, ExternalLink, Mail } from 'lucide-react';
 import { useLocation } from 'wouter';
 import logoImg from '@assets/Screenshot_20260721-214654_Instagram_2-removebg-preview_1784688274639.png';
 
@@ -103,7 +103,26 @@ export function Footer() {
               >
                 ♪
               </a>
+              <a
+                href="mailto:contacto@candyspet.cl"
+                className="w-11 h-11 rounded-full flex items-center justify-center border border-white/12 text-white/50 hover:border-transparent hover:text-white transition-all"
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'hsl(220 70% 55%)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = ''; }}
+                title="contacto@candyspet.cl"
+              >
+                <Mail className="w-5 h-5" />
+              </a>
             </div>
+
+            {/* Email visible */}
+            <a
+              href="mailto:contacto@candyspet.cl"
+              className="inline-flex items-center gap-2 mt-4 text-sm transition-colors hover:text-white"
+              style={{ color: 'rgba(255,255,255,0.45)' }}
+            >
+              <Mail className="w-3.5 h-3.5" />
+              contacto@candyspet.cl
+            </a>
           </div>
 
           {/* Nav columns */}
