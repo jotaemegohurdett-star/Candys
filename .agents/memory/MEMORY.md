@@ -1,0 +1,1 @@
+- [Imported artifact registration](imported-artifact-registration.md) — imported artifact metadata may exist without platform records; use the existing commands to configure minimal workflows when managed services are unavailable.
