@@ -12,6 +12,7 @@ export default function VideoWithControls() {
   const [muted, setMuted] = useState(false);
   const instagramDownloadHref = `${import.meta.env.BASE_URL}downloads/candys-pet-instagram.mp4`;
   const webDownloadHref = `${import.meta.env.BASE_URL}downloads/candys-pet-web.mp4`;
+  const animationDownloadHref = `${import.meta.env.BASE_URL}downloads/candys-pet-animation.mp4`;
 
   useEffect(() => {
     if (!isEmbedded) return;
@@ -46,8 +47,8 @@ export default function VideoWithControls() {
       <VideoTemplate />
       <div className="absolute bottom-[2.4vh] left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-2">
         <a
-          href={webDownloadHref}
-          download="candys-pet-web.mp4"
+          href={animationDownloadHref}
+          download="candys-pet-animation.mp4"
           className="rounded-full px-6 py-3 text-sm font-bold transition-transform hover:scale-105 active:scale-95"
           style={{ background: 'var(--coral)', color: 'var(--paper)', boxShadow: '0 .8vw 2.4vw rgba(237,23,107,.3)' }}
         >
@@ -60,6 +61,14 @@ export default function VideoWithControls() {
           style={{ borderColor: 'rgba(250,248,244,.3)', background: 'rgba(17,19,29,.82)', color: 'var(--paper)' }}
         >
           Descargar video Instagram - 9:16
+        </a>
+        <a
+          href={webDownloadHref}
+          download="candys-pet-web.mp4"
+          className="rounded-full border px-6 py-3 text-sm font-bold transition-transform hover:scale-105 active:scale-95"
+          style={{ borderColor: 'rgba(250,248,244,.3)', background: 'rgba(17,19,29,.82)', color: 'var(--paper)' }}
+        >
+          Descargar video web - 16:9
         </a>
         <span className="rounded-full px-3 py-1 text-[.7rem] font-semibold tracking-wide" style={{ background: 'rgba(17,19,29,.78)', color: 'rgba(250,248,244,.72)' }}>
           9:16 · {((TOTAL_DURATION_MS) / 1000).toFixed(2)} s · H.264 + AAC
