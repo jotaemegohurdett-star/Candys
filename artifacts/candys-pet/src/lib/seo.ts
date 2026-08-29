@@ -1,7 +1,7 @@
 export const HOME_SEO = {
   title: "Porta Mascotas para Perros y Gatos | Hecho a Mano en Chile — Candy's Pet",
   description:
-    'Porta mascotas artesanales para perros y gatos, hechos a mano en Chile. Bolsos manos libres, cómodos y seguros para paseos. Envíos a todo Chile.',
+    'Porta mascotas tipo banano en Chile y bolsos manos libres para perros y gatos. Porta mascotas de tela artesanales, cómodos y seguros. Envíos a todo Chile.',
   path: '/',
 };
 

@@ -167,7 +167,7 @@ export function Benefits() {
                 marginBottom: 24,
               }}
             >
-               Bolsos manos libres para perros,{' '}
+               Bolsos manos libres para perros y gatos,{' '}
               <em style={{ color: '#e879a0', fontStyle: 'italic' }}>una forma de vida.</em>
             </motion.h2>
 

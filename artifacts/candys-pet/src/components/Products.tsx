@@ -234,9 +234,9 @@ export function Products() {
               transition={{ delay: 0.1 }}
               className="font-heading text-4xl md:text-5xl font-bold text-white leading-tight"
             >
-              Porta Mascotas Tipo Banano y{' '}
+              Porta mascotas tipo banano en Chile y{' '}
               <span className="italic" style={{ color: 'hsl(340 84% 65%)' }}>
-                Bolsos Manos Libres para Perros
+                Bolsos manos libres para perros y gatos
               </span>
             </motion.h2>
           </div>

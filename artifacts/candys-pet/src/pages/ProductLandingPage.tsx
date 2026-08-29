@@ -20,9 +20,9 @@ export const PRODUCT_SEO: Record<string, ProductSeo> = {
   classic: {
     path: '/productos/porta-mascota-clasico',
     name: 'Porta Mascota Tipo Banano Clásico',
-    title: 'Porta Mascota Tipo Banano para Perros y Gatos | Candy’s Pet',
+    title: 'Porta Mascota Tipo Banano en Chile | Candy’s Pet',
     description:
-      'Porta mascota tipo banano clásico para perros y gatos pequeños. Bolso manos libres, cómodo y seguro, hecho a mano en Chile. Tallas M y L.',
+      'Porta mascota tipo banano en Chile para perros y gatos pequeños. Bolsos manos libres y porta mascotas de tela artesanales. Tallas M y L.',
     image: p1Img,
     imageAlt:
       'Porta mascota tipo banano clásico para perros y gatos, bolso manos libres hecho a mano en Chile',
@@ -36,9 +36,9 @@ export const PRODUCT_SEO: Record<string, ProductSeo> = {
   bomber: {
     path: '/productos/porta-mascota-bomber-cafe',
     name: 'Porta Mascota Tipo Banano Tela Bomber Color Café',
-    title: 'Porta Mascota Bomber Café para Perros y Gatos | Candy’s Pet',
+    title: 'Porta Mascota Bomber Café en Chile | Candy’s Pet',
     description:
-      'Porta mascota tipo banano de tela bomber color café para perros y gatos. Bolso manos libres repelente a lloviznas, cómodo y hecho a mano en Chile.',
+      'Porta mascota tipo banano de tela bomber color café en Chile para perros y gatos. Bolso manos libres cómodo y artesanal.',
     image: p2Img,
     imageAlt:
       'Porta mascota tipo banano de tela bomber color café para perros y gatos, bolso manos libres',
@@ -52,9 +52,9 @@ export const PRODUCT_SEO: Record<string, ProductSeo> = {
   unisex: {
     path: '/productos/porta-mascota-unisex',
     name: 'Porta Mascota Tipo Banano Unisex',
-    title: 'Porta Mascota Tipo Banano Unisex para Perros | Candy’s Pet',
+    title: 'Porta Mascota Tipo Banano Unisex en Chile | Candy’s Pet',
     description:
-      'Porta mascota tipo banano unisex para perros y gatos pequeños. Bolso manos libres resistente, transpirable y hecho a mano en Chile. Tallas M y L.',
+      'Porta mascota tipo banano unisex en Chile para perros y gatos pequeños. Bolsos manos libres y porta mascotas de tela artesanales.',
     image: p4Img,
     imageAlt:
       'Porta mascota tipo banano unisex para perros y gatos, bolso manos libres resistente hecho en Chile',
@@ -114,7 +114,7 @@ export function ProductLandingPage({ product }: { product: ProductSeo }) {
             <p className="mt-6 text-lg leading-relaxed text-muted-foreground">{product.description}</p>
 
             <h2 className="mt-9 font-heading text-2xl font-bold">
-              Bolso manos libres para perros y gatos
+              Bolsos manos libres para perros y gatos
             </h2>
             <p className="mt-3 leading-relaxed text-muted-foreground">
               Lleva a tu mascota cerca de ti con un porta mascota tipo banano cómodo, seguro y
