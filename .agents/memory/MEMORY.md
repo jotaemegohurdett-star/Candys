@@ -1,0 +1,1 @@
+- [Video artifacts and exports](video-artifact-exports.md) — distinguish the live Animation artifact from separately rendered MP4 deliverables before wiring download links.
