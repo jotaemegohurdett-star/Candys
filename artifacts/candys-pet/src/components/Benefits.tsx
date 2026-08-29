@@ -203,7 +203,7 @@ export function Benefits() {
                 { n: '14', u: 'colores', label: 'disponibles' },
                 { n: '2', u: 'tallas', label: 'M · L' },
               ].map((s) => (
-                <div key={s.label}>
+                <div key={`${s.u}-${s.n}`}>
                   <div style={{ fontSize: 26, fontWeight: 800, color: '#fff', lineHeight: 1 }}>
                     {s.n}{' '}
                     <span style={{ fontSize: 15, fontWeight: 600, color: '#e879a0' }}>{s.u}</span>
