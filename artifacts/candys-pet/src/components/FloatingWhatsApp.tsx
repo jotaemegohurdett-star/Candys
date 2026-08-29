@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { waLink } from '../lib/constants';
+import { WhatsAppIcon } from './WhatsAppIcon';
 
 const WA_HREF = waLink("Hola Candy's Pet! Me gustaría consultar sobre sus porta mascotas 🐾");
 
@@ -99,7 +100,7 @@ export function FloatingWhatsApp() {
             aria-label="Contactar por WhatsApp"
             onClick={() => setShowBubble(false)}
           >
-            💬
+            <WhatsAppIcon className="h-9 w-9" />
           </motion.a>
         </motion.div>
       )}
