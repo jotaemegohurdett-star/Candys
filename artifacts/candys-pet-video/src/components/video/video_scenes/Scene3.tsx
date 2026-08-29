@@ -1,133 +1,55 @@
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import { sceneTransitions, springs } from '@/lib/video/animations';
-import { ShieldCheck, Smile, Star } from 'lucide-react';
+import { ArrowUpRight, Sparkles } from 'lucide-react';
+
+const base = import.meta.env.BASE_URL;
+const products = [
+  { name: 'Clásico', image: 'dog-in-sling.jpg', color: '#E56B5D', note: 'El favorito' },
+  { name: 'Bomber Café', image: 'carrier-flatlay.jpg', color: '#4E8D86', note: 'Todas las temporadas' },
+  { name: 'Unisex', image: 'happy-tiny-dog.jpg', color: '#F3B562', note: 'Para todos' },
+];
 
 export function Scene3() {
-  const [phase, setPhase] = useState(0);
-
-  useEffect(() => {
-    const timers = [
-      setTimeout(() => setPhase(1), 1000),
-      setTimeout(() => setPhase(2), 2000),
-      setTimeout(() => setPhase(3), 3000),
-    ];
-    return () => timers.forEach(t => clearTimeout(t));
-  }, []);
-
   return (
-    <motion.div
-      key="scene3"
-      className="absolute inset-0 flex items-center justify-center overflow-hidden bg-bg-muted"
-      {...sceneTransitions.slideLeft}
+    <motion.section
+      className="absolute inset-0 overflow-hidden"
+      initial={{ clipPath: 'inset(0 0 100% 0)' }}
+      animate={{ clipPath: 'inset(0 0 0% 0)' }}
+      exit={{ clipPath: 'inset(100% 0 0 0)' }}
+      transition={{ duration: .85, ease: [0.16, 1, .3, 1] }}
+      style={{ background: 'var(--paper-deep)' }}
     >
-      {/* Background shapes */}
-      <motion.div
-        className="absolute -right-32 top-0 bottom-0 w-1/2 bg-white skew-x-[-12deg] shadow-2xl"
-        initial={{ x: '100%' }}
-        animate={{ x: 0 }}
-        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-      />
-      <motion.div
-        className="absolute top-6 left-6 text-primary/10 hidden sm:block"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-      >
-        <Star size={120} fill="currentColor" />
-      </motion.div>
-
-      {/* Responsive layout */}
-      <div className="relative z-10 w-full max-w-6xl px-5 sm:px-10 flex flex-col sm:flex-row items-center justify-between gap-5">
-
-        {/* Left: Features */}
-        <div className="w-full sm:w-[52%] flex flex-col justify-center">
-          <motion.div
-            className="inline-block bg-white px-4 py-1.5 rounded-full font-display font-bold text-accent shadow-sm mb-3 self-start rotate-[-2deg]"
-            style={{ fontSize: 'clamp(0.75rem, 2.2vw, 1.1rem)' }}
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ ...springs.bouncy, delay: 0.5 }}
-          >
-            Tranquilidad total 🕊️
-          </motion.div>
-
-          <motion.h2
-            className="font-display font-bold text-text-primary mb-4 sm:mb-8 leading-tight"
-            style={{ fontSize: 'clamp(1.4rem, 4.8vw, 3.2rem)' }}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.7, ease: 'circOut' }}
-          >
-            Paseos sin{' '}
-            <span className="text-secondary block">preocupaciones</span>
-          </motion.h2>
-
-          <div className="space-y-3 sm:space-y-6 font-body">
-            <FeatureItem
-              icon={<ShieldCheck className="text-white" style={{ width: 'clamp(16px,2.8vw,26px)', height: 'clamp(16px,2.8vw,26px)' }} />}
-              title="Gancho de seguridad"
-              desc="Interior seguro para tu perrito"
-              visible={phase >= 1}
-              color="bg-primary"
-            />
-            <FeatureItem
-              icon={<Smile className="text-white" style={{ width: 'clamp(16px,2.8vw,26px)', height: 'clamp(16px,2.8vw,26px)' }} />}
-              title="Reduce el estrés"
-              desc="Siente los latidos de tu corazón"
-              visible={phase >= 2}
-              color="bg-accent"
-            />
-            <FeatureItem
-              icon={<Star className="text-white" style={{ width: 'clamp(16px,2.8vw,26px)', height: 'clamp(16px,2.8vw,26px)' }} />}
-              title="Ideal para todos"
-              desc="Senior o con discapacidad"
-              visible={phase >= 3}
-              color="bg-secondary"
-            />
+      <div className="absolute inset-0 paper-grid opacity-45" />
+      <div className="absolute left-[7vw] top-[6vh] flex items-center gap-[.7vw] text-[.95vw] tiny-caps" style={{ color: 'var(--muted)' }}>
+        <Sparkles style={{ width: '1.2vw', color: 'var(--coral)' }} /> 02 / Elige tu estilo
+      </div>
+      <div className="relative z-10 px-[7vw] pt-[15vh]">
+        <motion.div className="flex items-end justify-between" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .25, duration: .55 }}>
+          <div>
+            <p className="mb-[1.3vh] text-[1.1vw] font-semibold" style={{ color: 'var(--coral)' }}>Tres formas de llevarlos contigo</p>
+            <h2 className="font-display text-[4.5vw] font-semibold leading-[.95] tracking-[-.05em]" style={{ color: 'var(--ink)' }}>Elige tu <i style={{ color: 'var(--teal)' }}>favorito.</i></h2>
           </div>
-        </div>
-
-        {/* Right: Image */}
-        <motion.div
-          className="w-[55%] sm:w-[40%] relative flex justify-center shrink-0"
-          initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
-          animate={{ opacity: 1, scale: 1, rotate: 2 }}
-          transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <div className="absolute inset-0 bg-secondary/30 rounded-full scale-[1.1] blur-xl" />
-          <motion.img
-            src={`${import.meta.env.BASE_URL}images/happy-tiny-dog.jpg`}
-            alt="Happy tiny dog"
-            className="w-full aspect-square object-cover rounded-full shadow-2xl relative z-10 border-4 sm:border-8 border-bg-light"
-            animate={{ y: [0, -8, 0] }}
-            transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
-          />
+          <div className="max-w-[15vw] pb-[.5vh] text-right text-[.95vw] leading-[1.3]" style={{ color: 'var(--muted)' }}>Porta mascotas tipo banano para perros y gatos.</div>
         </motion.div>
-      </div>
-    </motion.div>
-  );
-}
 
-function FeatureItem({ icon, title, desc, visible, color }: { icon: React.ReactNode, title: string, desc: string, visible: boolean, color: string }) {
-  return (
-    <motion.div
-      className="flex items-start gap-3 sm:gap-4"
-      initial={{ opacity: 0, x: -50 }}
-      animate={visible ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-    >
-      <div className={`shrink-0 rounded-full ${color} flex items-center justify-center shadow-md mt-0.5`}
-        style={{ width: 'clamp(30px,5vw,48px)', height: 'clamp(30px,5vw,48px)', padding: 'clamp(5px,1vw,9px)' }}>
-        {icon}
+        <div className="mt-[5vh] flex gap-[1.5vw]">
+          {products.map((product, index) => (
+            <motion.div key={product.name} className="relative h-[48vh] flex-1 overflow-hidden rounded-[1.5vw] soft-shadow" style={{ background: product.color }} initial={{ opacity: 0, y: 50, rotate: index === 0 ? -3 : index === 2 ? 3 : 0 }} animate={{ opacity: 1, y: 0, rotate: index === 0 ? -3 : index === 2 ? 3 : 0 }} transition={{ delay: .48 + index * .15, duration: .7, ease: [0.16, 1, .3, 1] }}>
+              <img src={`${base}images/${product.image}`} alt={product.name} className="h-full w-full object-cover opacity-90" />
+              <div className="absolute inset-0" style={{ background: `linear-gradient(180deg, transparent 40%, ${product.color} 100%)` }} />
+              <div className="absolute bottom-[2vw] left-[1.7vw] right-[1.7vw]">
+                <div className="mb-[1vh] text-[.8vw] tiny-caps" style={{ color: 'rgba(251,243,236,.8)' }}>{product.note}</div>
+                <div className="flex items-end justify-between">
+                  <h3 className="font-display text-[2.35vw] font-semibold leading-none" style={{ color: 'var(--paper)' }}>{product.name}</h3>
+                  <span className="flex h-[2.4vw] w-[2.4vw] items-center justify-center rounded-full" style={{ background: 'var(--paper)', color: product.color }}><ArrowUpRight style={{ width: '1.2vw' }} /></span>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
-      <div>
-        <p className="font-bold text-text-primary" style={{ fontSize: 'clamp(0.8rem, 2.5vw, 1.4rem)' }}>
-          {title}
-        </p>
-        <p className="text-text-secondary" style={{ fontSize: 'clamp(0.65rem, 2vw, 1.1rem)' }}>
-          {desc}
-        </p>
-      </div>
-    </motion.div>
+      <motion.div className="absolute bottom-[4.5vh] left-[7vw] text-[.9vw] font-medium" style={{ color: 'var(--muted)' }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.45 }}>
+        Diseños cómodos, prácticos y con personalidad.
+      </motion.div>
+    </motion.section>
   );
 }

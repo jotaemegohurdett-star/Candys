@@ -1,127 +1,37 @@
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import { sceneTransitions, springs } from '@/lib/video/animations';
+import { BusFront, HeartPulse, Plane, ShieldCheck } from 'lucide-react';
+
+const base = import.meta.env.BASE_URL;
 
 export function Scene4() {
-  const [phase, setPhase] = useState(0);
-
-  useEffect(() => {
-    const timers = [
-      setTimeout(() => setPhase(1), 800),
-      setTimeout(() => setPhase(2), 1600),
-    ];
-    return () => timers.forEach(t => clearTimeout(t));
-  }, []);
-
+  const uses = [
+    { icon: BusFront, title: 'Transporte público', text: 'Manos libres, sin apuros.' },
+    { icon: Plane, title: 'Paseos y viajes', text: 'Tu compañero va contigo.' },
+    { icon: HeartPulse, title: 'Mascotas senior', text: 'Más cerca, más tranquilos.' },
+  ];
   return (
-    <motion.div
-      key="scene4"
-      className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden bg-bg-dark"
-      {...sceneTransitions.splitHorizontal}
-    >
-      {/* Background */}
-      <div className="absolute inset-0 overflow-hidden opacity-20">
-        <img
-          src={`${import.meta.env.BASE_URL}images/carrier-flatlay.jpg`}
-          alt="Flatlay"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-bg-dark/80 backdrop-blur-md" />
-      </div>
-
-      <motion.h2
-        className="relative z-10 font-display font-bold text-white text-center drop-shadow-lg mb-6 sm:mb-10 px-4"
-        style={{ fontSize: 'clamp(1.4rem, 5vw, 3.5rem)' }}
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8, ease: 'backOut' }}
-      >
-        Encuentra su <span className="text-secondary">talla ideal</span>
-      </motion.h2>
-
-      {/* Size cards — column on small, row on wider */}
-      <div className="relative z-10 flex flex-col sm:flex-row gap-4 sm:gap-8 w-full max-w-5xl px-5 sm:px-8">
-
-        {/* Talla M */}
-        <motion.div
-          className="flex-1 bg-white rounded-[2rem] sm:rounded-[3rem] shadow-2xl relative overflow-visible"
-          style={{ padding: 'clamp(1rem, 3vw, 2.5rem)' }}
-          initial={{ opacity: 0, y: 60, rotate: -5 }}
-          animate={phase >= 1 ? { opacity: 1, y: 0, rotate: -2 } : { opacity: 0, y: 60, rotate: -5 }}
-          transition={springs.bouncy}
-        >
-          <div className="absolute font-display font-bold text-white bg-primary rounded-full flex items-center justify-center shadow-xl"
-            style={{
-              width: 'clamp(44px,8vw,80px)',
-              height: 'clamp(44px,8vw,80px)',
-              fontSize: 'clamp(1.2rem,3.5vw,2.5rem)',
-              top: 'clamp(-18px,-3vw,-32px)',
-              left: 'clamp(-12px,-2vw,-20px)',
-              transform: 'rotate(-10deg)',
-            }}>
-            M
+    <motion.section className="absolute inset-0 overflow-hidden" initial={{ clipPath: 'polygon(100% 0,100% 0,100% 100%,100% 100%)' }} animate={{ clipPath: 'polygon(0 0,100% 0,100% 100%,0 100%)' }} exit={{ clipPath: 'polygon(0 0,0 0,0 100%,0 100%)' }} transition={{ duration: .9, ease: [0.16, 1, .3, 1] }} style={{ background: 'var(--teal)' }}>
+      <motion.div className="absolute -right-[9vw] -top-[11vw] h-[45vw] w-[45vw] rounded-full border-[.15vw]" style={{ borderColor: 'rgba(251,243,236,.35)' }} animate={{ rotate: [0, 15, 0] }} transition={{ duration: 8, repeat: Infinity }} />
+      <div className="absolute left-[7vw] top-[6vh] text-[.95vw] tiny-caps" style={{ color: 'rgba(251,243,236,.72)' }}>03 / El día a día</div>
+      <div className="relative z-10 flex h-full items-center px-[7vw]">
+        <div className="w-[46%]">
+          <motion.p className="mb-[1.5vh] text-[1.1vw] font-semibold" style={{ color: 'var(--sun)' }} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .28 }}>Libertad para ambos</motion.p>
+          <motion.h2 className="font-display text-[5.25vw] font-semibold leading-[.92] tracking-[-.05em]" style={{ color: 'var(--paper)' }} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .42, duration: .75 }}>Paseos sin<br /><span style={{ color: 'var(--sun)' }}>complicaciones.</span></motion.h2>
+          <div className="mt-[4.5vh] space-y-[1.35vh]">
+            {uses.map(({ icon: Icon, title, text }, index) => (
+              <motion.div key={title} className="flex items-center gap-[1vw] rounded-[.9vw] px-[1vw] py-[1.1vw]" style={{ background: index === 1 ? 'rgba(251,243,236,.15)' : 'rgba(251,243,236,.08)' }} initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: .85 + index * .2, duration: .5 }}>
+                <div className="flex h-[2.8vw] w-[2.8vw] items-center justify-center rounded-[.7vw]" style={{ background: index === 1 ? 'var(--sun)' : 'rgba(251,243,236,.2)', color: index === 1 ? 'var(--ink)' : 'var(--paper)' }}><Icon style={{ width: '1.4vw' }} /></div>
+                <div><div className="text-[1.05vw] font-semibold" style={{ color: 'var(--paper)' }}>{title}</div><div className="mt-[.25vh] text-[.8vw]" style={{ color: 'rgba(251,243,236,.64)' }}>{text}</div></div>
+              </motion.div>
+            ))}
           </div>
-          <div className="flex flex-col items-center text-center" style={{ marginTop: 'clamp(0.8rem,2vw,2rem)' }}>
-            <h3 className="font-display font-bold text-text-primary mb-2"
-              style={{ fontSize: 'clamp(1rem, 3vw, 1.8rem)' }}>
-              Pequeños y Cachorros
-            </h3>
-            <div className="bg-primary/10 text-primary font-bold rounded-full mb-3"
-              style={{ fontSize: 'clamp(0.8rem,2.2vw,1.2rem)', padding: 'clamp(4px,1vw,8px) clamp(10px,2vw,20px)' }}>
-              Hasta 3.5 kg
-            </div>
-            <ul className="text-text-secondary space-y-2 font-body font-medium"
-              style={{ fontSize: 'clamp(0.7rem,2vw,1.1rem)' }}>
-              <li className="flex items-center gap-1.5 justify-center">
-                <span className="text-primary">✓</span> A partir de 2 meses
-              </li>
-              <li className="flex items-center gap-1.5 justify-center">
-                <span className="text-primary">✓</span> Ideal para razas mini
-              </li>
-            </ul>
-          </div>
-        </motion.div>
-
-        {/* Talla L */}
-        <motion.div
-          className="flex-1 bg-white rounded-[2rem] sm:rounded-[3rem] shadow-2xl relative overflow-visible"
-          style={{ padding: 'clamp(1rem, 3vw, 2.5rem)' }}
-          initial={{ opacity: 0, y: 60, rotate: 5 }}
-          animate={phase >= 2 ? { opacity: 1, y: 0, rotate: 2 } : { opacity: 0, y: 60, rotate: 5 }}
-          transition={springs.bouncy}
-        >
-          <div className="absolute font-display font-bold text-white bg-secondary rounded-full flex items-center justify-center shadow-xl"
-            style={{
-              width: 'clamp(44px,8vw,80px)',
-              height: 'clamp(44px,8vw,80px)',
-              fontSize: 'clamp(1.2rem,3.5vw,2.5rem)',
-              top: 'clamp(-18px,-3vw,-32px)',
-              right: 'clamp(-12px,-2vw,-20px)',
-              transform: 'rotate(10deg)',
-            }}>
-            L
-          </div>
-          <div className="flex flex-col items-center text-center" style={{ marginTop: 'clamp(0.8rem,2vw,2rem)' }}>
-            <h3 className="font-display font-bold text-text-primary mb-2"
-              style={{ fontSize: 'clamp(1rem, 3vw, 1.8rem)' }}>
-              Medianos o Duplas
-            </h3>
-            <div className="bg-secondary/10 text-secondary font-bold rounded-full mb-3"
-              style={{ fontSize: 'clamp(0.8rem,2.2vw,1.2rem)', padding: 'clamp(4px,1vw,8px) clamp(10px,2vw,20px)' }}>
-              Hasta 10 kg
-            </div>
-            <ul className="text-text-secondary space-y-2 font-body font-medium"
-              style={{ fontSize: 'clamp(0.7rem,2vw,1.1rem)' }}>
-              <li className="flex items-center gap-1.5 justify-center">
-                <span className="text-secondary">✓</span> Máxima resistencia
-              </li>
-              <li className="flex items-center gap-1.5 justify-center">
-                <span className="text-secondary">✓</span> ¡Caben 2 perritos!
-              </li>
-            </ul>
-          </div>
+        </div>
+        <motion.div className="absolute right-[9vw] top-[16vh] h-[59vh] w-[33vw] rotate-[3deg] overflow-hidden rounded-[1.7vw] browser-shadow" initial={{ opacity: 0, scale: .84, rotate: 10 }} animate={{ opacity: 1, scale: 1, rotate: 3 }} transition={{ delay: .3, duration: 1.1, ease: [0.16, 1, .3, 1] }}>
+          <img src={`${base}images/happy-tiny-dog.jpg`} alt="Perro feliz en Candy's Pet" className="h-full w-full object-cover" />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, rgba(43,36,32,0), rgba(43,36,32,.35))' }} />
+          <motion.div className="absolute bottom-[2vw] left-[1.5vw] flex items-center gap-[.65vw] rounded-full px-[1vw] py-[.65vw] text-[.85vw] font-semibold" style={{ background: 'var(--paper)', color: 'var(--ink)' }} animate={{ y: [0, -7, 0] }} transition={{ duration: 3.1, repeat: Infinity }}><ShieldCheck style={{ width: '1.2vw', color: 'var(--teal)' }} /> Cómodo y seguro</motion.div>
         </motion.div>
       </div>
-    </motion.div>
+    </motion.section>
   );
 }

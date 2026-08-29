@@ -19,7 +19,7 @@ export default function VideoWithControls() {
   const { sceneKeys, activeIndex, locked, mountKey, tick, durations, activeDuration, onSceneChange, jumpTo, toggleLock } =
     useSceneControls(SCENE_DURATIONS);
 
-  const [muted, setMuted] = useState(true);
+  const [muted, setMuted] = useState(false);
 
   // ── recording state (standalone only) ──
   const [recState, setRecState] = useState<RecordState>('idle');
@@ -52,7 +52,7 @@ export default function VideoWithControls() {
     try {
       // Ask user to share THIS tab
       const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: { frameRate: 30, displaySurface: 'browser' } as DisplayMediaStreamConstraints['video'],
+        video: { frameRate: 30, displaySurface: 'browser' } as MediaTrackConstraints,
         audio: false,
       } as DisplayMediaStreamOptions);
 
@@ -129,9 +129,9 @@ export default function VideoWithControls() {
           <button
             onClick={startDownload}
             className="flex items-center gap-2 px-6 py-3 rounded-full font-bold text-white text-sm shadow-2xl transition-all hover:scale-105 active:scale-95"
-            style={{ background: 'linear-gradient(135deg,hsl(340 84% 50%),hsl(270 70% 55%))' }}
+            style={{ background: 'var(--coral)', color: 'var(--paper)' }}
           >
-            ⬇ Descargar video
+            Descargar video
           </button>
         )}
 
@@ -142,7 +142,7 @@ export default function VideoWithControls() {
           >
             <div className="flex items-center gap-2 text-white text-sm font-semibold">
               <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              Grabando… {progress}%
+            Grabando · {progress}%
             </div>
             <div className="w-48 h-1.5 rounded-full bg-white/20 overflow-hidden">
               <div
@@ -157,9 +157,9 @@ export default function VideoWithControls() {
         {recState === 'done' && (
           <div
             className="px-6 py-3 rounded-full font-bold text-white text-sm shadow-2xl"
-            style={{ background: 'hsl(150 65% 35% / 0.95)' }}
+        style={{ background: 'var(--teal)', color: 'var(--paper)' }}
           >
-            ✅ ¡Descarga lista! Revisá tu carpeta de descargas
+            Descarga lista · revisá tu carpeta de descargas
           </div>
         )}
 
@@ -168,7 +168,7 @@ export default function VideoWithControls() {
             className="px-6 py-3 rounded-2xl text-white text-sm shadow-2xl text-center max-w-[260px]"
             style={{ background: 'hsl(0 70% 40% / 0.95)' }}
           >
-            ❌ No se pudo iniciar. Asegurate de compartir <strong>esta pestaña</strong> cuando el navegador lo pida.
+            No se pudo iniciar. Asegurate de compartir <strong>esta pestaña</strong> cuando el navegador lo pida.
           </div>
         )}
 
@@ -177,7 +177,7 @@ export default function VideoWithControls() {
             className="px-6 py-4 rounded-2xl text-white text-sm shadow-2xl text-center max-w-[280px] space-y-1"
             style={{ background: 'hsl(220 25% 12% / 0.97)' }}
           >
-            <p className="font-bold text-base mb-1">📱 En celular</p>
+            <p className="font-bold text-base mb-1">En celular</p>
             <p className="text-white/80 text-xs leading-relaxed">
               Usá la <strong>grabación de pantalla</strong> de tu teléfono mientras el video se reproduce.
             </p>
