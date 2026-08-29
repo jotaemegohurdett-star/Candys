@@ -11,7 +11,7 @@ const HEADLINE = [
 ];
 
 const stats = [
-  { value: '+5.300', label: 'Seguidores Instagram' },
+  { value: '+6.000', label: 'Seguidores Instagram' },
   { value: '+105',   label: 'Publicaciones' },
   { value: '100%',   label: 'Hecho a mano' },
 ];
