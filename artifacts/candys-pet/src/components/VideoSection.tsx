@@ -212,6 +212,24 @@ export function VideoSection() {
         >
           Descargar video Instagram · 9:16
         </a>
+        <a
+          href="/candys-pet-video/videos/cozy-puppy.mp4"
+          download="cozy-puppy.mp4"
+          style={{
+            display: 'block',
+            width: 'fit-content',
+            padding: '11px 20px',
+            borderRadius: 999,
+            border: '1px solid rgba(232,121,160,0.45)',
+            background: 'rgba(255,255,255,0.06)',
+            color: '#ffffff',
+            fontSize: 13,
+            fontWeight: 800,
+            textDecoration: 'none',
+          }}
+        >
+          Descargar video Animation · 16:9
+        </a>
       </div>
     </section>
   );
