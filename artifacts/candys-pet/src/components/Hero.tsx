@@ -6,7 +6,7 @@ import heroImg from '@assets/Screenshot_20260722-051201_WhatsApp~2_1784713749256
 const HEADLINE = [
   { text: 'Porta mascotas', italic: false },
   { text: 'tipo banano', italic: true },
-  { text: 'para perros y gatos.', italic: false },
+  { text: 'en Chile para perros y gatos.', italic: false },
 ];
 
 const stats = [
@@ -90,7 +90,8 @@ export function Hero() {
             className="text-lg leading-relaxed mb-10 max-w-md"
             style={{ color: 'rgba(255,255,255,0.62)' }}
           >
-            Tu mascota no va dentro de un bolso — va contigo, cerca, protegida y tranquila. Reduce su estrés. Fabricación chilena 🇨🇱 · También para mascotas con movilidad reducida 🧡
+            Bolsos manos libres para perros y gatos y porta mascotas de tela artesanales. Tu mascota va contigo,
+            cerca, protegida y tranquila. Fabricación chilena 🇨🇱 · También para mascotas con movilidad reducida 🧡
           </motion.p>
 
           {/* CTAs */}
