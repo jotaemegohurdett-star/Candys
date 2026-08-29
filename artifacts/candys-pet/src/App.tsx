@@ -21,6 +21,17 @@ import { AdminPage } from './pages/AdminPage';
 import { PRODUCT_SEO, ProductLandingPage } from './pages/ProductLandingPage';
 
 function StoreFront() {
+  React.useEffect(() => {
+    const sectionId = window.location.hash.slice(1);
+    if (!sectionId) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById(sectionId)?.scrollIntoView({ block: 'start' });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
   return (
     <CartProvider>
       <div className="min-h-screen bg-background font-sans text-foreground overflow-x-hidden selection:bg-primary/20 selection:text-primary">
