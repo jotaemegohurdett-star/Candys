@@ -27,3 +27,10 @@ uri = "file://artifacts/candys-pet-video/public/downloads/candys-pet-web.mp4"
 type = "video"
 title = "Candy's Pet — Video web 16:9"
 description = "Versión horizontal para la página web: 1920×1080, 16:9, 52,48 segundos, con audio de ElevenLabs y capturas reales del sitio."
+
+[[outputs]]
+id = "8hkLnqFCfJYHxbzOmZsbU"
+uri = "file://artifacts/candys-pet-video/public/videos/cozy-puppy.mp4"
+type = "video"
+title = "Candy's Pet — Video extra horizontal"
+description = "Tercer MP4 guardado en el proyecto: 1280×720, 16:9, 6 segundos. Es un clip separado de las dos versiones finales de 52,48 segundos."
