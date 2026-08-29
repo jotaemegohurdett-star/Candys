@@ -50,7 +50,6 @@ export function VideoSection() {
   return (
     <section
       ref={containerRef}
-      id="video"
       style={{
         background: 'linear-gradient(180deg, #09090f 0%, #0f0a1a 60%, #09090f 100%)',
         padding: '72px 0 80px',
@@ -166,71 +165,6 @@ export function VideoSection() {
       >
         Fabricado a mano en Chile · 100% algodón transpirable
       </p>
-      <div
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          gap: 10,
-          margin: '18px auto 0',
-          padding: '0 20px',
-        }}
-      >
-        <a
-          href="/candys-pet-video/downloads/candys-pet-web.mp4"
-          download="candys-pet-web.mp4"
-          style={{
-            display: 'block',
-            width: 'fit-content',
-            padding: '11px 20px',
-            borderRadius: 999,
-            background: '#ed176b',
-            color: '#ffffff',
-            fontSize: 13,
-            fontWeight: 800,
-            textDecoration: 'none',
-            boxShadow: '0 10px 28px rgba(237,23,107,0.24)',
-          }}
-        >
-          Descargar video web · 16:9
-        </a>
-        <a
-          href="/candys-pet-video/downloads/candys-pet-instagram.mp4"
-          download="candys-pet-instagram.mp4"
-          style={{
-            display: 'block',
-            width: 'fit-content',
-            padding: '11px 20px',
-            borderRadius: 999,
-            border: '1px solid rgba(232,121,160,0.45)',
-            background: 'rgba(255,255,255,0.06)',
-            color: '#ffffff',
-            fontSize: 13,
-            fontWeight: 800,
-            textDecoration: 'none',
-          }}
-        >
-          Descargar video Instagram · 9:16
-        </a>
-        <a
-          href="/candys-pet-video/downloads/candys-pet-animation.mp4"
-          download="candys-pet-animation.mp4"
-          style={{
-            display: 'block',
-            width: 'fit-content',
-            padding: '11px 20px',
-            borderRadius: 999,
-            border: '1px solid rgba(232,121,160,0.45)',
-            background: 'rgba(255,255,255,0.06)',
-            color: '#ffffff',
-            fontSize: 13,
-            fontWeight: 800,
-            textDecoration: 'none',
-          }}
-        >
-          Descargar video Animation · 9:16
-        </a>
-      </div>
     </section>
   );
 }
