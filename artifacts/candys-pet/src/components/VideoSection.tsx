@@ -165,6 +165,25 @@ export function VideoSection() {
       >
         Fabricado a mano en Chile · 100% algodón transpirable
       </p>
+      <a
+        href="/candys-pet-video/downloads/candys-pet-web.mp4"
+        download="candys-pet-web.mp4"
+        style={{
+          display: 'block',
+          width: 'fit-content',
+          margin: '18px auto 0',
+          padding: '11px 20px',
+          borderRadius: 999,
+          background: '#ed176b',
+          color: '#ffffff',
+          fontSize: 13,
+          fontWeight: 800,
+          textDecoration: 'none',
+          boxShadow: '0 10px 28px rgba(237,23,107,0.24)',
+        }}
+      >
+        Descargar video Candy's Pet
+      </a>
     </section>
   );
 }
