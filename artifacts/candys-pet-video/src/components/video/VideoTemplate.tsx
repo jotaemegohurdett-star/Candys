@@ -7,18 +7,13 @@ import { Scene2 } from './video_scenes/Scene2';
 import { Scene3 } from './video_scenes/Scene3';
 import { Scene4 } from './video_scenes/Scene4';
 import { Scene5 } from './video_scenes/Scene5';
-import { Scene6 } from './video_scenes/Scene6';
-import { Scene7 } from './video_scenes/Scene7';
-import { WebScene } from './WebScene';
 
 export const SCENE_DURATIONS: Record<string, number> = {
-  scene1: 7200,
-  scene2: 8320,
-  scene3: 7120,
-  scene4: 6880,
-  scene5: 7280,
-  scene6: 7520,
-  scene7: 8160,
+  scene1: 8000,
+  scene2: 8000,
+  scene3: 8000,
+  scene4: 8000,
+  scene5: 8000,
 };
 
 const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
@@ -27,8 +22,6 @@ const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
   scene3: Scene3,
   scene4: Scene4,
   scene5: Scene5,
-  scene6: Scene6,
-  scene7: Scene7,
 };
 
 // Cumulative start times in seconds for audio sync
@@ -49,13 +42,11 @@ export default function VideoTemplate({
   loop = true,
   muted = false,
   onSceneChange,
-  format = 'instagram',
 }: {
   durations?: Record<string, number>;
   loop?: boolean;
   muted?: boolean;
   onSceneChange?: (sceneKey: string) => void;
-  format?: 'instagram' | 'web';
 } = {}) {
   const { currentScene, currentSceneKey } = useVideoPlayer({ durations, loop });
 
@@ -66,14 +57,13 @@ export default function VideoTemplate({
   const baseSceneKey = currentSceneKey.replace(/_r[12]$/, '') as keyof typeof SCENE_DURATIONS;
   const sceneIndex = Object.keys(SCENE_DURATIONS).indexOf(baseSceneKey);
   const SceneComponent = SCENE_COMPONENTS[baseSceneKey];
-  const isWeb = format === 'web';
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    audio.volume = 1;
+    audio.volume = 0.45;
     const targetTime = SCENE_START_SEC[baseSceneKey] ?? 0;
     if (Math.abs(audio.currentTime - targetTime) > AUDIO_SEEK_EPSILON_SEC) {
       audio.currentTime = targetTime;
@@ -84,29 +74,20 @@ export default function VideoTemplate({
   return (
     <>
       <div
-        className="video-stage"
-        data-format={format}
-        style={{
-          backgroundColor: 'var(--paper)',
-          aspectRatio: isWeb ? '16 / 9' : '9 / 16',
-        }}
+        className="w-full h-screen overflow-hidden relative"
+        style={{ backgroundColor: 'var(--color-bg-light)' }}
         data-scene-index={sceneIndex}
       >
         <AnimatePresence mode="sync">
-          {isWeb ? (
-            <WebScene key={currentSceneKey} sceneIndex={sceneIndex} />
-          ) : (
-            SceneComponent && <SceneComponent key={currentSceneKey} />
-          )}
+          {SceneComponent && <SceneComponent key={currentSceneKey} />}
         </AnimatePresence>
       </div>
       <audio
         ref={audioRef}
-        src={`${import.meta.env.BASE_URL}audio/candys-pet-voiceover.mp3`}
+        src={`${import.meta.env.BASE_URL}audio/bg_music.mp3`}
         preload="auto"
         autoPlay
         muted={muted}
-        loop={loop}
       />
     </>
   );
