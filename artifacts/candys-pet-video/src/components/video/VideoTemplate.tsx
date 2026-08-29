@@ -11,13 +11,13 @@ import { Scene6 } from './video_scenes/Scene6';
 import { Scene7 } from './video_scenes/Scene7';
 
 export const SCENE_DURATIONS: Record<string, number> = {
-  scene1: 6500,
-  scene2: 8000,
-  scene3: 7500,
-  scene4: 8000,
-  scene5: 7000,
-  scene6: 9500,
-  scene7: 5980,
+  scene1: 7200,
+  scene2: 8320,
+  scene3: 7120,
+  scene4: 6880,
+  scene5: 7280,
+  scene6: 7520,
+  scene7: 8160,
 };
 
 const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
@@ -69,7 +69,7 @@ export default function VideoTemplate({
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    audio.volume = 0.45;
+    audio.volume = 1;
     const targetTime = SCENE_START_SEC[baseSceneKey] ?? 0;
     if (Math.abs(audio.currentTime - targetTime) > AUDIO_SEEK_EPSILON_SEC) {
       audio.currentTime = targetTime;
