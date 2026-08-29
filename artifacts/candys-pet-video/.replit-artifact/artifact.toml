@@ -4,7 +4,7 @@ title = "Candy's Pet — Video"
 version = "1.0.0"
 id = "artifacts/candys-pet-video"
 router = "path"
-videoAspectRatio = "16:9"
+videoAspectRatio = "9:16"
 
 [[services]]
 name = "web"
