@@ -199,7 +199,7 @@ export function Benefits() {
               style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}
             >
               {[
-                { n: '2', u: 'modelos', label: 'disponibles' },
+                { n: '3', u: 'modelos', label: 'disponibles' },
                 { n: '14', u: 'colores', label: 'disponibles' },
                 { n: '2', u: 'tallas', label: 'M · L' },
               ].map((s) => (
