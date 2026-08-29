@@ -2,10 +2,10 @@
 set -euo pipefail
 
 # Dedicated export for the interactive Animation delivery.
-# It keeps the 16:9 composition and voiceover, but is encoded as its own file
+# It keeps the 9:16 composition and voiceover, but is encoded as its own file
 # so Animation, Instagram, and web are separate downloadable deliverables.
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SOURCE="$ROOT/public/downloads/candys-pet-web.mp4"
+SOURCE="$ROOT/public/downloads/candys-pet-instagram.mp4"
 OUT="$ROOT/public/downloads/candys-pet-animation.mp4"
 
 if [[ ! -f "$SOURCE" ]]; then
@@ -15,7 +15,7 @@ fi
 
 ffmpeg -hide_banner -loglevel error -y \
   -i "$SOURCE" \
-  -vf "scale=1600:900:flags=lanczos,eq=contrast=1.02:saturation=1.03" \
+  -vf "scale=1080:1920:flags=lanczos,eq=contrast=1.02:saturation=1.03" \
   -c:v libx264 -preset medium -crf 17 \
   -pix_fmt yuv420p \
   -c:a aac -b:a 224k -ar 48000 \
