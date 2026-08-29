@@ -4,9 +4,9 @@ import { ArrowDown, Star, Instagram, Sparkles } from 'lucide-react';
 import heroImg from '@assets/Screenshot_20260722-051201_WhatsApp~2_1784713749256.jpg';
 
 const HEADLINE = [
-  { text: 'El abrazo que', italic: false },
-  { text: 'tu mascota', italic: true },
-  { text: 'merece.', italic: false },
+  { text: 'Porta mascotas', italic: false },
+  { text: 'tipo banano', italic: true },
+  { text: 'para perros y gatos.', italic: false },
 ];
 
 const stats = [
@@ -39,7 +39,7 @@ export function Hero() {
       <div className="absolute right-0 top-0 w-full md:w-[62%] h-full">
         <img
           src={heroImg}
-          alt="Porta mascota Candy's Pet — perrito en sling azul marino"
+          alt="Porta mascota tipo banano para perros y gatos — bolso manos libres Candy's Pet"
           className="w-full h-full object-cover"
           fetchPriority="high"
           decoding="async"

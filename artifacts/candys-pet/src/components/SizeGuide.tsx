@@ -154,7 +154,7 @@ export function SizeGuide() {
                 >
                   <img
                     src={src}
-                    alt={`Cómo medir a tu mascota — ${label}`}
+              alt={`Cómo medir a tu mascota para elegir un porta mascota tipo banano — ${label}`}
                     className="w-full object-cover"
                     loading="lazy"
                     decoding="async"

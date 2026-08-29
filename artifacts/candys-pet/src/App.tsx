@@ -18,6 +18,7 @@ import { CartDrawer } from './components/CartDrawer';
 import { PaymentResult } from './components/PaymentResult';
 import { CartProvider } from './context/CartContext';
 import { AdminPage } from './pages/AdminPage';
+import { PRODUCT_SEO, ProductLandingPage } from './pages/ProductLandingPage';
 
 function StoreFront() {
   return (
@@ -55,6 +56,15 @@ function App() {
   return (
     <Switch>
       <Route path="/admin" component={AdminPage} />
+      <Route path={PRODUCT_SEO.classic.path}>
+        <ProductLandingPage product={PRODUCT_SEO.classic} />
+      </Route>
+      <Route path={PRODUCT_SEO.bomber.path}>
+        <ProductLandingPage product={PRODUCT_SEO.bomber} />
+      </Route>
+      <Route path={PRODUCT_SEO.unisex.path}>
+        <ProductLandingPage product={PRODUCT_SEO.unisex} />
+      </Route>
       <Route component={StoreFront} />
     </Switch>
   );

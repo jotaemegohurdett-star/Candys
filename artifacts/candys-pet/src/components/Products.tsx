@@ -234,9 +234,9 @@ export function Products() {
               transition={{ delay: 0.1 }}
               className="font-heading text-4xl md:text-5xl font-bold text-white leading-tight"
             >
-              Nuestra{' '}
+              Porta Mascotas Tipo Banano y{' '}
               <span className="italic" style={{ color: 'hsl(340 84% 65%)' }}>
-                Colección
+                Bolsos Manos Libres para Perros
               </span>
             </motion.h2>
           </div>
@@ -437,7 +437,7 @@ function ProductCard({
               <div className="relative aspect-[3/4] overflow-hidden">
                 <img
                   src={displayImage}
-                  alt={`${product.name} — porta mascota para perros y gatos hecho a mano en Chile`}
+                  alt={`${product.name} — porta mascota tipo banano y bolso manos libres para perros y gatos, hecho a mano en Chile`}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-107"
                   loading="lazy"
                   decoding="async"
@@ -511,7 +511,7 @@ function ProductCard({
           <div className="w-full md:w-1/2 relative bg-gray-100 min-h-[280px]">
             <img
               src={displayImage}
-              alt={`${product.name} — porta mascota para perros y gatos hecho a mano en Chile`}
+              alt={`${product.name} — porta mascota tipo banano y bolso manos libres para perros y gatos, hecho a mano en Chile`}
               className="w-full h-full object-cover absolute inset-0"
               style={{ objectPosition: product.imgPosition }}
             />
@@ -555,6 +555,18 @@ function ProductCard({
               <DialogDescription className="text-base text-gray-600 leading-relaxed">
                 {product.description}
               </DialogDescription>
+              {product.id === 'p1' || product.id === 'p2' || product.id === 'p4' ? (
+                <a
+                  href={{
+                    p1: '/productos/porta-mascota-clasico',
+                    p2: '/productos/porta-mascota-bomber-cafe',
+                    p4: '/productos/porta-mascota-unisex',
+                  }[product.id]}
+                  className="mt-3 inline-block text-sm font-semibold text-pink-600 underline-offset-4 hover:underline"
+                >
+                  Ver información completa del producto
+                </a>
+              ) : null}
             </DialogHeader>
 
             <div className="space-y-6 mb-8">
