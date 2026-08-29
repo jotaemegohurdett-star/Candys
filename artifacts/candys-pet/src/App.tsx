@@ -6,7 +6,6 @@ import { Hero } from './components/Hero';
 import { TrustBar } from './components/TrustBar';
 import { Benefits } from './components/Benefits';
 import { Products } from './components/Products';
-import { VideoSection } from './components/VideoSection';
 import { SizeGuide } from './components/SizeGuide';
 import { Testimonials } from './components/Testimonials';
 import { Partnerships } from './components/Partnerships';
@@ -39,7 +38,6 @@ function StoreFront() {
         <main>
           <Hero />
           <TrustBar />
-          <VideoSection />
           <Products />
           <Benefits />
           <SizeGuide />
