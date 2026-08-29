@@ -192,7 +192,7 @@ export function VideoSection() {
             boxShadow: '0 10px 28px rgba(237,23,107,0.24)',
           }}
         >
-          Descargar video Candy's Pet · web 16:9
+          Descargar video web · 16:9
         </a>
         <a
           href="/candys-pet-video/downloads/candys-pet-instagram.mp4"
@@ -213,7 +213,7 @@ export function VideoSection() {
           Descargar video Instagram · 9:16
         </a>
         <a
-          href="/candys-pet-video/downloads/candys-pet-web.mp4"
+          href="/candys-pet-video/downloads/candys-pet-animation.mp4"
           download="candys-pet-animation.mp4"
           style={{
             display: 'block',
