@@ -1,10 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Clock, Phone, Instagram, Package, Mail } from 'lucide-react';
+import { WhatsAppIcon } from './WhatsAppIcon';
 
 const contactItems = [
   {
-    icon: <Phone className="w-5 h-5" />,
+    icon: <WhatsAppIcon className="w-5 h-5" />,
     color: 'hsl(340 84% 50%)',
     bg: 'hsl(340 84% 50% / 0.1)',
     title: 'WhatsApp',
@@ -208,7 +209,8 @@ export function Location() {
                       boxShadow: '0 8px 32px hsl(340 84% 50% / 0.45)',
                     }}
                   >
-                    💬 Escribir por WhatsApp
+                    <WhatsAppIcon className="h-5 w-5" />
+                    Escribir por WhatsApp
                   </a>
                   <a
                     href="https://www.instagram.com/candys_pets1/"

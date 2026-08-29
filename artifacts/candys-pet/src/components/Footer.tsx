@@ -2,6 +2,7 @@ import React from 'react';
 import { Instagram, Heart, ExternalLink, Mail } from 'lucide-react';
 import { useLocation } from 'wouter';
 import logoImg from '@assets/Screenshot_20260721-214654_Instagram_2-removebg-preview_1784688274639.png';
+import { WhatsAppIcon } from './WhatsAppIcon';
 
 const navColumns = [
   {
@@ -183,6 +184,7 @@ export function Footer() {
             className="btn-shimmer shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-95"
             style={{ background: 'hsl(340 84% 50%)', boxShadow: '0 4px 18px hsl(340 84% 50% / 0.38)' }}
           >
+            <WhatsAppIcon className="h-4 w-4" />
             Pedido personalizado
           </a>
         </div>

@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowDown, Star, Instagram, Sparkles } from 'lucide-react';
 import heroImg from '@assets/Screenshot_20260722-051201_WhatsApp~2_1784713749256.jpg';
+import { WhatsAppIcon } from './WhatsAppIcon';
 
 const HEADLINE = [
   { text: 'Porta mascotas', italic: false },
@@ -117,6 +118,7 @@ export function Hero() {
               rel="noopener noreferrer"
               className="px-8 py-4 rounded-full font-semibold text-base text-white border border-white/25 hover:border-white/55 hover:bg-white/[0.07] transition-all active:scale-95 backdrop-blur-sm"
             >
+              <WhatsAppIcon className="h-5 w-5 inline-block mr-2 align-[-3px]" />
               WhatsApp
             </a>
           </motion.div>

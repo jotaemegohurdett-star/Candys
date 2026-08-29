@@ -4,6 +4,7 @@ import { Menu, X } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { Logo3D } from './Logo3D';
 import { CartIcon3D } from './CartIcon3D';
+import { WhatsAppIcon } from './WhatsAppIcon';
 import logoImg from '@assets/Screenshot_20260721-214654_Instagram_2-removebg-preview_1784688274639.png';
 
 const navLinks = [
@@ -85,7 +86,8 @@ export function Header() {
               className="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-95"
               style={{ background: 'hsl(340 84% 50%)' }}
             >
-              WhatsApp 🐾
+              <WhatsAppIcon className="h-4 w-4" />
+              WhatsApp
             </a>
 
             {/* Hamburger */}
@@ -154,7 +156,8 @@ export function Header() {
                 className="flex items-center justify-center gap-2 w-full py-4 rounded-full font-semibold text-white"
                 style={{ background: 'hsl(340 84% 50%)' }}
               >
-                Escribir por WhatsApp 🐾
+                <WhatsAppIcon className="h-5 w-5" />
+                Escribir por WhatsApp
               </a>
               <p className="text-center text-sm text-white/30">
                 Diseñado con amor en Chile 🇨🇱

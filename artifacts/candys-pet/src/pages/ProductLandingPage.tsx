@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
-import { ArrowLeft, Mail, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Mail } from 'lucide-react';
 import { Link } from 'wouter';
 import p1Img from '@assets/Screenshot_20260722-051400_WhatsApp~2_1784713749406.jpg';
 import p2Img from '@assets/Screenshot_20260722-005735_Instagram~2_1784698640108.jpg';
 import p4Img from '@assets/Screenshot_20260722-051201_WhatsApp~2_1784713749256.jpg';
 import { HOME_SEO, applySeo } from '../lib/seo';
+import { WhatsAppIcon } from '../components/WhatsAppIcon';
 
 type ProductSeo = {
   path: string;
@@ -142,7 +143,7 @@ export function ProductLandingPage({ product }: { product: ProductSeo }) {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-full bg-pink-500 px-6 py-3 font-semibold text-white transition-opacity hover:opacity-90"
               >
-                <MessageCircle className="h-4 w-4" />
+                <WhatsAppIcon className="h-4 w-4" />
                 Consultar por WhatsApp
               </a>
               <a
