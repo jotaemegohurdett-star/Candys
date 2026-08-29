@@ -120,6 +120,11 @@ export function ProductLandingPage({ product }: { product: ProductSeo }) {
               Lleva a tu mascota cerca de ti con un porta mascota tipo banano cómodo, seguro y
               práctico para paseos, viajes y transporte público.
             </p>
+            <p className="mt-3 leading-relaxed text-muted-foreground">
+              También puedes encontrar este formato como bandolera para perros, bolso porta mascotas,
+              cangurera para perros o banano para mascotas: una alternativa artesanal para mantener
+              tus manos libres.
+            </p>
 
             <ul className="mt-6 space-y-3">
               {product.details.map((detail) => (
