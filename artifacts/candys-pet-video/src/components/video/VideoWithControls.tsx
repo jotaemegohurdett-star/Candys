@@ -26,7 +26,7 @@ export default function VideoWithControls() {
 
   if (isEmbedded) {
     return (
-      <div className="relative h-screen w-full">
+      <div className="relative flex min-h-[100dvh] w-full items-center justify-center">
         <VideoTemplate
           key={mountKey}
           durations={durations}
@@ -39,9 +39,9 @@ export default function VideoWithControls() {
   }
 
   return (
-    <div className="relative h-screen w-full">
+    <div className="relative flex min-h-[100dvh] w-full items-center justify-center">
       <VideoTemplate />
-      <div className="absolute bottom-[4vh] left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-2">
+      <div className="absolute bottom-[2.4vh] left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-2">
         <a
           href={downloadHref}
           download="candys-pet-instagram.mp4"
@@ -51,7 +51,7 @@ export default function VideoWithControls() {
           Descargar video MP4
         </a>
         <span className="rounded-full px-3 py-1 text-[.7rem] font-semibold tracking-wide" style={{ background: 'rgba(17,19,29,.78)', color: 'rgba(250,248,244,.72)' }}>
-          16:9 · {((TOTAL_DURATION_MS) / 1000).toFixed(2)} s · H.264 + AAC
+          9:16 · {((TOTAL_DURATION_MS) / 1000).toFixed(2)} s · H.264 + AAC
         </span>
       </div>
     </div>

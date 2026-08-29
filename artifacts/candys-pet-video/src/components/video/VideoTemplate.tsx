@@ -81,7 +81,7 @@ export default function VideoTemplate({
     <>
       <div
         className="video-stage"
-        style={{ backgroundColor: 'var(--paper)', aspectRatio: '16 / 9' }}
+        style={{ backgroundColor: 'var(--paper)', aspectRatio: '9 / 16' }}
         data-scene-index={sceneIndex}
       >
         <AnimatePresence mode="sync">
