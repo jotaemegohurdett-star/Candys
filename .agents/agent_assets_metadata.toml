@@ -18,5 +18,12 @@ description = "Logo original de Candy’s Pet en formato PNG, listo para descarg
 id = "qQx3l71ZvnlV99q1hJgqJ"
 uri = "file://artifacts/candys-pet-video/public/downloads/candys-pet-instagram.mp4"
 type = "video"
-title = "Candy's Pet — Video Instagram vertical"
-description = "Video MP4 vertical 9:16 de 52,48 segundos, 1080×1920, con capturas reales de candyspet.cl y audio original de ElevenLabs."
+title = "Candy's Pet — Video Instagram 9:16"
+description = "Versión vertical para Instagram: 1080×1920, 9:16, 52,48 segundos, con audio de ElevenLabs y capturas reales del sitio."
+
+[[outputs]]
+id = "8v8R2HleQm0zUhCJXiQZG"
+uri = "file://artifacts/candys-pet-video/public/downloads/candys-pet-web.mp4"
+type = "video"
+title = "Candy's Pet — Video web 16:9"
+description = "Versión horizontal para la página web: 1920×1080, 16:9, 52,48 segundos, con audio de ElevenLabs y capturas reales del sitio."
