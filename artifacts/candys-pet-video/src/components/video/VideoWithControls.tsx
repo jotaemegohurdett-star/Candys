@@ -52,7 +52,7 @@ export default function VideoWithControls() {
           className="rounded-full px-6 py-3 text-sm font-bold transition-transform hover:scale-105 active:scale-95"
           style={{ background: 'var(--coral)', color: 'var(--paper)', boxShadow: '0 .8vw 2.4vw rgba(237,23,107,.3)' }}
         >
-          Descargar video Animation - 16:9
+          Descargar video Animation - 9:16
         </a>
         <a
           href={instagramDownloadHref}

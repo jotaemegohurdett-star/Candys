@@ -228,7 +228,7 @@ export function VideoSection() {
             textDecoration: 'none',
           }}
         >
-          Descargar video Animation · 16:9
+          Descargar video Animation · 9:16
         </a>
       </div>
     </section>
