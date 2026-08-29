@@ -6,3 +6,10 @@ id = "lAfeZXWWBEIh0ngt1SGwJ"
 uri = "file://artifacts/candys-pet-video/public/audio/bg_music.mp3"
 type = "audio"
 title = "playful pet brand background music"
+
+[[outputs]]
+id = "goLI49dgbi-_vsScyu4va"
+uri = "file://attached_assets/Screenshot_20260721-214654_Instagram_2-removebg-preview_1784688274639.png"
+type = "image"
+title = "Logo original de Candy's Pet"
+description = "Logo original de Candy’s Pet en formato PNG, listo para descargar y usar en Google Business Profile."
