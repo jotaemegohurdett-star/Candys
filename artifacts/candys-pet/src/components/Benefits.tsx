@@ -167,7 +167,7 @@ export function Benefits() {
                 marginBottom: 24,
               }}
             >
-              Más que un accesorio,{' '}
+               Bolsos manos libres para perros,{' '}
               <em style={{ color: '#e879a0', fontStyle: 'italic' }}>una forma de vida.</em>
             </motion.h2>
 
@@ -236,7 +236,7 @@ export function Benefits() {
           >
             <img
               src={lifestyleImg}
-              alt="Clientes felices usando sus porta mascotas Candy's Pet"
+              alt="Clientes felices usando sus porta mascotas tipo banano Candy's Pet para perros y gatos"
               style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 45%' }}
               loading="lazy"
             />
