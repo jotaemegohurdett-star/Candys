@@ -5,6 +5,13 @@ import { useEffect, useRef, useState } from 'react';
 // so the content always keeps its exact layout and format — never cropped.
 const DESIGN_WIDTH = 960;
 const DESIGN_HEIGHT = 540; // 16:9
+const VIDEO_EMBED_URL = (() => {
+  if (typeof window === 'undefined') return '/candys-pet-video/?embed=1&format=web';
+  const url = new URL('/candys-pet-video/', window.location.origin);
+  url.searchParams.set('embed', '1');
+  url.searchParams.set('format', 'web');
+  return url.toString();
+})();
 
 export function VideoSection() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -127,7 +134,7 @@ export function VideoSection() {
         />
         <iframe
           ref={iframeRef}
-          src="/candys-pet-video/?embed=1"
+          src={VIDEO_EMBED_URL}
           allow="autoplay"
           title="Candy's Pet — video"
           style={{

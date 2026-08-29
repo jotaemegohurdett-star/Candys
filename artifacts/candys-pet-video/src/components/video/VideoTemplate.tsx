@@ -9,6 +9,7 @@ import { Scene4 } from './video_scenes/Scene4';
 import { Scene5 } from './video_scenes/Scene5';
 import { Scene6 } from './video_scenes/Scene6';
 import { Scene7 } from './video_scenes/Scene7';
+import { WebScene } from './WebScene';
 
 export const SCENE_DURATIONS: Record<string, number> = {
   scene1: 7200,
@@ -48,11 +49,13 @@ export default function VideoTemplate({
   loop = true,
   muted = false,
   onSceneChange,
+  format = 'instagram',
 }: {
   durations?: Record<string, number>;
   loop?: boolean;
   muted?: boolean;
   onSceneChange?: (sceneKey: string) => void;
+  format?: 'instagram' | 'web';
 } = {}) {
   const { currentScene, currentSceneKey } = useVideoPlayer({ durations, loop });
 
@@ -63,6 +66,7 @@ export default function VideoTemplate({
   const baseSceneKey = currentSceneKey.replace(/_r[12]$/, '') as keyof typeof SCENE_DURATIONS;
   const sceneIndex = Object.keys(SCENE_DURATIONS).indexOf(baseSceneKey);
   const SceneComponent = SCENE_COMPONENTS[baseSceneKey];
+  const isWeb = format === 'web';
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -81,11 +85,19 @@ export default function VideoTemplate({
     <>
       <div
         className="video-stage"
-        style={{ backgroundColor: 'var(--paper)', aspectRatio: '9 / 16' }}
+        data-format={format}
+        style={{
+          backgroundColor: 'var(--paper)',
+          aspectRatio: isWeb ? '16 / 9' : '9 / 16',
+        }}
         data-scene-index={sceneIndex}
       >
         <AnimatePresence mode="sync">
-          {SceneComponent && <SceneComponent key={currentSceneKey} />}
+          {isWeb ? (
+            <WebScene key={currentSceneKey} sceneIndex={sceneIndex} />
+          ) : (
+            SceneComponent && <SceneComponent key={currentSceneKey} />
+          )}
         </AnimatePresence>
       </div>
       <audio
