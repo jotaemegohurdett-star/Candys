@@ -7,7 +7,7 @@ const TOTAL_DURATION_MS = Object.values(SCENE_DURATIONS).reduce((a, b) => a + b,
 export default function VideoWithControls() {
   const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
   const isEmbedded = searchParams?.get('embed') === '1';
-  const format = isEmbedded && searchParams?.get('format') !== 'web' ? 'instagram' : 'web';
+  const format = isEmbedded && searchParams?.get('format') === 'web' ? 'web' : 'instagram';
   const { durations, onSceneChange, mountKey, jumpTo } = useSceneControls(SCENE_DURATIONS);
   const [muted, setMuted] = useState(false);
   const instagramDownloadHref = `${import.meta.env.BASE_URL}downloads/candys-pet-instagram.mp4`;
@@ -44,7 +44,7 @@ export default function VideoWithControls() {
 
   return (
     <div className="relative flex min-h-[100dvh] w-full items-center justify-center">
-      <VideoTemplate />
+      <VideoTemplate format={format} />
       <div className="absolute bottom-[2.4vh] left-1/2 z-50 flex -translate-x-1/2 flex-col items-center gap-2">
         <a
           href={animationDownloadHref}
