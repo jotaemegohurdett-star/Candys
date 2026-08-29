@@ -59,3 +59,6 @@ ffmpeg -hide_banner -loglevel error -y \
 echo "Rendered $OUT"
 ffprobe -v error -show_entries format=duration:stream=codec_name,codec_type,width,height,pix_fmt \
   -of default=noprint_wrappers=1 "$OUT"
+
+# Keep both delivery formats reproducible from the single render command.
+bash "$ROOT/scripts/render-web-video.sh"
