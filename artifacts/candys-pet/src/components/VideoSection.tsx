@@ -213,8 +213,8 @@ export function VideoSection() {
           Descargar video Instagram · 9:16
         </a>
         <a
-          href="/candys-pet-video/videos/cozy-puppy.mp4"
-          download="cozy-puppy.mp4"
+          href="/candys-pet-video/downloads/candys-pet-web.mp4"
+          download="candys-pet-animation.mp4"
           style={{
             display: 'block',
             width: 'fit-content',

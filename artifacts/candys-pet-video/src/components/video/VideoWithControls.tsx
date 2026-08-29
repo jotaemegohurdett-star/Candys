@@ -7,12 +7,11 @@ const TOTAL_DURATION_MS = Object.values(SCENE_DURATIONS).reduce((a, b) => a + b,
 export default function VideoWithControls() {
   const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
   const isEmbedded = searchParams?.get('embed') === '1';
-  const format = isEmbedded && searchParams?.get('format') === 'web' ? 'web' : 'instagram';
+  const format = isEmbedded && searchParams?.get('format') !== 'web' ? 'instagram' : 'web';
   const { durations, onSceneChange, mountKey, jumpTo } = useSceneControls(SCENE_DURATIONS);
   const [muted, setMuted] = useState(false);
   const instagramDownloadHref = `${import.meta.env.BASE_URL}downloads/candys-pet-instagram.mp4`;
   const webDownloadHref = `${import.meta.env.BASE_URL}downloads/candys-pet-web.mp4`;
-  const cozyPuppyDownloadHref = `${import.meta.env.BASE_URL}videos/cozy-puppy.mp4`;
 
   useEffect(() => {
     if (!isEmbedded) return;
@@ -52,7 +51,7 @@ export default function VideoWithControls() {
           className="rounded-full px-6 py-3 text-sm font-bold transition-transform hover:scale-105 active:scale-95"
           style={{ background: 'var(--coral)', color: 'var(--paper)', boxShadow: '0 .8vw 2.4vw rgba(237,23,107,.3)' }}
         >
-          Descargar video Candy's Pet - web 16:9
+          Descargar video Animation - 16:9
         </a>
         <a
           href={instagramDownloadHref}
@@ -61,14 +60,6 @@ export default function VideoWithControls() {
           style={{ borderColor: 'rgba(250,248,244,.3)', background: 'rgba(17,19,29,.82)', color: 'var(--paper)' }}
         >
           Descargar video Instagram - 9:16
-        </a>
-        <a
-          href={cozyPuppyDownloadHref}
-          download="cozy-puppy.mp4"
-          className="rounded-full border px-6 py-3 text-sm font-bold transition-transform hover:scale-105 active:scale-95"
-          style={{ borderColor: 'rgba(250,248,244,.3)', background: 'rgba(17,19,29,.82)', color: 'var(--paper)' }}
-        >
-          Descargar video Animation - 16:9
         </a>
         <span className="rounded-full px-3 py-1 text-[.7rem] font-semibold tracking-wide" style={{ background: 'rgba(17,19,29,.78)', color: 'rgba(250,248,244,.72)' }}>
           9:16 · {((TOTAL_DURATION_MS) / 1000).toFixed(2)} s · H.264 + AAC
