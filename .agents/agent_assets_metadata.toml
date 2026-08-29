@@ -13,3 +13,10 @@ uri = "file://attached_assets/Screenshot_20260721-214654_Instagram_2-removebg-pr
 type = "image"
 title = "Logo original de Candy's Pet"
 description = "Logo original de Candy’s Pet en formato PNG, listo para descargar y usar en Google Business Profile."
+
+[[outputs]]
+id = "qQx3l71ZvnlV99q1hJgqJ"
+uri = "file://artifacts/candys-pet-video/public/downloads/candys-pet-instagram.mp4"
+type = "video"
+title = "Candy's Pet — Video promocional para Instagram"
+description = "Video MP4 de 52,48 segundos con capturas reales de candyspet.cl, narración original de ElevenLabs y formato 16:9."
