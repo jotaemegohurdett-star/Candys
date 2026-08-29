@@ -239,6 +239,11 @@ export function Products() {
                 Bolsos manos libres para perros y gatos
               </span>
             </motion.h2>
+            <p className="mt-4 max-w-2xl text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>
+              Si buscas una bandolera para perros, un bolso porta mascotas, una cangurera para perros,
+              un fular para perros, un porta perros bolso o un banano para mascotas, aquí encuentras
+              alternativas artesanales, cómodas y seguras para llevar a tu compañero cerca de ti.
+            </p>
           </div>
           <motion.div
             initial={{ opacity: 0, y: 16 }}
