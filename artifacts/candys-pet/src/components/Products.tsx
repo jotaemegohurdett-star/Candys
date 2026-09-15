@@ -144,24 +144,17 @@ export function Products() {
   const priceM = catalog.getPrice('M');
   const priceL = catalog.getPrice('L');
 
-  // Merge strategy:
-  // 1. Always show KNOWN_PRODUCTS (p1–p4) — images are bundled, never need DB
-  // 2. Update their names if the API has them
-  // 3. Append any admin-created products (p5+) not already in KNOWN_PRODUCTS
+  // The database is the source of truth when it responds. This keeps production
+  // products in sync with the admin panel instead of adding stale local models.
+  // The bundled products are only a fallback while the API is unavailable.
   const products = useMemo<ProductData[]>(() => {
     const apiProducts = catalog.catalog.products;
-    // Base: known products with optional name override from API
-    const result: ProductData[] = KNOWN_PRODUCTS.map(k => {
-      const fromApi = apiProducts.find(p => p.id === k.id);
-      return fromApi ? { ...k, name: fromApi.name } : k;
+    if (apiProducts.length === 0) return KNOWN_PRODUCTS;
+
+    return apiProducts.map(p => {
+      const known = KNOWN_PRODUCTS.find(k => k.id === p.id);
+      return known ? { ...known, name: p.name } : makeGenericProduct(p.id, p.name);
     });
-    // Append dynamic products not already in the known list
-    for (const p of apiProducts) {
-      if (!KNOWN_PRODUCTS.find(k => k.id === p.id)) {
-        result.push(makeGenericProduct(p.id, p.name));
-      }
-    }
-    return result;
   }, [catalog.catalog.products]);
 
   // ── Infinite Carousel ──
