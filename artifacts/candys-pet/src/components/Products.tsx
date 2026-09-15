@@ -15,14 +15,21 @@ import {
   DialogTrigger,
   DialogDescription,
 } from './ui/dialog';
+import bestSellerImg from '@assets/porta-mascota-bomber-mas-vendido.jpg';
 import p2Img from '@assets/Screenshot_20260722-005735_Instagram~2_1784698640108.jpg';
 import p4Img from '@assets/Screenshot_20260722-051201_WhatsApp~2_1784713749256.jpg';
 
 /** Fallback local images used when no image is uploaded via admin panel */
 const LOCAL_IMAGES: Record<string, string> = {
+  p12: bestSellerImg,
   p2: p2Img,
   p4: p4Img,
 };
+
+// p6 is the old duplicate of the current all-season Bomber product (p12).
+// p1 was the removed classic model and remains blocked defensively in case an
+// older API response or cached database row is ever returned.
+const HIDDEN_PRODUCT_IDS = new Set(['p1', 'p6']);
 
 const SIZE_INFO: Record<string, string> = {
   M: 'Desde 2 meses · hasta 3,5 kg',
@@ -37,13 +44,13 @@ const SIZE_TUBULAR: Record<string, string> = {
 /** Rich presentation data for the original products. Dynamic products get generic defaults. */
 const KNOWN_PRODUCTS = [
   {
-    id: 'p6',
+    id: 'p12',
     name: 'Porta mascotaTela Bomber todas las temporadas (semi elastizada)',
     badge: 'Más vendido',
     badgeStyle: { background: 'linear-gradient(135deg, hsl(340 84% 50%), hsl(340 84% 40%))' },
     description:
       'Tela liviana semi elastizada, suave y repelente a lloviznas para todas las temporadas. Forrada por dentro en algodón transpirable.',
-    image: p2Img,
+    image: bestSellerImg,
     imgPosition: 'center 20%',
     colors: ['Azul Marino', 'Gris Marengo', 'Negro', 'Azul Celeste', 'Café'],
     colorSwatches: ['#1B2A4A', '#4A4A4A', '#111111', '#6BBFDF', '#7B5C3E'],
@@ -146,7 +153,7 @@ export function Products() {
   // products in sync with the admin panel instead of adding stale local models.
   // The bundled products are only a fallback while the API is unavailable.
   const products = useMemo<ProductData[]>(() => {
-    const apiProducts = catalog.catalog.products.filter(product => product.id !== 'p1');
+    const apiProducts = catalog.catalog.products.filter(product => !HIDDEN_PRODUCT_IDS.has(product.id));
     if (apiProducts.length === 0) return KNOWN_PRODUCTS;
 
     return apiProducts.map(p => {

@@ -4,10 +4,10 @@ import { motion } from 'framer-motion';
 import { Star, ChevronLeft, ChevronRight, Instagram, Heart } from 'lucide-react';
 
 import photo1 from '@assets/Screenshot_20260722-051201_WhatsApp~2_1784713749256.jpg';
-import photo2 from '@assets/Screenshot_20260722-051400_WhatsApp~2_1784713749406.jpg';
+import photo2 from '@assets/porta-mascota-bomber-mas-vendido.jpg';
 import photo3 from '@assets/Screenshot_20260722-051510_WhatsApp_1784713749468.jpg';
 import photo4 from '@assets/Screenshot_20260722-051518_WhatsApp_1784713749524.jpg';
-import photo5 from '@assets/Screenshot_20260722-051400_WhatsApp~2_1784713749406.jpg';
+import photo5 from '@assets/porta-mascota-bomber-mas-vendido.jpg';
 
 const testimonials = [
   {
