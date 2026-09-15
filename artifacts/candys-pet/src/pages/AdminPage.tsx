@@ -597,7 +597,7 @@ type ImageRow = { id: string; productId: string; url: string; color: string | nu
 
 const DEFAULT_IMAGE_COLORS = ['Rosa', 'Rosa Chicle', 'Lila', 'Azul Cielo', 'Azul Rey', 'Azul Marino', 'Azul Celeste', 'Negro', 'Gris', 'Gris Marengo', 'Marino', 'Café'];
 const PRODUCT_IMAGE_COLORS: Record<string, string[]> = {
-  p1: ['Rosa', 'Rosa Chicle', 'Lila', 'Azul Cielo', 'Azul Rey', 'Negro', 'Gris', 'Marino'],
+  p6: ['Azul Marino', 'Gris Marengo', 'Negro', 'Azul Celeste', 'Café'],
   p2: ['Azul Marino', 'Gris Marengo', 'Negro', 'Azul Celeste', 'Café'],
   p4: ['Negro', 'Gris', 'Marino', 'Café'],
 };

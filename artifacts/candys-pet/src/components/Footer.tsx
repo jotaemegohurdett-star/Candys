@@ -8,7 +8,7 @@ const navColumns = [
   {
     heading: 'Catálogo',
     links: [
-      { label: 'Porta Mascota Clásico',    href: '#products' },
+      { label: 'Bomber todas las temporadas', href: '#products' },
       { label: 'Corderito Invierno',       href: '#products' },
       { label: 'Estampados Especiales',    href: '#products' },
       { label: 'Modelo Unisex',            href: '#products' },
