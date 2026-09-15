@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowDown, Star, Instagram, Sparkles } from 'lucide-react';
-import heroImg from '@assets/Screenshot_20260722-051201_WhatsApp~2_1784713749256.jpg';
+import heroImg from '@assets/porta-mascota-bomber-mas-vendido.jpg';
 import { WhatsAppIcon } from './WhatsAppIcon';
 
 const HEADLINE = [

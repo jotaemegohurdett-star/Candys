@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Heart, ShieldCheck, Feather, Sparkles, Brain, Wind, MapPin } from 'lucide-react';
-import lifestyleImg from '@assets/Screenshot_20260722-051400_WhatsApp~2_1784713749406.jpg';
+import lifestyleImg from '@assets/porta-mascota-bomber-mas-vendido.jpg';
 
 const benefits = [
   {
