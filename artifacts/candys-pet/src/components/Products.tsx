@@ -15,13 +15,11 @@ import {
   DialogTrigger,
   DialogDescription,
 } from './ui/dialog';
-import p1Img from '@assets/Screenshot_20260722-051400_WhatsApp~2_1784713749406.jpg';
 import p2Img from '@assets/Screenshot_20260722-005735_Instagram~2_1784698640108.jpg';
 import p4Img from '@assets/Screenshot_20260722-051201_WhatsApp~2_1784713749256.jpg';
 
 /** Fallback local images used when no image is uploaded via admin panel */
 const LOCAL_IMAGES: Record<string, string> = {
-  p1: p1Img,
   p2: p2Img,
   p4: p4Img,
 };
@@ -39,22 +37,22 @@ const SIZE_TUBULAR: Record<string, string> = {
 /** Rich presentation data for the original products. Dynamic products get generic defaults. */
 const KNOWN_PRODUCTS = [
   {
-    id: 'p1',
-    name: 'Porta Mascota Clásico',
+    id: 'p6',
+    name: 'Porta mascotaTela Bomber todas las temporadas (semi elastizada)',
     badge: 'Más vendido',
     badgeStyle: { background: 'linear-gradient(135deg, hsl(340 84% 50%), hsl(340 84% 40%))' },
     description:
-      'Nuestro modelo insignia tipo sling. Tela de algodón suave y transpirable, ideal para el día a día. Incluye gancho de seguridad interior. Perfecto también para perritos senior o con movilidad reducida 🧡',
-    image: p1Img,
-    imgPosition: 'center 18%',
-    colors: ['Rosa', 'Rosa Chicle', 'Lila', 'Azul Cielo', 'Azul Rey', 'Negro', 'Gris', 'Marino'],
-    colorSwatches: ['#F9A8C9', '#FF69B4', '#C3A6E8', '#87CEEB', '#4169E1', '#222222', '#9E9E9E', '#1B2A4A'],
+      'Tela liviana semi elastizada, suave y repelente a lloviznas para todas las temporadas. Forrada por dentro en algodón transpirable.',
+    image: p2Img,
+    imgPosition: 'center 20%',
+    colors: ['Azul Marino', 'Gris Marengo', 'Negro', 'Azul Celeste', 'Café'],
+    colorSwatches: ['#1B2A4A', '#4A4A4A', '#111111', '#6BBFDF', '#7B5C3E'],
     features: [
-      'Tela algodón 100% transpirable',
-      'Lavable a máquina 30°',
-      'Gancho de seguridad interior',
-      'Ideal para perritos senior o con discapacidad',
-      'Reduce el estrés y la ansiedad de tu mascota',
+      'Tela liviana semi elastizada y suave',
+      'Repelente a lloviznas',
+      'Para todas las temporadas',
+      'Forro interior algodón transpirable',
+      'Correa ajustable acolchada',
       'Paseos cotidianos: útil en lugares con mucha gente, transporte público o cuando tu mascota se cansa de caminar',
       'Talla M: desde 2 meses hasta 3,5 kg',
       'Talla L: hasta 10 kg — caben 2 perritos',
@@ -148,7 +146,7 @@ export function Products() {
   // products in sync with the admin panel instead of adding stale local models.
   // The bundled products are only a fallback while the API is unavailable.
   const products = useMemo<ProductData[]>(() => {
-    const apiProducts = catalog.catalog.products;
+    const apiProducts = catalog.catalog.products.filter(product => product.id !== 'p1');
     if (apiProducts.length === 0) return KNOWN_PRODUCTS;
 
     return apiProducts.map(p => {
@@ -382,7 +380,7 @@ function ProductCard({
   const uploadedImages = catalog.catalog.images[product.id] ?? [];
   const galleryImages = uploadedImages.length > 0
     ? uploadedImages
-    : [{ url: LOCAL_IMAGES[product.id] ?? p1Img, color: null }];
+    : [{ url: LOCAL_IMAGES[product.id] ?? product.image, color: null }];
   const safeGalleryIndex = Math.min(galleryIndex, galleryImages.length - 1);
   const currentGalleryImage = galleryImages[safeGalleryIndex];
   const displayImage = currentGalleryImage.url;
@@ -465,14 +463,20 @@ function ProductCard({
             <div className="flex flex-col h-full">
               {/* Image */}
               <div className="relative aspect-[3/4] overflow-hidden">
-                <img
-                  src={displayImage}
-                  alt={`${product.name} — porta mascota tipo banano y bolso manos libres para perros y gatos, hecho a mano en Chile`}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-107"
-                  loading="lazy"
-                  decoding="async"
-                  style={{ objectPosition: product.imgPosition }}
-                />
+                {displayImage ? (
+                  <img
+                    src={displayImage}
+                    alt={`${product.name} — porta mascota tipo banano y bolso manos libres para perros y gatos, hecho a mano en Chile`}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-107"
+                    loading="lazy"
+                    decoding="async"
+                    style={{ objectPosition: product.imgPosition }}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-pink-100 to-purple-100">
+                    <span className="px-6 text-center font-heading text-xl font-bold text-gray-600">{product.name}</span>
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
                 {/* Badge */}
@@ -539,12 +543,18 @@ function ProductCard({
 
           {/* Image panel */}
           <div className="w-full md:w-1/2 relative bg-gray-100 min-h-[280px]">
-            <img
-              src={displayImage}
-              alt={`${product.name}${currentImageColor ? ` — color ${currentImageColor}` : ''} — porta mascota tipo banano y bolso manos libres para perros y gatos, hecho a mano en Chile`}
-              className="w-full h-full object-cover absolute inset-0"
-              style={{ objectPosition: product.imgPosition }}
-            />
+            {displayImage ? (
+              <img
+                src={displayImage}
+                alt={`${product.name}${currentImageColor ? ` — color ${currentImageColor}` : ''} — porta mascota tipo banano y bolso manos libres para perros y gatos, hecho a mano en Chile`}
+                className="w-full h-full object-cover absolute inset-0"
+                style={{ objectPosition: product.imgPosition }}
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-pink-100 to-purple-100">
+                <span className="px-8 text-center font-heading text-2xl font-bold text-gray-600">{product.name}</span>
+              </div>
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
             <div
               className="absolute top-5 left-5 px-3 py-1 rounded-full text-xs font-bold text-white shadow-md"
@@ -636,10 +646,9 @@ function ProductCard({
               <DialogDescription className="text-base text-gray-600 leading-relaxed">
                 {product.description}
               </DialogDescription>
-              {product.id === 'p1' || product.id === 'p2' || product.id === 'p4' ? (
+              {product.id === 'p2' || product.id === 'p4' ? (
                 <a
                   href={{
-                    p1: '/productos/porta-mascota-clasico',
                     p2: '/productos/porta-mascota-bomber-cafe',
                     p4: '/productos/porta-mascota-unisex',
                   }[product.id]}
