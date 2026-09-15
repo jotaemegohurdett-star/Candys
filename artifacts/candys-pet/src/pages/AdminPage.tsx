@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Lock, LogOut, Package, DollarSign, ImageIcon, LayoutGrid,
   Save, Trash2, Eye, EyeOff, Plus, Pencil, X, Check,
-  AlertTriangle, RefreshCw, ShieldCheck, Upload
+  AlertTriangle, RefreshCw, ShieldCheck, Upload, ChevronLeft,
+  ChevronRight, ImagePlus, Palette
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -26,6 +27,7 @@ async function api(method: string, path: string, body?: unknown) {
 
 /* ─────────────── types ─────────────── */
 type Product = { id: string; name: string };
+type ImageRow = { id: string; productId: string; url: string; color: string | null; position: number };
 
 /* ─────────────── LOGIN ─────────────── */
 function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
@@ -122,6 +124,7 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
   const [deleting, setDeleting] = useState<Record<string, boolean>>({});
   const [renaming, setRenaming] = useState<Record<string, string>>({});
   const [savingName, setSavingName] = useState<Record<string, boolean>>({});
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   // Pre-fill current prices when opening the form
   const openForm = async () => {
@@ -307,8 +310,20 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
         {products.map(p => {
           const isRenaming = renaming[p.id] !== undefined;
           return (
-            <div key={p.id} className="flex items-center gap-3 px-4 py-3 rounded-2xl"
-              style={{ background: 'hsl(220 25% 12%)', border: '1px solid hsl(220 25% 20%)' }}>
+            <div
+              key={p.id}
+              role="button"
+              tabIndex={0}
+              onClick={() => setSelectedProduct(p)}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setSelectedProduct(p);
+                }
+              }}
+              className="flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer transition-colors hover:border-pink-500/50 focus:outline-none focus:ring-2 focus:ring-pink-500/60"
+              style={{ background: 'hsl(220 25% 12%)', border: '1px solid hsl(220 25% 20%)' }}
+            >
               <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 text-xs font-black text-white"
                 style={{ background: 'linear-gradient(135deg, hsl(340 84% 45%), hsl(280 70% 50%))' }}>
                 {p.id.replace('p', '')}
@@ -318,6 +333,7 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
                 <input
                   autoFocus
                   value={renaming[p.id]}
+                  onClick={e => e.stopPropagation()}
                   onChange={e => setRenaming(r => ({ ...r, [p.id]: e.target.value }))}
                   onKeyDown={e => {
                     if (e.key === 'Enter') saveName(p);
@@ -334,25 +350,25 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
               <div className="flex items-center gap-1 shrink-0">
                 {isRenaming ? (
                   <>
-                    <button onClick={() => saveName(p)} disabled={savingName[p.id]}
+                    <button onClick={e => { e.stopPropagation(); void saveName(p); }} disabled={savingName[p.id]}
                       className="w-8 h-8 rounded-lg flex items-center justify-center text-green-400 hover:bg-white/10 transition-colors"
                       title="Guardar nombre">
                       {savingName[p.id] ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                     </button>
-                    <button onClick={() => setRenaming(r => { const n = { ...r }; delete n[p.id]; return n; })}
+                    <button onClick={e => { e.stopPropagation(); setRenaming(r => { const n = { ...r }; delete n[p.id]; return n; }); }}
                       className="w-8 h-8 rounded-lg flex items-center justify-center text-white/40 hover:bg-white/10 transition-colors"
                       title="Cancelar">
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </>
                 ) : (
-                  <button onClick={() => setRenaming(r => ({ ...r, [p.id]: p.name }))}
+                   <button onClick={e => { e.stopPropagation(); setRenaming(r => ({ ...r, [p.id]: p.name })); }}
                     className="w-8 h-8 rounded-lg flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-colors"
                     title="Renombrar">
                     <Pencil className="w-3.5 h-3.5" />
                   </button>
                 )}
-                <button onClick={() => del(p)} disabled={deleting[p.id]}
+                <button onClick={e => { e.stopPropagation(); void del(p); }} disabled={deleting[p.id]}
                   className="w-8 h-8 rounded-lg flex items-center justify-center text-white/30 hover:text-red-400 hover:bg-red-400/10 transition-colors"
                   title="Eliminar producto">
                   {deleting[p.id] ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
@@ -367,7 +383,260 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
           </p>
         )}
       </div>
+      <ProductPreviewDialog
+        product={selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+        onRefresh={onRefresh}
+      />
     </div>
+  );
+}
+
+function ProductPreviewDialog({
+  product,
+  onClose,
+  onRefresh,
+}: {
+  product: Product | null;
+  onClose: () => void;
+  onRefresh: () => void;
+}) {
+  const [images, setImages] = useState<ImageRow[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [name, setName] = useState('');
+  const [savingName, setSavingName] = useState(false);
+  const [removing, setRemoving] = useState<Record<string, boolean>>({});
+  const [customColors, setCustomColors] = useState<string[]>([]);
+  const [newColor, setNewColor] = useState('');
+
+  const loadImages = useCallback(async () => {
+    if (!product) return;
+    setLoading(true);
+    try {
+      const rows = await api('GET', '/images') as ImageRow[];
+      setImages(rows.filter(image => image.productId === product.id));
+      setSelectedIndex(0);
+    } catch {
+      toast.error('No se pudieron cargar las imágenes');
+    } finally {
+      setLoading(false);
+    }
+  }, [product]);
+
+  useEffect(() => {
+    if (!product) return;
+    setName(product.name);
+    setCustomColors([]);
+    setNewColor('');
+    void loadImages();
+  }, [product, loadImages]);
+
+  const baseColors = product ? (PRODUCT_IMAGE_COLORS[product.id] ?? DEFAULT_IMAGE_COLORS) : DEFAULT_IMAGE_COLORS;
+  const colorOptions = Array.from(new Set([...baseColors, ...customColors]));
+  const currentImage = images[selectedIndex];
+
+  const saveProductName = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!product || !name.trim() || name.trim() === product.name) return;
+    setSavingName(true);
+    try {
+      await api('PUT', `/products/${product.id}/name`, { name: name.trim() });
+      toast.success('Información del producto actualizada ✓');
+      onRefresh();
+    } catch {
+      toast.error('No se pudo actualizar el producto');
+    } finally {
+      setSavingName(false);
+    }
+  };
+
+  const updateImageColor = async (image: ImageRow, color: string) => {
+    const nextColor = color || null;
+    try {
+      await api('PUT', `/images/${image.id}`, { color: nextColor });
+      setImages(current => current.map(item => item.id === image.id ? { ...item, color: nextColor } : item));
+      toast.success('Color actualizado');
+    } catch {
+      toast.error('No se pudo actualizar el color');
+    }
+  };
+
+  const removeImage = async (image: ImageRow) => {
+    if (!confirm('¿Eliminar esta imagen del producto?')) return;
+    setRemoving(current => ({ ...current, [image.id]: true }));
+    try {
+      await api('DELETE', `/images/${image.id}`);
+      setImages(current => current.filter(item => item.id !== image.id));
+      setSelectedIndex(index => Math.max(0, Math.min(index, images.length - 2)));
+      toast.success('Imagen eliminada');
+    } catch {
+      toast.error('No se pudo eliminar la imagen');
+    } finally {
+      setRemoving(current => ({ ...current, [image.id]: false }));
+    }
+  };
+
+  if (!product) return null;
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        key={product.id}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        style={{ background: 'rgba(0,0,0,0.76)', backdropFilter: 'blur(8px)' }}
+        onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          className="w-full max-w-5xl max-h-[92vh] overflow-y-auto rounded-3xl"
+          style={{ background: 'hsl(220 25% 11%)', border: '1px solid hsl(220 25% 24%)' }}
+        >
+          <div className="sticky top-0 z-10 flex items-center justify-between gap-4 px-5 py-4"
+            style={{ background: 'hsl(220 25% 11% / 0.96)', borderBottom: '1px solid hsl(220 25% 20%)', backdropFilter: 'blur(12px)' }}>
+            <div className="min-w-0">
+              <p className="text-xs uppercase tracking-widest font-semibold" style={{ color: 'hsl(340 84% 68%)' }}>
+                Visualización del producto
+              </p>
+              <h2 className="text-lg sm:text-xl font-bold text-white truncate">{product.name}</h2>
+            </div>
+            <button type="button" onClick={onClose}
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 shrink-0"
+              aria-label="Cerrar visualización">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.9fr)] gap-5 p-5">
+            <div className="space-y-4">
+              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden flex items-center justify-center"
+                style={{ background: 'hsl(220 25% 7%)', border: '1px solid hsl(220 25% 20%)' }}>
+                {currentImage ? (
+                  <img src={currentImage.url} alt={`${product.name} imagen ${selectedIndex + 1}`}
+                    className="w-full h-full object-contain" />
+                ) : (
+                  <div className="text-center px-8" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                    <ImageIcon className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p>{loading ? 'Cargando imágenes…' : 'Este producto aún no tiene imágenes'}</p>
+                  </div>
+                )}
+                {images.length > 1 && (
+                  <>
+                    <button type="button" onClick={() => setSelectedIndex(index => (index - 1 + images.length) % images.length)}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center text-white"
+                      style={{ background: 'rgba(0,0,0,0.62)' }} aria-label="Imagen anterior">
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    <button type="button" onClick={() => setSelectedIndex(index => (index + 1) % images.length)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center text-white"
+                      style={{ background: 'rgba(0,0,0,0.62)' }} aria-label="Imagen siguiente">
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                    <span className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full px-3 py-1 text-xs text-white"
+                      style={{ background: 'rgba(0,0,0,0.62)' }}>
+                      {selectedIndex + 1} / {images.length}
+                    </span>
+                  </>
+                )}
+              </div>
+
+              {images.length > 0 && (
+                <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                  {images.map((image, index) => (
+                    <button key={image.id} type="button" onClick={() => setSelectedIndex(index)}
+                      className={`relative aspect-square overflow-hidden rounded-xl border-2 ${index === selectedIndex ? 'border-pink-400' : 'border-transparent'}`}
+                      aria-label={`Ver imagen ${index + 1}`}>
+                      <img src={image.url} alt="" className="w-full h-full object-cover" />
+                      {image.color && (
+                        <span className="absolute bottom-0 left-0 right-0 truncate px-1 py-1 text-[9px] text-white"
+                          style={{ background: 'rgba(0,0,0,0.68)' }}>{image.color}</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-4">
+              <form onSubmit={saveProductName} className="rounded-2xl p-4 space-y-3"
+                style={{ background: 'hsl(220 25% 14%)', border: '1px solid hsl(220 25% 22%)' }}>
+                <div className="flex items-center gap-2 text-white font-semibold">
+                  <Pencil className="w-4 h-4" style={{ color: 'hsl(340 84% 65%)' }} />
+                  Información
+                </div>
+                <label className="block text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                  Nombre del producto
+                </label>
+                <input value={name} onChange={event => setName(event.target.value)} maxLength={100}
+                  className="w-full px-3 py-2.5 rounded-xl text-white text-sm focus:outline-none"
+                  style={{ background: 'hsl(220 25% 8%)', border: '1px solid hsl(220 25% 25%)' }} />
+                <button type="submit" disabled={savingName || !name.trim() || name.trim() === product.name}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-40"
+                  style={{ background: 'hsl(340 84% 50%)' }}>
+                  {savingName ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                  Guardar información
+                </button>
+                <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                  El stock, precios y pagos siguen administrándose en sus pestañas actuales.
+                </p>
+              </form>
+
+              <div className="rounded-2xl p-4 space-y-3"
+                style={{ background: 'hsl(220 25% 14%)', border: '1px solid hsl(220 25% 22%)' }}>
+                <div className="flex items-center gap-2 text-white font-semibold">
+                  <Palette className="w-4 h-4" style={{ color: 'hsl(340 84% 65%)' }} />
+                  Colores e imágenes
+                </div>
+                <div className="flex gap-2">
+                  <input value={newColor} onChange={event => setNewColor(event.target.value)}
+                    onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); const color = newColor.trim(); if (color && !colorOptions.includes(color)) setCustomColors(current => [...current, color]); setNewColor(''); } }}
+                    placeholder="Agregar color, ej. Verde oliva"
+                    className="min-w-0 flex-1 px-3 py-2.5 rounded-xl text-white text-sm focus:outline-none"
+                    style={{ background: 'hsl(220 25% 8%)', border: '1px solid hsl(220 25% 25%)' }} />
+                  <button type="button" onClick={() => { const color = newColor.trim(); if (color && !colorOptions.includes(color)) setCustomColors(current => [...current, color]); setNewColor(''); }}
+                    className="px-3 rounded-xl text-white text-sm font-semibold"
+                    style={{ background: 'hsl(280 70% 50%)' }}>
+                    Agregar
+                  </button>
+                </div>
+                {images.length > 0 && (
+                  <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                    {images.map((image, index) => (
+                      <div key={image.id} className="flex items-center gap-2 rounded-xl p-2"
+                        style={{ background: 'hsl(220 25% 9%)' }}>
+                        <img src={image.url} alt="" className="w-10 h-10 rounded-lg object-cover shrink-0" />
+                        <span className="text-xs text-white/45 w-8 shrink-0">#{index + 1}</span>
+                        <select value={image.color ?? ''} onChange={event => void updateImageColor(image, event.target.value)}
+                          className="min-w-0 flex-1 px-2 py-2 rounded-lg text-white text-xs focus:outline-none"
+                          style={{ background: 'hsl(220 25% 16%)' }} aria-label={`Color de imagen ${index + 1}`}>
+                          <option value="">General</option>
+                          {colorOptions.map(color => <option key={color} value={color}>{color}</option>)}
+                        </select>
+                        <button type="button" onClick={() => void removeImage(image)} disabled={removing[image.id]}
+                          className="w-8 h-8 rounded-lg flex items-center justify-center text-red-400 hover:bg-red-400/10 shrink-0"
+                          aria-label={`Eliminar imagen ${index + 1}`}>
+                          {removing[image.id] ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <ImageUploadButton
+                  productId={product.id}
+                  colors={colorOptions}
+                  buttonLabel="Agregar imágenes"
+                  onUploaded={() => { void loadImages(); }}
+                />
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 }
 
@@ -593,7 +862,6 @@ function PricesTab() {
 }
 
 /* ─────────────── IMÁGENES TAB ─────────────── */
-type ImageRow = { id: string; productId: string; url: string; color: string | null; position: number };
 
 const DEFAULT_IMAGE_COLORS = ['Rosa', 'Rosa Chicle', 'Lila', 'Azul Cielo', 'Azul Rey', 'Azul Marino', 'Azul Celeste', 'Negro', 'Gris', 'Gris Marengo', 'Marino', 'Café'];
 const PRODUCT_IMAGE_COLORS: Record<string, string[]> = {
@@ -631,10 +899,12 @@ async function uploadImageFile(file: File, productId: string, color: string): Pr
 function ImageUploadButton({
   productId,
   colors,
+  buttonLabel = 'Subir foto',
   onUploaded,
 }: {
   productId: string;
   colors: string[];
+  buttonLabel?: string;
   onUploaded: () => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -698,7 +968,7 @@ function ImageUploadButton({
       >
         {uploading
           ? <><RefreshCw className="w-4 h-4 animate-spin" /> Subiendo… {progress}%</>
-          : <><Upload className="w-4 h-4" /> Subir foto</>}
+          : <><ImagePlus className="w-4 h-4" /> {buttonLabel}</>}
       </button>
       {uploading && (
         <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ background: 'hsl(220 25% 20%)' }}>
