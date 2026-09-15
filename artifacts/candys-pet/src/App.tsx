@@ -67,9 +67,6 @@ function App() {
   return (
     <Switch>
       <Route path="/admin" component={AdminPage} />
-      <Route path={PRODUCT_SEO.classic.path}>
-        <ProductLandingPage product={PRODUCT_SEO.classic} />
-      </Route>
       <Route path={PRODUCT_SEO.bomber.path}>
         <ProductLandingPage product={PRODUCT_SEO.bomber} />
       </Route>

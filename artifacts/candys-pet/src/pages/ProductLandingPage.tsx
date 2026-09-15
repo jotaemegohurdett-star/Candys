@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { ArrowLeft, Mail } from 'lucide-react';
 import { Link } from 'wouter';
-import p1Img from '@assets/Screenshot_20260722-051400_WhatsApp~2_1784713749406.jpg';
 import p2Img from '@assets/Screenshot_20260722-005735_Instagram~2_1784698640108.jpg';
 import p4Img from '@assets/Screenshot_20260722-051201_WhatsApp~2_1784713749256.jpg';
 import { HOME_SEO, applySeo } from '../lib/seo';
@@ -18,22 +17,6 @@ type ProductSeo = {
 };
 
 export const PRODUCT_SEO: Record<string, ProductSeo> = {
-  classic: {
-    path: '/productos/porta-mascota-clasico',
-    name: 'Porta Mascota Tipo Banano Clásico',
-    title: 'Porta Mascota Tipo Banano en Chile | Candy’s Pet',
-    description:
-      'Porta mascota tipo banano en Chile para perros y gatos pequeños. Bolsos manos libres y porta mascotas de tela artesanales. Tallas M y L.',
-    image: p1Img,
-    imageAlt:
-      'Porta mascota tipo banano clásico para perros y gatos, bolso manos libres hecho a mano en Chile',
-    details: [
-      'Tela de algodón suave, liviana y transpirable',
-      'Gancho de seguridad interior',
-      'Talla M hasta 3,5 kg y talla L hasta 10 kg',
-      'Ideal para paseos, transporte público y mascotas senior',
-    ],
-  },
   bomber: {
     path: '/productos/porta-mascota-bomber-cafe',
     name: 'Porta Mascota Tipo Banano Tela Bomber Color Café',
