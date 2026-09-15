@@ -593,9 +593,16 @@ function PricesTab() {
 }
 
 /* ─────────────── IMÁGENES TAB ─────────────── */
-type ImageRow = { id: string; productId: string; url: string; position: number };
+type ImageRow = { id: string; productId: string; url: string; color: string | null; position: number };
 
-async function uploadImageFile(file: File, productId: string): Promise<void> {
+const DEFAULT_IMAGE_COLORS = ['Rosa', 'Rosa Chicle', 'Lila', 'Azul Cielo', 'Azul Rey', 'Azul Marino', 'Azul Celeste', 'Negro', 'Gris', 'Gris Marengo', 'Marino', 'Café'];
+const PRODUCT_IMAGE_COLORS: Record<string, string[]> = {
+  p1: ['Rosa', 'Rosa Chicle', 'Lila', 'Azul Cielo', 'Azul Rey', 'Negro', 'Gris', 'Marino'],
+  p2: ['Azul Marino', 'Gris Marengo', 'Negro', 'Azul Celeste', 'Café'],
+  p4: ['Negro', 'Gris', 'Marino', 'Café'],
+};
+
+async function uploadImageFile(file: File, productId: string, color: string): Promise<void> {
   const metaRes = await fetch(`${BASE}/api/storage/uploads/request-url`, {
     method: 'POST',
     credentials: 'include',
@@ -617,14 +624,23 @@ async function uploadImageFile(file: File, productId: string): Promise<void> {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ productId, url: servingUrl }),
+    body: JSON.stringify({ productId, url: servingUrl, color: color || null }),
   }).then(r => { if (!r.ok) throw new Error('Error al guardar imagen'); });
 }
 
-function ImageUploadButton({ productId, onUploaded }: { productId: string; onUploaded: () => void }) {
+function ImageUploadButton({
+  productId,
+  colors,
+  onUploaded,
+}: {
+  productId: string;
+  colors: string[];
+  onUploaded: () => void;
+}) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [color, setColor] = useState('');
 
   const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -633,7 +649,7 @@ function ImageUploadButton({ productId, onUploaded }: { productId: string; onUpl
     let ok = 0;
     for (const file of Array.from(files)) {
       try {
-        await uploadImageFile(file, productId);
+         await uploadImageFile(file, productId, color);
         ok++;
         setProgress(p => Math.min(p + Math.round(80 / files.length), 95));
       } catch {
@@ -649,7 +665,20 @@ function ImageUploadButton({ productId, onUploaded }: { productId: string; onUpl
   };
 
   return (
-    <div>
+    <div className="space-y-2">
+      <label className="block text-xs font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>
+        Color de las fotos seleccionadas
+      </label>
+      <select
+        value={color}
+        onChange={e => setColor(e.target.value)}
+        disabled={uploading}
+        className="w-full px-3 py-2.5 rounded-xl text-white text-sm focus:outline-none"
+        style={{ background: 'hsl(220 25% 8%)', border: '1px solid hsl(220 25% 25%)' }}
+      >
+        <option value="">Sin color específico</option>
+        {colors.map(option => <option key={option} value={option}>{option}</option>)}
+      </select>
       <input
         ref={inputRef}
         type="file"
@@ -710,7 +739,7 @@ function ImagesTab({ products }: { products: Product[] }) {
   return (
     <div className="space-y-4">
       <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
-        Sube fotos directo desde tu celular o computador. La primera foto de cada producto es la que aparece en la tienda.
+        Sube fotos desde tu celular o computador y asígnales un color. La primera foto de cada producto es la principal.
       </p>
 
       {products.length === 0 && (
@@ -735,7 +764,7 @@ function ImagesTab({ products }: { products: Product[] }) {
                 </span>
               </div>
               <div className="p-4 space-y-4">
-                {imgs.length > 0 && (
+                 {imgs.length > 0 && (
                   <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                     {imgs.map((img, idx) => (
                       <div key={img.id} className="relative group aspect-square rounded-xl overflow-hidden"
@@ -748,11 +777,35 @@ function ImagesTab({ products }: { products: Product[] }) {
                             Principal
                           </div>
                         )}
+                        <select
+                          value={img.color ?? ''}
+                          onChange={async e => {
+                            const nextColor = e.target.value || null;
+                            try {
+                              await api('PUT', `/images/${img.id}`, { color: nextColor });
+                              setImages(current => current.map(item =>
+                                item.id === img.id ? { ...item, color: nextColor } : item,
+                              ));
+                              toast.success('Color actualizado');
+                            } catch {
+                              toast.error('No se pudo actualizar el color');
+                            }
+                          }}
+                          aria-label={`Color de la foto ${idx + 1}`}
+                          className="absolute bottom-1 left-1 right-1 text-[9px] rounded px-1 py-1 text-white focus:outline-none"
+                          style={{ background: 'rgba(0,0,0,0.72)' }}
+                        >
+                          <option value="">General</option>
+                          {(PRODUCT_IMAGE_COLORS[pid] ?? DEFAULT_IMAGE_COLORS).map(option => (
+                            <option key={option} value={option}>{option}</option>
+                          ))}
+                        </select>
                         <button
                           onClick={() => remove(img.id)}
                           disabled={removing[img.id]}
-                          className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute top-1 right-1 z-10 w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                           style={{ background: 'rgba(0,0,0,0.6)' }}
+                          aria-label={`Eliminar foto ${idx + 1}`}
                         >
                           {removing[img.id]
                             ? <RefreshCw className="w-5 h-5 text-white animate-spin" />
@@ -762,7 +815,11 @@ function ImagesTab({ products }: { products: Product[] }) {
                     ))}
                   </div>
                 )}
-                <ImageUploadButton productId={pid} onUploaded={load} />
+                 <ImageUploadButton
+                   productId={pid}
+                   colors={PRODUCT_IMAGE_COLORS[pid] ?? DEFAULT_IMAGE_COLORS}
+                   onUploaded={load}
+                 />
               </div>
             </div>
           );

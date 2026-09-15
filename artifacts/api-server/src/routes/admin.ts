@@ -217,7 +217,11 @@ router.get("/images", adminGuard, async (_req, res) => {
 });
 
 router.post("/images", adminGuard, async (req, res) => {
-  const { productId, url } = req.body as { productId: string; url: string };
+  const { productId, url, color } = req.body as {
+    productId: string;
+    url: string;
+    color?: string | null;
+  };
   if (!productId || !url) { res.status(400).json({ error: "MISSING_FIELDS" }); return; }
   const id = randomUUID();
   try {
@@ -228,7 +232,14 @@ router.post("/images", adminGuard, async (req, res) => {
       .where(eq(productImagesTable.productId, productId));
     const nextPosition = (maxRow?.maxPos ?? -1) + 1;
 
-    await db.insert(productImagesTable).values({ id, productId, url, position: nextPosition, updatedAt: new Date() });
+    await db.insert(productImagesTable).values({
+      id,
+      productId,
+      url,
+      color: color?.trim() || null,
+      position: nextPosition,
+      updatedAt: new Date(),
+    });
     res.json({ ok: true, id });
   } catch (err) {
     logger.error({ err }, "admin: image insert failed");
@@ -238,12 +249,16 @@ router.post("/images", adminGuard, async (req, res) => {
 
 router.put("/images/:id", adminGuard, async (req, res) => {
   const { id } = req.params;
-  const { url } = req.body as { url: string };
-  if (!url) { res.status(400).json({ error: "MISSING_URL" }); return; }
+  const { url, color } = req.body as { url?: string; color?: string | null };
+  if (!url && color === undefined) { res.status(400).json({ error: "MISSING_FIELDS" }); return; }
   try {
     await db
       .update(productImagesTable)
-      .set({ url, updatedAt: new Date() })
+      .set({
+        ...(url ? { url } : {}),
+        ...(color !== undefined ? { color: color?.trim() || null } : {}),
+        updatedAt: new Date(),
+      })
       .where(eq(productImagesTable.id, id));
     res.json({ ok: true });
   } catch (err) {
