@@ -59,7 +59,7 @@ export function Scene1() {
           <motion.h1
             className="font-bold text-white tracking-tight"
             style={{ fontSize: 'clamp(2rem, 10vw, 5rem)' }}
-            variants={staggerConfigs.charFast}
+            transition={staggerConfigs.charFast}
             initial="hidden"
             animate="visible"
           >
@@ -75,7 +75,7 @@ export function Scene1() {
           <motion.h2
             className="font-bold text-bg-muted"
             style={{ fontSize: 'clamp(1.6rem, 8.5vw, 4.5rem)' }}
-            variants={staggerConfigs.charFast}
+            transition={staggerConfigs.charFast}
             initial="hidden"
             animate="visible"
           >
