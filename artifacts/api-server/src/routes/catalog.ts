@@ -25,11 +25,11 @@ router.get("/", async (_req, res) => {
     const prices: Record<string, string> = {};
     for (const r of settingsRows) prices[r.key] = r.value;
 
-    // Build images map: { p1: ["url1","url2"], p2: [], ... }
-    const images: Record<string, string[]> = {};
+    // Build ordered image galleries with optional color labels.
+    const images: Record<string, { url: string; color: string | null }[]> = {};
     for (const r of imageRows) {
       if (!images[r.productId]) images[r.productId] = [];
-      images[r.productId].push(r.url);
+      images[r.productId].push({ url: r.url, color: r.color ?? null });
     }
 
     // Build products list: unique [{id, name}] from stock table

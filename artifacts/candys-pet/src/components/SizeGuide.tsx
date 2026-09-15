@@ -11,6 +11,7 @@ const sizes = [
     name: 'Mediano',
     weight: 'hasta 3,5 kg · desde 2 meses',
     length: '20 – 40 cm',
+    tubular: '1,10 m',
     breeds: 'Chihuahua, Yorkshire Terrier, Poodle, Maltés, Bichón Frisé, Gatos',
     color: 'hsl(340 84% 50%)',
     bg: 'hsl(340 84% 50% / 0.08)',
@@ -20,6 +21,7 @@ const sizes = [
     name: 'Grande',
     weight: 'hasta 10 kg',
     length: '40 – 50 cm',
+    tubular: '1,25 m',
     breeds: 'Bulldog Francés, Schnauzer mini, Bichón Frisé, Pug, Shih Tzu · caben 2 perritos pequeños',
     color: 'hsl(186 96% 43%)',
     bg: 'hsl(186 96% 43% / 0.08)',
@@ -115,6 +117,14 @@ export function SizeGuide() {
                   <p className="text-xs text-muted-foreground mb-1 font-medium uppercase tracking-wide">Peso</p>
                   <p className="font-bold text-foreground">{sizes[active].weight}</p>
                 </div>
+
+              <div className="bg-white/70 rounded-2xl p-4 mb-4">
+                <p className="text-xs text-muted-foreground mb-1 font-medium uppercase tracking-wide">Medida tubular</p>
+                <p className="font-bold text-foreground">{sizes[active].tubular}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  La medida más corta corresponde a la talla M y la más larga a la talla L.
+                </p>
+              </div>
                 <div className="bg-white/70 rounded-2xl p-4">
                   <p className="text-xs text-muted-foreground mb-1 font-medium uppercase tracking-wide">Largo</p>
                   <p className="font-bold text-foreground">{sizes[active].length}</p>

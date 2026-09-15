@@ -8,8 +8,8 @@ const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 export interface CatalogData {
   prices: { price_m: number; price_l: number };
-  /** productId → ordered list of image URLs */
-  images: Record<string, string[]>;
+  /** productId → ordered gallery images with optional color labels */
+  images: Record<string, { url: string; color: string | null }[]>;
   /** All products registered in admin, in order: [{id, name}] */
   products: { id: string; name: string }[];
 }
@@ -30,7 +30,7 @@ export function useCatalog() {
       if (!res.ok) return;
       const data = await res.json() as {
         prices: Record<string, string>;
-        images: Record<string, string[]>;
+        images: Record<string, { url: string; color: string | null }[]>;
         products?: { id: string; name: string }[];
       };
       setCatalog({
@@ -55,7 +55,7 @@ export function useCatalog() {
 
   /** Returns first image URL for a product from the DB, or null if none uploaded yet. */
   const getPrimaryImage = (productId: string): string | null =>
-    catalog.images[productId]?.[0] ?? null;
+    catalog.images[productId]?.[0]?.url ?? null;
 
   return { catalog, loading, getPrice, getPrimaryImage };
 }

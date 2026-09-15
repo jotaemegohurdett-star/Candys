@@ -31,6 +31,11 @@ const SIZE_INFO: Record<string, string> = {
   L: 'Hasta 10 kg · caben 2 perritos 🐾🐾',
 };
 
+const SIZE_TUBULAR: Record<string, string> = {
+  M: 'Tubular de 1,10 m',
+  L: 'Tubular de 1,25 m',
+};
+
 /** Rich presentation data for the original products. Dynamic products get generic defaults. */
 const KNOWN_PRODUCTS = [
   {
@@ -374,13 +379,29 @@ function ProductCard({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedSize, setSelectedSize] = useState<'M' | 'L'>('M');
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
+  const [galleryIndex, setGalleryIndex] = useState(0);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const cardRef = useRef<HTMLDivElement>(null);
 
   // Dynamic price from DB, fallback to local constant
   const currentPrice = catalog.getPrice(selectedSize);
-  // Dynamic image from admin panel, fallback to bundled asset
-  const displayImage = catalog.getPrimaryImage(product.id) ?? LOCAL_IMAGES[product.id] ?? p1Img;
+  // Dynamic image gallery from admin panel, fallback to the bundled asset.
+  const uploadedImages = catalog.catalog.images[product.id] ?? [];
+  const galleryImages = uploadedImages.length > 0
+    ? uploadedImages
+    : [{ url: LOCAL_IMAGES[product.id] ?? p1Img, color: null }];
+  const safeGalleryIndex = Math.min(galleryIndex, galleryImages.length - 1);
+  const currentGalleryImage = galleryImages[safeGalleryIndex];
+  const displayImage = currentGalleryImage.url;
+  const currentImageColor = currentGalleryImage.color;
+
+  useEffect(() => {
+    if (galleryIndex >= galleryImages.length) setGalleryIndex(0);
+  }, [galleryIndex, galleryImages.length]);
+
+  useEffect(() => {
+    if (currentImageColor) setSelectedColor(currentImageColor);
+  }, [currentImageColor]);
 
   const outOfStock = stock.isOutOfStock(product.id, selectedSize);
   const lowStock = stock.isLowStock(product.id, selectedSize);
@@ -420,7 +441,16 @@ function ProductCard({
   };
 
   return (
-    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+    <Dialog
+      open={dialogOpen}
+      onOpenChange={(open) => {
+        setDialogOpen(open);
+        if (open) {
+          setGalleryIndex(0);
+          setSelectedColor(product.colors[0]);
+        }
+      }}
+    >
       <DialogTrigger asChild>
         {/* Scroll-in wrapper */}
         <motion.div
@@ -518,7 +548,7 @@ function ProductCard({
           <div className="w-full md:w-1/2 relative bg-gray-100 min-h-[280px]">
             <img
               src={displayImage}
-              alt={`${product.name} — porta mascota tipo banano y bolso manos libres para perros y gatos, hecho a mano en Chile`}
+              alt={`${product.name}${currentImageColor ? ` — color ${currentImageColor}` : ''} — porta mascota tipo banano y bolso manos libres para perros y gatos, hecho a mano en Chile`}
               className="w-full h-full object-cover absolute inset-0"
               style={{ objectPosition: product.imgPosition }}
             />
@@ -529,6 +559,57 @@ function ProductCard({
             >
               {product.badge}
             </div>
+            {currentImageColor && (
+              <div
+                className="absolute top-5 right-5 px-3 py-1 rounded-full text-xs font-bold text-white shadow-md"
+                style={{ background: 'rgba(0,0,0,0.62)' }}
+              >
+                Color: {currentImageColor}
+              </div>
+            )}
+            {galleryImages.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  aria-label="Imagen anterior"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setGalleryIndex((safeGalleryIndex - 1 + galleryImages.length) % galleryImages.length);
+                  }}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center text-white transition-all hover:scale-105"
+                  style={{ background: 'rgba(0,0,0,0.55)' }}
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Imagen siguiente"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setGalleryIndex((safeGalleryIndex + 1) % galleryImages.length);
+                  }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center text-white transition-all hover:scale-105"
+                  style={{ background: 'rgba(0,0,0,0.55)' }}
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full"
+                  style={{ background: 'rgba(0,0,0,0.5)' }}>
+                  {galleryImages.map((image, index) => (
+                    <button
+                      key={`${image.url}-${index}`}
+                      type="button"
+                      aria-label={`Ver imagen ${index + 1}`}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setGalleryIndex(index);
+                      }}
+                      className={`w-2 h-2 rounded-full transition-all ${index === safeGalleryIndex ? 'bg-white scale-125' : 'bg-white/50'}`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
             {/* AGOTADO en modal — talla seleccionada sin stock */}
             {outOfStock && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/50">
@@ -577,12 +658,38 @@ function ProductCard({
             </DialogHeader>
 
             <div className="space-y-6 mb-8">
-              {/* Colores — consultar por WhatsApp */}
+              {/* Color selector + current gallery color */}
               <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-pink-50 border border-pink-100">
                 <span className="text-xl">🎨</span>
-                <p className="text-sm text-gray-600">
-                  Consulta los <span className="font-semibold text-gray-800">colores disponibles</span> por WhatsApp antes de pedir.
-                </p>
+                <div className="min-w-0">
+                  <p className="text-sm text-gray-600">
+                    <span className="font-semibold text-gray-800">Colores disponibles</span>
+                    {currentImageColor ? ` · Mostrando ${currentImageColor}` : ' · Consulta disponibilidad por WhatsApp'}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {product.colors.map((color, index) => {
+                      const imageIndex = galleryImages.findIndex(image => image.color === color);
+                      return (
+                        <button
+                          key={color}
+                          type="button"
+                          onClick={() => {
+                            setSelectedColor(color);
+                            if (imageIndex >= 0) setGalleryIndex(imageIndex);
+                          }}
+                          className="px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-colors"
+                          style={{
+                            background: selectedColor === color ? product.colorSwatches[index] ?? '#333' : 'white',
+                            borderColor: selectedColor === color ? 'transparent' : '#e5e7eb',
+                            color: selectedColor === color ? '#fff' : '#4b5563',
+                          }}
+                        >
+                          {color}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
 
               {/* Size picker */}
@@ -622,6 +729,9 @@ function ProductCard({
                         </span>
                         <span className="text-[9px] mt-0.5 leading-tight max-w-[80px] text-center opacity-65">
                           {SIZE_INFO[size]}
+                        </span>
+                        <span className="text-[9px] mt-1 leading-tight text-center opacity-65">
+                          {SIZE_TUBULAR[size]}
                         </span>
                         {oos ? (
                           <span className="text-[9px] mt-1 font-bold text-red-400">Sin stock</span>
