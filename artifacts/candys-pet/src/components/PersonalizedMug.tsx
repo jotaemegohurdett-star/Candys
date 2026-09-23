@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, ChevronLeft, ChevronRight, Coffee, MessageCircle, Sparkles, Truck } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, MessageCircle, Sparkles, Truck } from 'lucide-react';
 import { customProductWaLink } from '../lib/constants';
 import { WhatsAppIcon } from './WhatsAppIcon';
 
@@ -29,7 +29,7 @@ export function PersonalizedMug() {
 
   const whatsappMessage = [
     "Hola Candy's Pet! 🤍 Quiero pedir un tazón blanco personalizado de 11oz.",
-    'Me gustaría conocer las opciones para personalizarlo con una foto, frase o logo. Vi que el valor es de $6.500.',
+    'Me gustaría conocer las opciones para personalizarlo con una foto, frase o logo. Vi que el valor es de $6.990.',
   ].join('\n');
 
   return (
@@ -95,6 +95,18 @@ export function PersonalizedMug() {
                 </button>
               ))}
             </div>
+            <div className="border-t border-white/10 bg-black/20 p-3">
+              <a
+                href={customProductWaLink(whatsappMessage)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-center text-sm font-bold text-white shadow-lg shadow-[#25D366]/20 transition hover:bg-[#20bd5a]"
+              >
+                <WhatsAppIcon className="h-4 w-4" />
+                Pedir este tazón por WhatsApp
+                <MessageCircle className="h-4 w-4 opacity-75" />
+              </a>
+            </div>
           </div>
 
           <div>
@@ -116,7 +128,7 @@ export function PersonalizedMug() {
               </div>
               <div className="rounded-2xl border border-pink-300/25 bg-pink-300/10 p-4">
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-pink-300">Valor</p>
-                <p className="mt-2 text-2xl font-bold text-white">$6.500</p>
+                <p className="mt-2 text-2xl font-bold text-white">$6.990</p>
               </div>
             </div>
 
@@ -142,20 +154,6 @@ export function PersonalizedMug() {
               <span>Entrega en Santiago y envíos a todo Chile.</span>
             </div>
 
-            <a
-              href={customProductWaLink(whatsappMessage)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-6 py-4 text-center font-bold text-white shadow-lg shadow-[#25D366]/20 transition hover:-translate-y-0.5 hover:bg-[#20bd5a] sm:w-auto"
-            >
-              <WhatsAppIcon className="h-5 w-5" />
-              Pedir por WhatsApp
-              <MessageCircle className="h-4 w-4 opacity-75" />
-            </a>
-            <p className="mt-3 flex items-center gap-1.5 text-xs text-white/45">
-              <Coffee className="h-3.5 w-3.5" />
-              Tazón blanco personalizado 11oz · $6.500.
-            </p>
           </div>
         </div>
       </div>

@@ -24,7 +24,7 @@ export function PersonalizedKeychain() {
 
   const whatsappMessage = [
     "Hola Candy's Pet! 🐾 Quiero pedir la placa de identificación huesito personalizada modelo KIRA.",
-    'Vi la muestra de la chapita y me gustaría coordinar mi diseño por $3.500.',
+    'Vi la muestra de la chapita y me gustaría coordinar mi diseño por $4.990.',
   ].join('\n');
 
   return (
@@ -98,6 +98,18 @@ export function PersonalizedKeychain() {
                 </button>
               ))}
             </div>
+            <div className="border-t border-white/10 bg-black/20 p-3">
+              <a
+                href={customProductWaLink(whatsappMessage)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-center text-sm font-bold text-white shadow-lg shadow-[#25D366]/20 transition hover:bg-[#20bd5a]"
+              >
+                <WhatsAppIcon className="h-4 w-4" />
+                Pedir este llavero por WhatsApp
+                <MessageCircle className="h-4 w-4 opacity-75" />
+              </a>
+            </div>
           </motion.div>
 
           <motion.div
@@ -126,7 +138,7 @@ export function PersonalizedKeychain() {
               </div>
               <div className="rounded-2xl border border-pink-300/25 bg-pink-300/10 p-4">
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-pink-300">Valor</p>
-                <p className="mt-2 text-2xl font-bold text-white">$3.500</p>
+                <p className="mt-2 text-2xl font-bold text-white">$4.990</p>
               </div>
             </div>
 
@@ -153,17 +165,6 @@ export function PersonalizedKeychain() {
               <span>La muestra del reverso se publica con los últimos tres dígitos desenfocados para proteger los datos del cliente.</span>
             </div>
 
-            <a
-              href={customProductWaLink(whatsappMessage)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-6 py-4 text-center font-bold text-white shadow-lg shadow-[#25D366]/20 transition hover:-translate-y-0.5 hover:bg-[#20bd5a] sm:w-auto"
-            >
-              <WhatsAppIcon className="h-5 w-5" />
-              Pedir por WhatsApp
-              <MessageCircle className="h-4 w-4 opacity-75" />
-            </a>
-            <p className="mt-3 text-xs text-white/45">+56 9 9050 4762 · Precio de la placa personalizada: $3.500.</p>
           </motion.div>
         </div>
       </div>
