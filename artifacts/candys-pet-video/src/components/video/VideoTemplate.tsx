@@ -59,10 +59,62 @@ export default function VideoTemplate({
   const SceneComponent = SCENE_COMPONENTS[baseSceneKey];
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioFocusRef = useRef<'intro' | 'carnet'>('intro');
+  const audioAnimationRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const fadeAudio = (focus: 'intro' | 'carnet', durationMs: number) => {
+      const audio = audioRef.current;
+      if (!audio || muted) return;
+
+      if (audioAnimationRef.current !== null) {
+        cancelAnimationFrame(audioAnimationRef.current);
+        audioAnimationRef.current = null;
+      }
+
+      audioFocusRef.current = focus;
+      const startVolume = audio.volume;
+      const targetVolume = focus === 'intro' ? 0.45 : 0;
+      const startedAt = performance.now();
+
+      if (focus === 'intro') {
+        void audio.play().catch(() => {});
+      }
+
+      const animate = (now: number) => {
+        const progress = Math.min((now - startedAt) / durationMs, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        audio.volume = startVolume + (targetVolume - startVolume) * eased;
+
+        if (progress < 1) {
+          audioAnimationRef.current = requestAnimationFrame(animate);
+          return;
+        }
+
+        audioAnimationRef.current = null;
+        if (focus === 'carnet') audio.pause();
+      };
+
+      audioAnimationRef.current = requestAnimationFrame(animate);
+    };
+
+    const handleAudioFocus = (event: MessageEvent) => {
+      if (event.data?.type !== 'candys:audio-focus') return;
+      const focus = event.data.focus === 'carnet' ? 'carnet' : 'intro';
+      fadeAudio(focus, Number(event.data.transitionMs) || 900);
+    };
+
+    window.addEventListener('message', handleAudioFocus);
+    return () => {
+      window.removeEventListener('message', handleAudioFocus);
+      if (audioAnimationRef.current !== null) cancelAnimationFrame(audioAnimationRef.current);
+    };
+  }, [muted]);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
+    if (audioFocusRef.current !== 'intro' || muted) return;
     audio.volume = 0.45;
     const targetTime = SCENE_START_SEC[baseSceneKey] ?? 0;
     if (Math.abs(audio.currentTime - targetTime) > AUDIO_SEEK_EPSILON_SEC) {

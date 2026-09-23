@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Check, ChevronLeft, ChevronRight, Clock3, MessageCircle, Ruler, ShoppingBag, Truck } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, Clock3, MessageCircle, Ruler, ShoppingBag, Truck, Volume2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCart } from '../context/CartContext';
 import { customProductWaLink } from '../lib/constants';
+import { requestAudioFocus } from '../lib/audioFocus';
 import { WhatsAppIcon } from './WhatsAppIcon';
 
 import promoImage from '@assets/carnet-veterinario-whatsapp.jpg';
@@ -63,6 +64,11 @@ export function PersonalizedVeterinaryNotebook() {
   const [format, setFormat] = useState<(typeof FORMAT_OPTIONS)[number]['id']>('A6');
   const [color, setColor] = useState<(typeof COLOR_OPTIONS)[number]['id']>('Rosado');
   const [galleryIndex, setGalleryIndex] = useState(0);
+  const [videoMuted, setVideoMuted] = useState(true);
+  const [audioNeedsGesture, setAudioNeedsGesture] = useState(false);
+  const [carnetAudioFocused, setCarnetAudioFocused] = useState(false);
+  const productVideoRef = useRef<HTMLVideoElement>(null);
+  const audioAnimationRef = useRef<number | null>(null);
 
   const activeImage = GALLERY[galleryIndex];
   const selectedFormat = useMemo(
@@ -93,6 +99,93 @@ export function PersonalizedVeterinaryNotebook() {
       duration: 5000,
     });
   };
+
+  const fadeCarnetAudio = useCallback((shouldPlay: boolean) => {
+    const video = productVideoRef.current;
+    if (!video) return;
+
+    if (audioAnimationRef.current !== null) {
+      cancelAnimationFrame(audioAnimationRef.current);
+      audioAnimationRef.current = null;
+    }
+
+    const startVolume = video.volume;
+    const targetVolume = shouldPlay ? 0.82 : 0;
+    const startedAt = performance.now();
+    const duration = 900;
+
+    if (shouldPlay) {
+      video.muted = false;
+      setVideoMuted(false);
+      void video.play().catch(() => {
+        video.muted = true;
+        setVideoMuted(true);
+        setAudioNeedsGesture(true);
+      });
+    }
+
+    const animate = (now: number) => {
+      const progress = Math.min((now - startedAt) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      video.volume = startVolume + (targetVolume - startVolume) * eased;
+
+      if (progress < 1) {
+        audioAnimationRef.current = requestAnimationFrame(animate);
+        return;
+      }
+
+      audioAnimationRef.current = null;
+      if (!shouldPlay) {
+        video.muted = true;
+        setVideoMuted(true);
+      }
+    };
+
+    audioAnimationRef.current = requestAnimationFrame(animate);
+  }, []);
+
+  const activateCarnetAudio = useCallback(async () => {
+    const video = productVideoRef.current;
+    if (!video) return;
+
+    requestAudioFocus('carnet');
+    setCarnetAudioFocused(true);
+    video.muted = false;
+    video.volume = 0.82;
+    setVideoMuted(false);
+
+    try {
+      await video.play();
+      setAudioNeedsGesture(false);
+    } catch {
+      video.muted = true;
+      setVideoMuted(true);
+      setAudioNeedsGesture(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    const video = productVideoRef.current;
+    if (!video) return;
+
+    video.volume = 0;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const isFocused = entry.isIntersecting && entry.intersectionRatio >= 0.35;
+        setCarnetAudioFocused(isFocused);
+        requestAudioFocus(isFocused ? 'carnet' : 'intro');
+        fadeCarnetAudio(isFocused);
+      },
+      { threshold: [0, 0.35, 0.65], rootMargin: '-22% 0px -22% 0px' },
+    );
+
+    observer.observe(video);
+    return () => {
+      observer.disconnect();
+      if (audioAnimationRef.current !== null) cancelAnimationFrame(audioAnimationRef.current);
+      requestAudioFocus('intro');
+    };
+  }, [fadeCarnetAudio]);
 
   const moveGallery = (direction: 1 | -1) => {
     setGalleryIndex((current) => (current + direction + GALLERY.length) % GALLERY.length);
@@ -330,18 +423,35 @@ export function PersonalizedVeterinaryNotebook() {
               mejor represente a tu mascota.
             </p>
           </div>
-          <div className="overflow-hidden rounded-2xl bg-black">
+           <div className="relative overflow-hidden rounded-2xl bg-black">
             <video
+               ref={productVideoRef}
               className="aspect-video w-full object-cover"
               src={productVideo}
               autoPlay
-              muted
+               muted={videoMuted}
               loop
               playsInline
               controls
               preload="metadata"
               aria-label="Video del carnet veterinario personalizado"
             />
+             {carnetAudioFocused && !audioNeedsGesture && (
+               <div className="pointer-events-none absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/55 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-white backdrop-blur-md">
+                 <Volume2 className="h-3.5 w-3.5 text-cyan-300" />
+                 Música del carnet
+               </div>
+             )}
+             {carnetAudioFocused && audioNeedsGesture && (
+               <button
+                 type="button"
+                 onClick={activateCarnetAudio}
+                 className="absolute inset-x-4 bottom-4 flex items-center justify-center gap-2 rounded-full bg-pink-500 px-4 py-3 text-sm font-bold text-white shadow-xl shadow-pink-900/30 transition hover:bg-pink-400"
+               >
+                 <Volume2 className="h-4 w-4" />
+                 Activar música del carnet
+               </button>
+             )}
           </div>
         </div>
       </div>
