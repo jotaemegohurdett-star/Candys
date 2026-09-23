@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Check, ChevronLeft, ChevronRight, Clock3, MessageCircle, Ruler, Truck } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, Clock3, MessageCircle, Ruler, ShoppingBag, Truck } from 'lucide-react';
+import { toast } from 'sonner';
+import { useCart } from '../context/CartContext';
 import { customProductWaLink } from '../lib/constants';
 import { WhatsAppIcon } from './WhatsAppIcon';
 
@@ -30,12 +32,14 @@ const FORMAT_OPTIONS = [
     id: 'A6',
     name: 'Pequeño A6',
     dimensions: '15,5 × 11 cm',
+    price: 12990,
     description: 'Cómodo para llevar en cualquier bolso.',
   },
   {
     id: 'A5',
     name: 'Grande A5',
     dimensions: '21,5 × 15 cm',
+    price: 15990,
     description: 'Formato tipo agenda, con más espacio.',
   },
 ] as const;
@@ -55,6 +59,7 @@ const CONTENTS = [
 ];
 
 export function PersonalizedVeterinaryNotebook() {
+  const { addToCart, openCart } = useCart();
   const [format, setFormat] = useState<(typeof FORMAT_OPTIONS)[number]['id']>('A6');
   const [color, setColor] = useState<(typeof COLOR_OPTIONS)[number]['id']>('Rosado');
   const [galleryIndex, setGalleryIndex] = useState(0);
@@ -69,8 +74,25 @@ export function PersonalizedVeterinaryNotebook() {
     "Hola Candy's Pet! 🐾 Quiero pedir un Carnet Veterinario Personalizado.",
     `Formato: ${selectedFormat.name} (${selectedFormat.dimensions})`,
     `Color: ${color}`,
+    `Valor: $${selectedFormat.price.toLocaleString('es-CL')}`,
     'Quisiera coordinar la personalización, el valor y el despacho.',
   ].join('\n');
+
+  const handleAddToCart = () => {
+    addToCart({
+      productId: 'custom-veterinary-notebook',
+      name: `Carnet veterinario personalizado · ${selectedFormat.name}`,
+      price: selectedFormat.price,
+      image: promoImage,
+      size: selectedFormat.id,
+      color,
+    });
+    toast.success('¡Carnet agregado al carrito! 🐾', {
+      description: `${selectedFormat.name} · ${color} · $${selectedFormat.price.toLocaleString('es-CL')}`,
+      action: { label: 'Ver carrito', onClick: openCart },
+      duration: 5000,
+    });
+  };
 
   const moveGallery = (direction: 1 | -1) => {
     setGalleryIndex((current) => (current + direction + GALLERY.length) % GALLERY.length);
@@ -79,7 +101,7 @@ export function PersonalizedVeterinaryNotebook() {
   return (
     <section
       id="carnet-veterinario"
-      className="relative overflow-hidden py-24"
+      className="relative scroll-mt-24 overflow-hidden py-24"
       style={{ background: 'linear-gradient(180deg, hsl(220 25% 9%) 0%, hsl(220 27% 12%) 100%)' }}
     >
       <div className="pointer-events-none absolute -left-36 top-24 h-80 w-80 rounded-full bg-pink-500/10 blur-3xl" />
@@ -209,6 +231,9 @@ export function PersonalizedVeterinaryNotebook() {
                     </span>
                   </div>
                   <p className="mt-2 text-sm font-semibold text-pink-200">{option.dimensions}</p>
+                  <p className="mt-1 text-lg font-black text-white">
+                    ${option.price.toLocaleString('es-CL')}
+                  </p>
                   <p className="mt-1 text-xs leading-relaxed text-white/50">{option.description}</p>
                 </button>
               ))}
@@ -262,11 +287,26 @@ export function PersonalizedVeterinaryNotebook() {
               </div>
             </div>
 
+            <div className="mt-6 flex items-center justify-between rounded-2xl border border-pink-300/20 bg-pink-400/10 px-4 py-3">
+              <span className="text-sm text-white/65">Valor seleccionado</span>
+              <span className="text-2xl font-black text-pink-200">
+                ${selectedFormat.price.toLocaleString('es-CL')}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-pink-500 px-6 py-4 text-center font-bold text-white shadow-lg shadow-pink-500/20 transition hover:-translate-y-0.5 hover:bg-pink-400"
+            >
+              <ShoppingBag className="h-5 w-5" />
+              Agregar al carrito
+            </button>
             <a
               href={customProductWaLink(whatsappMessage)}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-7 flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-6 py-4 text-center font-bold text-white shadow-lg shadow-[#25D366]/20 transition hover:-translate-y-0.5 hover:bg-[#20bd5a]"
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-6 py-4 text-center font-bold text-white shadow-lg shadow-[#25D366]/20 transition hover:-translate-y-0.5 hover:bg-[#20bd5a]"
             >
               <WhatsAppIcon className="h-5 w-5" />
               Pedir por WhatsApp

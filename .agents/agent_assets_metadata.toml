@@ -53,3 +53,17 @@ mtime_ms = 1790139976338
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:c3b3173d-9874-4722-b19d-40eff54307f0/36d00da4-ca4a-4cdb-abd8-1bbe0b8fda92/f81d2e62-ad24-4129-ae06-6084d9c21cd9"
 storage_version_token = "1790140038343795"
 content_type = "image/jpeg"
+
+[[outputs]]
+id = "EMMkRi-7KXV6kwDTFAm6j"
+uri = "file://attached_assets/llavero-reverso-datos-protegidos.jpg"
+type = "image"
+title = "Reverso del llavero con datos protegidos"
+description = "Versión preparada para publicar: los últimos tres dígitos del teléfono del cliente están desenfocados."
+logical_id = "185dffd2-80ba-42dc-bf80-8c6e10ac9828"
+content_hash = "sha256:0f15ed8c1040761bac025907ed39a35be03771ad5f447937e4924d971101451c"
+size = 150907
+mtime_ms = 1790140716869
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:c3b3173d-9874-4722-b19d-40eff54307f0/185dffd2-80ba-42dc-bf80-8c6e10ac9828/f43f812f-1ca6-46b0-807f-693d2a3c1cf8"
+storage_version_token = "1790140772728693"
+content_type = "image/jpeg"

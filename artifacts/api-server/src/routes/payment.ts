@@ -7,6 +7,20 @@ import { logger } from "../lib/logger";
 
 const router: IRouter = Router();
 
+const CUSTOM_ITEM_PRICES: Record<string, number> = {
+  "custom-veterinary-notebook-A6": 12990,
+  "custom-veterinary-notebook-A5": 15990,
+};
+
+function isStockManagedProduct(productId: string): boolean {
+  return productId !== "shipping" && !productId.startsWith("custom-");
+}
+
+function normalizeItemPrice<T extends { productId: string; size: string; unit_price: number }>(item: T): T {
+  const configuredPrice = CUSTOM_ITEM_PRICES[`${item.productId}-${item.size}`];
+  return configuredPrice === undefined ? item : { ...item, unit_price: configuredPrice };
+}
+
 function getMpClient() {
   const accessToken = process.env["MP_ACCESS_TOKEN"];
   if (!accessToken) return null;
@@ -18,6 +32,7 @@ async function deductStock(
   items: { productId: string; size: string; quantity: number }[]
 ) {
   for (const item of items) {
+    if (!isStockManagedProduct(item.productId)) continue;
     const stockId = `${item.productId}-${item.size}`;
     await db
       .update(stockTable)
@@ -66,8 +81,11 @@ router.post("/preference", async (req, res) => {
     return;
   }
 
+  const normalizedItems = items.map(normalizeItemPrice);
+
   // Verify stock before creating preference
-  for (const item of items) {
+  for (const item of normalizedItems) {
+    if (!isStockManagedProduct(item.productId)) continue;
     const stockId = `${item.productId}-${item.size}`;
     const [stockRow] = await db
       .select()
@@ -89,13 +107,13 @@ router.post("/preference", async (req, res) => {
   try {
     const orderId = randomUUID();
     const origin = back_url ?? "https://candyspet.replit.app";
-    const totalAmount = items.reduce((acc, i) => acc + i.unit_price * i.quantity, 0);
+     const totalAmount = normalizedItems.reduce((acc, i) => acc + i.unit_price * i.quantity, 0);
 
     const preference = new Preference(client);
     const result = await preference.create({
       body: {
         external_reference: orderId,
-        items: items.map((item) => ({
+         items: normalizedItems.map((item) => ({
           id: `${item.productId}-${item.size}`,
           title: item.title,
           quantity: item.quantity,
@@ -121,7 +139,7 @@ router.post("/preference", async (req, res) => {
       id: orderId,
       mpPreferenceId: result.id ?? "",
       status: "pending",
-      items: items as unknown as Record<string, unknown>[],
+       items: normalizedItems as unknown as Record<string, unknown>[],
       totalAmount,
     });
 
