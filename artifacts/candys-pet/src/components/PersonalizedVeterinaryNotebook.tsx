@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { useCart } from '../context/CartContext';
 import { customProductWaLink } from '../lib/constants';
 import { requestAudioFocus } from '../lib/audioFocus';
+import { useCatalog } from '../hooks/useCatalog';
 import { WhatsAppIcon } from './WhatsAppIcon';
 
 import promoImage from '@assets/carnet-veterinario-whatsapp.jpg';
@@ -33,14 +34,12 @@ const FORMAT_OPTIONS = [
     id: 'A6',
     name: 'Pequeño A6',
     dimensions: '15,5 × 11 cm',
-    price: 12990,
     description: 'Cómodo para llevar en cualquier bolso.',
   },
   {
     id: 'A5',
     name: 'Grande A5',
     dimensions: '21,5 × 15 cm',
-    price: 15990,
     description: 'Formato tipo agenda, con más espacio.',
   },
 ] as const;
@@ -61,6 +60,7 @@ const CONTENTS = [
 
 export function PersonalizedVeterinaryNotebook() {
   const { addToCart, openCart } = useCart();
+  const { getVeterinaryPrice } = useCatalog();
   const [format, setFormat] = useState<(typeof FORMAT_OPTIONS)[number]['id']>('A6');
   const [color, setColor] = useState<(typeof COLOR_OPTIONS)[number]['id']>('Rosado');
   const [galleryIndex, setGalleryIndex] = useState(0);
@@ -75,26 +75,35 @@ export function PersonalizedVeterinaryNotebook() {
     () => FORMAT_OPTIONS.find((option) => option.id === format) ?? FORMAT_OPTIONS[0],
     [format],
   );
+  const selectedPrice = getVeterinaryPrice(selectedFormat.id);
 
   const whatsappMessage = [
     "Hola Candy's Pet! 🐾 Quiero pedir un Carnet Veterinario Personalizado.",
     `Formato: ${selectedFormat.name} (${selectedFormat.dimensions})`,
     `Color: ${color}`,
-    `Valor: $${selectedFormat.price.toLocaleString('es-CL')}`,
-    'Quisiera coordinar la personalización, el valor y el despacho.',
+    selectedPrice
+      ? `Valor: $${selectedPrice.toLocaleString('es-CL')}`
+      : 'Valor: por confirmar según configuración vigente',
+    'Despacho: gratis sobre $49.900.',
+    'Quisiera coordinar la personalización y el despacho.',
   ].join('\n');
 
   const handleAddToCart = () => {
+    if (!selectedPrice) {
+      toast.info('Este formato todavía no tiene precio configurado. Puedes pedirlo por WhatsApp.');
+      return;
+    }
+
     addToCart({
-      productId: 'custom-veterinary-notebook',
+      productId: 'veterinary-notebook',
       name: `Carnet veterinario personalizado · ${selectedFormat.name}`,
-      price: selectedFormat.price,
+      price: selectedPrice,
       image: promoImage,
       size: selectedFormat.id,
       color,
     });
     toast.success('¡Carnet agregado al carrito! 🐾', {
-      description: `${selectedFormat.name} · ${color} · $${selectedFormat.price.toLocaleString('es-CL')}`,
+      description: `${selectedFormat.name} · ${color} · $${selectedPrice.toLocaleString('es-CL')}`,
       action: { label: 'Ver carrito', onClick: openCart },
       duration: 5000,
     });
@@ -341,7 +350,9 @@ export function PersonalizedVeterinaryNotebook() {
                   </div>
                   <p className="mt-2 text-sm font-semibold text-pink-200">{option.dimensions}</p>
                   <p className="mt-1 text-lg font-black text-white">
-                    ${option.price.toLocaleString('es-CL')}
+                    {getVeterinaryPrice(option.id)
+                      ? `$${getVeterinaryPrice(option.id)!.toLocaleString('es-CL')}`
+                      : 'Precio por confirmar'}
                   </p>
                   <p className="mt-1 text-xs leading-relaxed text-white/50">{option.description}</p>
                 </button>
@@ -399,14 +410,16 @@ export function PersonalizedVeterinaryNotebook() {
             <div className="mt-6 flex items-center justify-between rounded-2xl border border-pink-300/20 bg-pink-400/10 px-4 py-3">
               <span className="text-sm text-white/65">Valor seleccionado</span>
               <span className="text-2xl font-black text-pink-200">
-                ${selectedFormat.price.toLocaleString('es-CL')}
+                {selectedPrice ? `$${selectedPrice.toLocaleString('es-CL')}` : 'Precio por confirmar'}
               </span>
             </div>
 
             <button
               type="button"
               onClick={handleAddToCart}
-              className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-pink-500 px-6 py-4 text-center font-bold text-white shadow-lg shadow-pink-500/20 transition hover:-translate-y-0.5 hover:bg-pink-400"
+              disabled={!selectedPrice}
+              title={!selectedPrice ? 'Este formato aún no tiene precio configurado' : undefined}
+              className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-pink-500 px-6 py-4 text-center font-bold text-white shadow-lg shadow-pink-500/20 transition hover:-translate-y-0.5 hover:bg-pink-400 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <ShoppingBag className="h-5 w-5" />
               Agregar al carrito
