@@ -21,7 +21,7 @@ router.get("/", async (_req, res) => {
       db.select().from(stockTable).orderBy(asc(stockTable.productId)),
     ]);
 
-    // Build prices map, including optional veterinary notebook prices.
+    // Build prices map: { price_m: "17990", price_l: "20990" }
     const prices: Record<string, string> = {};
     for (const r of settingsRows) prices[r.key] = r.value;
 

@@ -41,6 +41,8 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 _Populate as you build — sharp edges, "always run X before Y" rules._
 
+- The optional `candys-pet-video` artifact currently has existing TypeScript errors, so `pnpm run build` will stop during the workspace-wide typecheck. The primary storefront and API can be validated independently with `PORT=25253 BASE_PATH=/ pnpm --filter @workspace/candys-pet run build` and `pnpm --filter @workspace/api-server run build`.
+
 ## Pointers
 
 - See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
