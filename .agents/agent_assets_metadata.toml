@@ -67,3 +67,17 @@ mtime_ms = 1790140716869
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:c3b3173d-9874-4722-b19d-40eff54307f0/185dffd2-80ba-42dc-bf80-8c6e10ac9828/f43f812f-1ca6-46b0-807f-693d2a3c1cf8"
 storage_version_token = "1790140772728693"
 content_type = "image/jpeg"
+
+[[outputs]]
+id = "fEVgQ1dQNHY4UwTDM3CU4"
+uri = "file://.agents/outputs/candys-pet-organigrama-integraciones.pdf"
+type = "pdf"
+title = "Candy's Pet — Organigrama técnico de integraciones"
+description = "PDF privado en blanco y negro, optimizado para imprimir: arquitectura, integraciones, configuración, recorridos de datos, checkout, storage, autenticación, despliegue y guía para repetir el patrón en otro proyecto."
+logical_id = "a4610a9c-1820-4efa-b30a-50c02eee341e"
+content_hash = "sha256:f50f354d0b3515d70278c7daaa7cc7c78a466eb4de97bccc1eab6ca17b432e85"
+size = 150181
+mtime_ms = 1790175410413
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:c3b3173d-9874-4722-b19d-40eff54307f0/a4610a9c-1820-4efa-b30a-50c02eee341e/e05c7f06-f5b7-4c71-8bcc-e90cb836409d"
+storage_version_token = "1790175421571416"
+content_type = "application/pdf"
