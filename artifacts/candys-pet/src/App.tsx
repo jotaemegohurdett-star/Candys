@@ -8,6 +8,7 @@ import { Benefits } from './components/Benefits';
 import { Products } from './components/Products';
 import { PersonalizedVeterinaryNotebook } from './components/PersonalizedVeterinaryNotebook';
 import { PersonalizedKeychain } from './components/PersonalizedKeychain';
+import { PersonalizedMug } from './components/PersonalizedMug';
 import { VideoSection } from './components/VideoSection';
 import { SizeGuide } from './components/SizeGuide';
 import { Testimonials } from './components/Testimonials';
@@ -45,6 +46,7 @@ function StoreFront() {
           <Products />
           <PersonalizedVeterinaryNotebook />
           <PersonalizedKeychain />
+          <PersonalizedMug />
           <Benefits />
           <SizeGuide />
           <Testimonials />

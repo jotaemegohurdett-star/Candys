@@ -12,6 +12,7 @@ const navLinks = [
   { name: 'Beneficios', href: '#benefits' },
   { name: 'Catálogo', href: '#products' },
   { name: 'Personalizados', href: '#carnet-veterinario' },
+  { name: 'Tazones', href: '#tazones-personalizados' },
   { name: 'Guía de Tallas', href: '#size-guide' },
   { name: 'Reseñas', href: '#testimonials' },
   { name: 'Contacto', href: '#location' },
