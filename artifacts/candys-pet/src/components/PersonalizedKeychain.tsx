@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, MessageCircle, ShieldCheck, Sparkles } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, MessageCircle, ShieldCheck, Sparkles } from 'lucide-react';
 import { customProductWaLink } from '../lib/constants';
 import { WhatsAppIcon } from './WhatsAppIcon';
 
@@ -23,8 +23,8 @@ export function PersonalizedKeychain() {
   };
 
   const whatsappMessage = [
-    "Hola Candy's Pet! 🐾 Quiero consultar por un llavero personalizado.",
-    'Vi las muestras de la chapita para mascota y quisiera conocer los diseños, medidas y valor.',
+    "Hola Candy's Pet! 🐾 Quiero pedir la placa de identificación huesito personalizada modelo KIRA.",
+    'Vi la muestra de la chapita y me gustaría coordinar mi diseño por $3.500.',
   ].join('\n');
 
   return (
@@ -111,22 +111,41 @@ export function PersonalizedKeychain() {
               Nueva línea personalizada
             </span>
             <h2 className="mt-5 font-heading text-4xl font-bold leading-tight text-white md:text-5xl">
-              Llavero personalizado para llevarlo siempre contigo
+              Placa de identificación huesito personalizada 🐾
             </h2>
             <p className="mt-5 max-w-xl text-sm leading-relaxed text-white/60 md:text-base">
-              Diseños personalizados con el nombre de tu mascota y sus datos de contacto. Ideal para
-              acompañar su collar, arnés o tus propias llaves.
+              <strong className="font-semibold text-white/85">Modelo KIRA</strong>
+              <br />
+              ¡Tu peludito siempre seguro y con mucho estilo! 🩷
             </p>
 
             <div className="mt-7 grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl border border-white/10 bg-white/[0.05] p-4">
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-cyan-300">Personalizable</p>
-                <p className="mt-2 text-sm text-white/70">Nombre, diseño y datos de contacto.</p>
+                <p className="mt-2 text-sm text-white/70">Nombre, dibujo de su raza y datos de contacto.</p>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/[0.05] p-4">
+              <div className="rounded-2xl border border-pink-300/25 bg-pink-300/10 p-4">
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-pink-300">Valor</p>
-                <p className="mt-2 text-sm text-white/70">Próximamente · consulta por WhatsApp.</p>
+                <p className="mt-2 text-2xl font-bold text-white">$3.500</p>
               </div>
+            </div>
+
+            <div className="mt-6">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-white/45">¿Qué incluye?</p>
+              <ul className="mt-3 grid gap-2 text-sm leading-relaxed text-white/70 sm:grid-cols-2">
+                {[
+                  'Nombre grande por delante: “Hola Soy Kira” + dibujo de su raza.',
+                  'Datos por detrás: “Mamá de Kira” + tu WhatsApp.',
+                  'Forma de huesito, liviana y no molesta.',
+                  'Material resistente al agua y no se oxida.',
+                  'Argolla y cadena metálica incluida, lista para poner en su collar.',
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-pink-300" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
             <div className="mt-6 flex items-start gap-3 rounded-2xl border border-cyan-300/15 bg-cyan-300/10 p-4 text-sm text-white/70">
@@ -141,10 +160,10 @@ export function PersonalizedKeychain() {
               className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-6 py-4 text-center font-bold text-white shadow-lg shadow-[#25D366]/20 transition hover:-translate-y-0.5 hover:bg-[#20bd5a] sm:w-auto"
             >
               <WhatsAppIcon className="h-5 w-5" />
-              Consultar valor por WhatsApp
+              Pedir por WhatsApp
               <MessageCircle className="h-4 w-4 opacity-75" />
             </a>
-            <p className="mt-3 text-xs text-white/45">+56 9 9050 4762 · El precio del llavero se agregará cuando esté definido.</p>
+            <p className="mt-3 text-xs text-white/45">+56 9 9050 4762 · Precio de la placa personalizada: $3.500.</p>
           </motion.div>
         </div>
       </div>
