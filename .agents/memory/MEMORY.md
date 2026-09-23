@@ -1,6 +1,7 @@
 - [Video artifacts and exports](video-artifact-exports.md) — distinguish the live Animation artifact from separately rendered MP4 deliverables before wiring download links.
 - [Customer image privacy](customer-image-privacy.md) — sanitize contact details in derived public assets; never render the original customer photo in the storefront.
 - [Vercel monorepo API entry](vercel-monorepo-api-entry.md) — Vercel function typechecking can differ from local TypeScript; serve a prebuilt Express bundle through a JavaScript entry.
+- [Vercel nested static routing](vercel-nested-static-routing.md) — serve filesystem assets before the SPA fallback; direct prebuilt deployments need separate static and Node builders.
 - [Vercel GitHub auto-deploy](vercel-github-auto-deploy.md) — pushes to the connected main branch deploy production automatically; no Replit Republish is needed for Vercel.
 - [Cloudflare connector permissions](cloudflare-connector-permissions.md) — zone reads can work while DNS and SSL writes fail unless the account token includes edit permissions for the zone.
 - [Imported artifact registration](imported-artifact-registration.md) — imported artifact metadata may exist without platform records; use the existing commands to configure minimal workflows when managed services are unavailable.
