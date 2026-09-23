@@ -1,32 +1,77 @@
 import { Router, type IRouter } from "express";
 import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
-import { db, stockTable, ordersTable } from "@workspace/db";
+import { db, stockTable, ordersTable, settingsTable } from "@workspace/db";
 import { eq, sql } from "drizzle-orm";
 import { randomUUID } from "crypto";
 import { logger } from "../lib/logger";
 
 const router: IRouter = Router();
 
-const CUSTOM_ITEM_PRICES: Record<string, number> = {
+const LEGACY_CUSTOM_ITEM_PRICES: Record<string, number> = {
   "custom-veterinary-notebook-A6": 12990,
   "custom-veterinary-notebook-A5": 15990,
 };
+const VETERINARY_NOTEBOOK_ID = "veterinary-notebook";
 const SHIPPING_COST = 3500;
 const FREE_SHIPPING_THRESHOLD = 49900;
 
-function isStockManagedProduct(productId: string): boolean {
-  return productId !== "shipping" && !productId.startsWith("custom-");
+function isVeterinaryNotebook(productId: string): boolean {
+  return productId === VETERINARY_NOTEBOOK_ID || productId.startsWith("custom-veterinary-notebook");
 }
 
-function normalizeItemPrice<T extends { productId: string; size: string; unit_price: number }>(item: T): T {
-  const configuredPrice = CUSTOM_ITEM_PRICES[`${item.productId}-${item.size}`];
-  return configuredPrice === undefined ? item : { ...item, unit_price: configuredPrice };
+function isStockManagedProduct(productId: string): boolean {
+  return productId !== "shipping" && !productId.startsWith("custom-") && !isVeterinaryNotebook(productId);
+}
+
+type PaymentItem = {
+  productId: string;
+  title: string;
+  quantity: number;
+  unit_price: number;
+  currency_id: string;
+  size: string;
+  color?: string;
+};
+
+async function normalizeItemPrices(items: PaymentItem[]): Promise<PaymentItem[]> {
+  const veterinaryItems = items.filter((item) => isVeterinaryNotebook(item.productId));
+  if (veterinaryItems.length === 0) return items;
+
+  const settingsRows = await db.select().from(settingsTable);
+  const veterinaryPrices = Object.fromEntries(
+    settingsRows
+      .filter((row) => row.key === "price_carnet_a6" || row.key === "price_carnet_a5")
+      .map((row) => [row.key, Number(row.value)]),
+  ) as Record<string, number>;
+
+  return items.map((item) => {
+    if (!isVeterinaryNotebook(item.productId)) return item;
+
+    const format = item.size?.toUpperCase();
+    const priceKey = format === "A5" ? "price_carnet_a5" : format === "A6" ? "price_carnet_a6" : null;
+    const configuredPrice = priceKey ? veterinaryPrices[priceKey] : null;
+    const legacyPrice = LEGACY_CUSTOM_ITEM_PRICES[`${item.productId}-${format}`];
+    const unitPrice = configuredPrice && Number.isInteger(configuredPrice) && configuredPrice > 0
+      ? configuredPrice
+      : legacyPrice;
+
+    if (!priceKey || !unitPrice) {
+      throw new Error("PRICE_NOT_CONFIGURED");
+    }
+
+    return {
+      ...item,
+      size: format,
+      title: `Carnet veterinario personalizado · Formato ${format}${item.color ? ` · ${item.color}` : ""}`,
+      unit_price: unitPrice,
+    };
+  });
 }
 
 function normalizeShippingPrice<T extends { productId: string; unit_price: number }>(items: T[]): T[] {
   const subtotal = items
     .filter((item) => item.productId !== "shipping")
-    .reduce((total, item) => total + item.unit_price, 0);
+    .reduce((total, item) => total + item.unit_price * ("quantity" in item ? Number(item.quantity) : 1), 0);
   const shippingPrice = subtotal > FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
 
   return items.map((item) =>
@@ -94,7 +139,21 @@ router.post("/preference", async (req, res) => {
     return;
   }
 
-  const normalizedItems = normalizeShippingPrice(items.map(normalizeItemPrice));
+  let normalizedItems: PaymentItem[];
+  try {
+    normalizedItems = normalizeShippingPrice(await normalizeItemPrices(items));
+  } catch (err) {
+    if (err instanceof Error && err.message === "PRICE_NOT_CONFIGURED") {
+      res.status(409).json({
+        error: "PRICE_NOT_CONFIGURED",
+        message: "El precio del formato seleccionado aún no está configurado.",
+      });
+      return;
+    }
+    logger.error({ err }, "Failed to validate payment items");
+    res.status(500).json({ error: "PAYMENT_VALIDATION_ERROR" });
+    return;
+  }
 
   // Verify stock before creating preference
   for (const item of normalizedItems) {
@@ -120,13 +179,13 @@ router.post("/preference", async (req, res) => {
   try {
     const orderId = randomUUID();
     const origin = back_url ?? "https://candyspet.cl";
-     const totalAmount = normalizedItems.reduce((acc, i) => acc + i.unit_price * i.quantity, 0);
+    const totalAmount = normalizedItems.reduce((acc, i) => acc + i.unit_price * i.quantity, 0);
 
     const preference = new Preference(client);
     const result = await preference.create({
       body: {
         external_reference: orderId,
-         items: normalizedItems.map((item) => ({
+        items: normalizedItems.map((item) => ({
           id: `${item.productId}-${item.size}`,
           title: item.title,
           quantity: item.quantity,
@@ -152,7 +211,7 @@ router.post("/preference", async (req, res) => {
       id: orderId,
       mpPreferenceId: result.id ?? "",
       status: "pending",
-       items: normalizedItems as unknown as Record<string, unknown>[],
+      items: normalizedItems as unknown as Record<string, unknown>[],
       totalAmount,
     });
 

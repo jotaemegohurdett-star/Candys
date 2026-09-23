@@ -75,7 +75,11 @@ export function CartDrawer() {
       let message = `Hola Candy's Pet! 🐾 Me gustaría reservar:\n\n`;
       for (const item of items) {
         message += `- ${item.quantity}x ${item.name}`;
-        if (item.size) message += ` (Talla: ${item.size})`;
+        if (item.size) {
+          message += item.productId === 'veterinary-notebook'
+            ? ` (Formato: ${item.size})`
+            : ` (Talla: ${item.size})`;
+        }
         if (item.color) message += ` (Color: ${item.color})`;
         message += ` — $${(item.price * item.quantity).toLocaleString('es-CL')}\n`;
       }
@@ -110,7 +114,11 @@ export function CartDrawer() {
           items: [
             ...items.map((item) => ({
               productId: item.productId,
-              title: [item.name, item.size && `Talla ${item.size}`, item.color].filter(Boolean).join(' · '),
+              title: [
+                item.name,
+                item.size && `${item.productId === 'veterinary-notebook' ? 'Formato' : 'Talla'} ${item.size}`,
+                item.color,
+              ].filter(Boolean).join(' · '),
               quantity: item.quantity,
               unit_price: item.price,
               currency_id: 'CLP',
@@ -140,6 +148,12 @@ export function CartDrawer() {
         }
         if (data.error === 'OUT_OF_STOCK') {
           toast.error(`Sin stock: ${data.message}`, { duration: 6000 });
+          return;
+        }
+        if (data.error === 'PRICE_NOT_CONFIGURED') {
+          window.open(buildWaLink('mercadopago'), '_blank');
+          closeCart();
+          toast.info('El precio del carnet cambió o aún no está configurado. Te redirigimos a WhatsApp.');
           return;
         }
         throw new Error(data.message ?? 'Error desconocido');
@@ -242,7 +256,11 @@ export function CartDrawer() {
                         </div>
 
                         <div className="text-xs text-muted-foreground mb-2 flex gap-2">
-                          {item.size && <span>Talla: {item.size}</span>}
+                          {item.size && (
+                            <span>
+                              {item.productId === 'veterinary-notebook' ? 'Formato' : 'Talla'}: {item.size}
+                            </span>
+                          )}
                           {item.size && item.color && <span>·</span>}
                           {item.color && <span>{item.color}</span>}
                         </div>
