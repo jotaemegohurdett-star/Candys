@@ -84,7 +84,7 @@ router.put("/stock/:id", adminGuard, async (req, res) => {
 
 router.get("/settings", adminGuard, async (_req, res) => {
   try {
-    const rows = await db.select().from(productImagesTable).orderBy(asc(productImagesTable.productId), asc(productImagesTable.position));
+    const rows = await db.select().from(settingsTable).orderBy(asc(settingsTable.key));
     const map: Record<string, string> = {};
     for (const r of rows) map[r.key] = r.value;
     res.json(map);
@@ -122,7 +122,7 @@ router.put("/settings/:key", adminGuard, async (req, res) => {
 /** Returns unique products [{id, name}] derived from the stock table */
 router.get("/products", adminGuard, async (_req, res) => {
   try {
-    const rows = await db.select().from(productImagesTable).orderBy(asc(productImagesTable.productId), asc(productImagesTable.position));
+    const rows = await db.select().from(stockTable).orderBy(asc(stockTable.productId));
     const seen = new Set<string>();
     const products: { id: string; name: string }[] = [];
     for (const r of rows) {

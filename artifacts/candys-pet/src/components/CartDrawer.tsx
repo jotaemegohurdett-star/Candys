@@ -120,19 +120,12 @@ export function CartDrawer() {
                 item.color,
               ].filter(Boolean).join(' · '),
               quantity: item.quantity,
-              unit_price: item.price,
-              currency_id: 'CLP',
               size: item.size ?? 'M',
               color: item.color,
             })),
-            ...(shippingApplies ? [{
-              productId: 'shipping',
-              title: `Despacho con ${SHIPPING_PROVIDERS.find((option) => option.id === shippingProvider)?.name ?? 'transportista seleccionado'}`,
-              quantity: 1,
-              unit_price: shippingCost,
-              currency_id: 'CLP',
-            }] : []),
           ],
+          shippingRequested,
+          shippingProvider,
           back_url: window.location.origin + import.meta.env.BASE_URL,
         }),
       });
@@ -141,9 +134,7 @@ export function CartDrawer() {
 
       if (!res.ok) {
         if (data.error === 'MP_NOT_CONFIGURED') {
-          window.open(buildWaLink('mercadopago'), '_blank');
-          closeCart();
-          toast.info('MercadoPago aún no está activado. Te redirigimos a WhatsApp para coordinar.');
+          toast.error('MercadoPago aún no está configurado. Elige Transferencia para coordinar por WhatsApp.');
           return;
         }
         if (data.error === 'OUT_OF_STOCK') {
@@ -151,25 +142,24 @@ export function CartDrawer() {
           return;
         }
         if (data.error === 'PRICE_NOT_CONFIGURED') {
-          window.open(buildWaLink('mercadopago'), '_blank');
-          closeCart();
-          toast.info('El precio del carnet cambió o aún no está configurado. Te redirigimos a WhatsApp.');
+          toast.error('El precio de un producto cambió o aún no está configurado. Revisa el carrito.');
           return;
         }
         throw new Error(data.message ?? 'Error desconocido');
       }
 
       // Redirect to MercadoPago Checkout Pro
+      if (!data.init_point) {
+        throw new Error('MercadoPago no devolvió el enlace de pago');
+      }
       window.location.href = data.init_point as string;
     } catch (err) {
       console.error('MP checkout error:', err);
-      toast.error('No se pudo iniciar el pago. Redirigiendo a WhatsApp…');
-      window.open(buildWaLink('mercadopago'), '_blank');
-      closeCart();
+      toast.error('No se pudo iniciar el pago. Revisa tu conexión e inténtalo nuevamente.');
     } finally {
       setLoadingMp(false);
     }
-  }, [items, buildWaLink, closeCart, shippingApplies, shippingCost, shippingProvider]);
+  }, [items, shippingRequested, shippingProvider]);
 
   return (
     <>
