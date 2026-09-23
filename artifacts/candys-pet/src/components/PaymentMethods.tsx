@@ -1,6 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { MapPin, Truck } from 'lucide-react';
 import { waLink } from '../lib/constants';
+import { FREE_SHIPPING_THRESHOLD, SHIPPING_PROVIDERS } from '../lib/shipping';
 
 const methods = [
   {
@@ -155,6 +157,47 @@ export function PaymentMethods() {
               )}
             </motion.div>
           ))}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-8 rounded-3xl border border-white/8 p-6 sm:p-7"
+          style={{ background: 'hsl(220 25% 12%)' }}
+        >
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="rounded-2xl bg-cyan-400/15 p-3 text-cyan-300">
+                <Truck className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="font-heading text-xl font-bold text-white">Despachos fuera de la VI Región</h3>
+                <p className="mt-1 max-w-xl text-sm leading-relaxed text-white/50">
+                  Enviamos a todo Chile. Elige el transportista al activar despacho en el carrito.
+                  Las compras superiores a ${FREE_SHIPPING_THRESHOLD.toLocaleString('es-CL')} tienen despacho gratis.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-xs font-semibold text-cyan-200">
+              <MapPin className="h-4 w-4" />
+              Todo Chile
+            </div>
+          </div>
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            {SHIPPING_PROVIDERS.map((provider) => (
+              <div
+                key={provider.id}
+                className="flex min-h-[76px] items-center justify-center rounded-2xl border border-white/10 bg-white px-4 py-3"
+              >
+                <img
+                  src={provider.logo}
+                  alt={`Logo de ${provider.name}`}
+                  className={`${provider.logoClassName} w-auto object-contain`}
+                />
+              </div>
+            ))}
+          </div>
         </motion.div>
 
         {/* Footer note */}

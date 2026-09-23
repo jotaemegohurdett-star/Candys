@@ -11,6 +11,8 @@ const CUSTOM_ITEM_PRICES: Record<string, number> = {
   "custom-veterinary-notebook-A6": 12990,
   "custom-veterinary-notebook-A5": 15990,
 };
+const SHIPPING_COST = 3500;
+const FREE_SHIPPING_THRESHOLD = 49900;
 
 function isStockManagedProduct(productId: string): boolean {
   return productId !== "shipping" && !productId.startsWith("custom-");
@@ -19,6 +21,17 @@ function isStockManagedProduct(productId: string): boolean {
 function normalizeItemPrice<T extends { productId: string; size: string; unit_price: number }>(item: T): T {
   const configuredPrice = CUSTOM_ITEM_PRICES[`${item.productId}-${item.size}`];
   return configuredPrice === undefined ? item : { ...item, unit_price: configuredPrice };
+}
+
+function normalizeShippingPrice<T extends { productId: string; unit_price: number }>(items: T[]): T[] {
+  const subtotal = items
+    .filter((item) => item.productId !== "shipping")
+    .reduce((total, item) => total + item.unit_price, 0);
+  const shippingPrice = subtotal > FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+
+  return items.map((item) =>
+    item.productId === "shipping" ? { ...item, unit_price: shippingPrice } : item,
+  );
 }
 
 function getMpClient() {
@@ -81,7 +94,7 @@ router.post("/preference", async (req, res) => {
     return;
   }
 
-  const normalizedItems = items.map(normalizeItemPrice);
+  const normalizedItems = normalizeShippingPrice(items.map(normalizeItemPrice));
 
   // Verify stock before creating preference
   for (const item of normalizedItems) {
