@@ -193,6 +193,18 @@ export function PersonalizedVeterinaryNotebook() {
                 </button>
               ))}
             </div>
+            <div className="border-t border-white/10 bg-black/20 p-3">
+              <a
+                href={customProductWaLink(whatsappMessage)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-center text-sm font-bold text-white shadow-lg shadow-[#25D366]/20 transition hover:bg-[#20bd5a]"
+              >
+                <WhatsAppIcon className="h-4 w-4" />
+                Pedir este carnet por WhatsApp
+                <MessageCircle className="h-4 w-4 opacity-75" />
+              </a>
+            </div>
           </motion.div>
 
           <motion.div
@@ -302,19 +314,6 @@ export function PersonalizedVeterinaryNotebook() {
               <ShoppingBag className="h-5 w-5" />
               Agregar al carrito
             </button>
-            <a
-              href={customProductWaLink(whatsappMessage)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-6 py-4 text-center font-bold text-white shadow-lg shadow-[#25D366]/20 transition hover:-translate-y-0.5 hover:bg-[#20bd5a]"
-            >
-              <WhatsAppIcon className="h-5 w-5" />
-              Pedir por WhatsApp
-              <MessageCircle className="h-4 w-4 opacity-75" />
-            </a>
-            <p className="mt-3 text-center text-xs text-white/45">
-              +56 9 9050 4762 · Personalizamos cada carnet con amor
-            </p>
           </motion.div>
         </div>
 
