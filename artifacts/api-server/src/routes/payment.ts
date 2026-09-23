@@ -119,7 +119,7 @@ router.post("/preference", async (req, res) => {
 
   try {
     const orderId = randomUUID();
-    const origin = back_url ?? "https://candyspet.replit.app";
+    const origin = back_url ?? "https://candyspet.cl";
      const totalAmount = normalizedItems.reduce((acc, i) => acc + i.unit_price * i.quantity, 0);
 
     const preference = new Preference(client);
