@@ -4,3 +4,4 @@
 - [Vercel GitHub auto-deploy](vercel-github-auto-deploy.md) — pushes to the connected main branch deploy production automatically; no Replit Republish is needed for Vercel.
 - [Cloudflare connector permissions](cloudflare-connector-permissions.md) — zone reads can work while DNS and SSL writes fail unless the account token includes edit permissions for the zone.
 - [Imported artifact registration](imported-artifact-registration.md) — imported artifact metadata may exist without platform records; use the existing commands to configure minimal workflows when managed services are unavailable.
+- [GitHub push authentication](github-push-auth.md) — Replit Git and the GitHub connector may have separate credentials and write permissions.
