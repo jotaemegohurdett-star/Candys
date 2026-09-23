@@ -8,6 +8,7 @@ import { WA_NUMBER } from '../lib/constants';
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const SHIPPING_COST = 3500;
+const FREE_SHIPPING_THRESHOLD = 49900;
 
 type PaymentMethod = 'mercadopago' | 'transfer' | 'presencial';
 
@@ -56,8 +57,11 @@ export function CartDrawer() {
   const [wantsShipping, setWantsShipping] = useState(false);
 
   // Retiro presencial nunca paga despacho
-  const shippingApplies = wantsShipping && paymentMethod !== 'presencial';
-  const grandTotal = totalPrice + (shippingApplies ? SHIPPING_COST : 0);
+  const shippingRequested = wantsShipping && paymentMethod !== 'presencial';
+  const freeShipping = shippingRequested && totalPrice > FREE_SHIPPING_THRESHOLD;
+  const shippingApplies = shippingRequested && !freeShipping;
+  const shippingCost = shippingApplies ? SHIPPING_COST : 0;
+  const grandTotal = totalPrice + shippingCost;
 
   const handleSetPaymentMethod = (m: PaymentMethod) => {
     setPaymentMethod(m);
@@ -76,8 +80,10 @@ export function CartDrawer() {
         if (item.color) message += ` (Color: ${item.color})`;
         message += ` — $${(item.price * item.quantity).toLocaleString('es-CL')}\n`;
       }
-      if (shippingApplies) {
-        message += `- Despacho — $${SHIPPING_COST.toLocaleString('es-CL')}\n`;
+      if (shippingRequested) {
+        message += freeShipping
+          ? '- Despacho — GRATIS (compra sobre $49.900)\n'
+          : `- Despacho — $${SHIPPING_COST.toLocaleString('es-CL')}\n`;
       }
       message += `\nTotal: $${grandTotal.toLocaleString('es-CL')}\n`;
 
@@ -91,7 +97,7 @@ export function CartDrawer() {
 
       return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`;
     },
-    [items, grandTotal, shippingApplies],
+    [items, grandTotal, freeShipping, shippingRequested],
   );
 
   const handleMpCheckout = useCallback(async () => {
@@ -115,7 +121,7 @@ export function CartDrawer() {
               productId: 'shipping',
               title: 'Despacho',
               quantity: 1,
-              unit_price: SHIPPING_COST,
+               unit_price: shippingCost,
               currency_id: 'CLP',
             }] : []),
           ],
@@ -149,7 +155,7 @@ export function CartDrawer() {
     } finally {
       setLoadingMp(false);
     }
-  }, [items, buildWaLink, closeCart]);
+  }, [items, buildWaLink, closeCart, shippingApplies, shippingCost]);
 
   return (
     <>
@@ -285,7 +291,9 @@ export function CartDrawer() {
                         <span className="text-xs font-normal text-muted-foreground">hasta XI Región</span>
                       </span>
                       <span className="flex items-center gap-2">
-                        <span className="font-bold">+$3.500</span>
+                        <span className="font-bold">
+                          {totalPrice > FREE_SHIPPING_THRESHOLD ? 'Gratis' : '+$3.500'}
+                        </span>
                         <span
                           className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
                             wantsShipping ? 'bg-primary border-primary' : 'border-border'
@@ -311,10 +319,12 @@ export function CartDrawer() {
                       <span>Productos</span>
                       <span>${totalPrice.toLocaleString('es-CL')}</span>
                     </div>
-                    {shippingApplies && (
+                    {shippingRequested && (
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <span>Despacho</span>
-                        <span>+${SHIPPING_COST.toLocaleString('es-CL')}</span>
+                        <span>
+                          {freeShipping ? 'Gratis' : `+$${SHIPPING_COST.toLocaleString('es-CL')}`}
+                        </span>
                       </div>
                     )}
                     <div className="flex items-center justify-between pt-1 border-t border-border/50">
