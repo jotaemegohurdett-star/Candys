@@ -4,11 +4,9 @@ import { X, Minus, Plus, Trash2, ShoppingBag, CreditCard, Banknote, Users } from
 import { toast } from 'sonner';
 import { useCart } from '../context/CartContext';
 import { WA_NUMBER } from '../lib/constants';
+import { FREE_SHIPPING_THRESHOLD, SHIPPING_COST, SHIPPING_PROVIDERS, type ShippingProviderId } from '../lib/shipping';
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
-
-const SHIPPING_COST = 3500;
-const FREE_SHIPPING_THRESHOLD = 49900;
 
 type PaymentMethod = 'mercadopago' | 'transfer' | 'presencial';
 
@@ -55,6 +53,7 @@ export function CartDrawer() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('mercadopago');
   const [loadingMp, setLoadingMp] = useState(false);
   const [wantsShipping, setWantsShipping] = useState(false);
+  const [shippingProvider, setShippingProvider] = useState<ShippingProviderId>('blue-express');
 
   // Retiro presencial nunca paga despacho
   const shippingRequested = wantsShipping && paymentMethod !== 'presencial';
@@ -81,9 +80,10 @@ export function CartDrawer() {
         message += ` — $${(item.price * item.quantity).toLocaleString('es-CL')}\n`;
       }
       if (shippingRequested) {
+        const provider = SHIPPING_PROVIDERS.find((option) => option.id === shippingProvider);
         message += freeShipping
-          ? '- Despacho — GRATIS (compra sobre $49.900)\n'
-          : `- Despacho — $${SHIPPING_COST.toLocaleString('es-CL')}\n`;
+          ? `- Despacho con ${provider?.name ?? 'transportista seleccionado'} — GRATIS (compra sobre $49.900)\n`
+          : `- Despacho con ${provider?.name ?? 'transportista seleccionado'} — $${SHIPPING_COST.toLocaleString('es-CL')}\n`;
       }
       message += `\nTotal: $${grandTotal.toLocaleString('es-CL')}\n`;
 
@@ -97,7 +97,7 @@ export function CartDrawer() {
 
       return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`;
     },
-    [items, grandTotal, freeShipping, shippingRequested],
+    [items, grandTotal, freeShipping, shippingRequested, shippingProvider],
   );
 
   const handleMpCheckout = useCallback(async () => {
@@ -119,9 +119,9 @@ export function CartDrawer() {
             })),
             ...(shippingApplies ? [{
               productId: 'shipping',
-              title: 'Despacho',
+              title: `Despacho con ${SHIPPING_PROVIDERS.find((option) => option.id === shippingProvider)?.name ?? 'transportista seleccionado'}`,
               quantity: 1,
-               unit_price: shippingCost,
+              unit_price: shippingCost,
               currency_id: 'CLP',
             }] : []),
           ],
@@ -155,7 +155,7 @@ export function CartDrawer() {
     } finally {
       setLoadingMp(false);
     }
-  }, [items, buildWaLink, closeCart, shippingApplies, shippingCost]);
+  }, [items, buildWaLink, closeCart, shippingApplies, shippingCost, shippingProvider]);
 
   return (
     <>
@@ -288,7 +288,7 @@ export function CartDrawer() {
                     >
                       <span className="flex items-center gap-2 font-semibold">
                         🚚 Agregar despacho
-                        <span className="text-xs font-normal text-muted-foreground">hasta XI Región</span>
+                        <span className="text-xs font-normal text-muted-foreground">a todo Chile</span>
                       </span>
                       <span className="flex items-center gap-2">
                         <span className="font-bold">
@@ -310,6 +310,39 @@ export function CartDrawer() {
                   ) : (
                     <div className="rounded-xl border border-border/60 bg-muted/30 px-4 py-3 text-xs text-muted-foreground">
                       📍 <span className="font-semibold text-foreground">Retiro</span> San Joaquín · a pasos Metro Pedrero Línea 5
+                    </div>
+                  )}
+
+                  {wantsShipping && (
+                    <div className="rounded-xl border border-border/60 bg-muted/20 p-3">
+                      <p className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                        Medio de despacho · fuera de la VI Región
+                      </p>
+                      <div className="grid grid-cols-3 gap-2">
+                        {SHIPPING_PROVIDERS.map((provider) => (
+                          <button
+                            key={provider.id}
+                            type="button"
+                            onClick={() => setShippingProvider(provider.id)}
+                            className={`flex min-h-[62px] flex-col items-center justify-center gap-1 rounded-lg border bg-white px-1.5 py-2 transition ${
+                              shippingProvider === provider.id
+                                ? 'border-primary ring-2 ring-primary/15'
+                                : 'border-border hover:border-primary/40'
+                            }`}
+                            aria-label={`Elegir ${provider.name}`}
+                          >
+                            <img
+                              src={provider.logo}
+                              alt={provider.name}
+                              className={`${provider.logoClassName} w-auto object-contain`}
+                            />
+                            <span className="text-[9px] font-semibold text-foreground">{provider.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                      <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+                        Despachamos fuera de la VI Región y a todo Chile. Gratis en compras superiores a $49.900.
+                      </p>
                     </div>
                   )}
 
