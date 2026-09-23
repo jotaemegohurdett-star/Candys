@@ -75,11 +75,7 @@ export function CartDrawer() {
       let message = `Hola Candy's Pet! 🐾 Me gustaría reservar:\n\n`;
       for (const item of items) {
         message += `- ${item.quantity}x ${item.name}`;
-        if (item.size) {
-          message += item.productId === 'veterinary-notebook'
-            ? ` (Formato: ${item.size})`
-            : ` (Talla: ${item.size})`;
-        }
+        if (item.size) message += ` (Talla: ${item.size})`;
         if (item.color) message += ` (Color: ${item.color})`;
         message += ` — $${(item.price * item.quantity).toLocaleString('es-CL')}\n`;
       }
@@ -114,18 +110,21 @@ export function CartDrawer() {
           items: [
             ...items.map((item) => ({
               productId: item.productId,
-              title: [
-                item.name,
-                item.size && `${item.productId === 'veterinary-notebook' ? 'Formato' : 'Talla'} ${item.size}`,
-                item.color,
-              ].filter(Boolean).join(' · '),
+              title: [item.name, item.size && `Talla ${item.size}`, item.color].filter(Boolean).join(' · '),
               quantity: item.quantity,
+              unit_price: item.price,
+              currency_id: 'CLP',
               size: item.size ?? 'M',
               color: item.color,
             })),
+            ...(shippingApplies ? [{
+              productId: 'shipping',
+              title: `Despacho con ${SHIPPING_PROVIDERS.find((option) => option.id === shippingProvider)?.name ?? 'transportista seleccionado'}`,
+              quantity: 1,
+              unit_price: shippingCost,
+              currency_id: 'CLP',
+            }] : []),
           ],
-          shippingRequested,
-          shippingProvider,
           back_url: window.location.origin + import.meta.env.BASE_URL,
         }),
       });
@@ -134,32 +133,29 @@ export function CartDrawer() {
 
       if (!res.ok) {
         if (data.error === 'MP_NOT_CONFIGURED') {
-          toast.error('MercadoPago aún no está configurado. Elige Transferencia para coordinar por WhatsApp.');
+          window.open(buildWaLink('mercadopago'), '_blank');
+          closeCart();
+          toast.info('MercadoPago aún no está activado. Te redirigimos a WhatsApp para coordinar.');
           return;
         }
         if (data.error === 'OUT_OF_STOCK') {
           toast.error(`Sin stock: ${data.message}`, { duration: 6000 });
           return;
         }
-        if (data.error === 'PRICE_NOT_CONFIGURED') {
-          toast.error('El precio de un producto cambió o aún no está configurado. Revisa el carrito.');
-          return;
-        }
         throw new Error(data.message ?? 'Error desconocido');
       }
 
       // Redirect to MercadoPago Checkout Pro
-      if (!data.init_point) {
-        throw new Error('MercadoPago no devolvió el enlace de pago');
-      }
       window.location.href = data.init_point as string;
     } catch (err) {
       console.error('MP checkout error:', err);
-      toast.error('No se pudo iniciar el pago. Revisa tu conexión e inténtalo nuevamente.');
+      toast.error('No se pudo iniciar el pago. Redirigiendo a WhatsApp…');
+      window.open(buildWaLink('mercadopago'), '_blank');
+      closeCart();
     } finally {
       setLoadingMp(false);
     }
-  }, [items, shippingRequested, shippingProvider]);
+  }, [items, buildWaLink, closeCart, shippingApplies, shippingCost, shippingProvider]);
 
   return (
     <>
@@ -246,11 +242,7 @@ export function CartDrawer() {
                         </div>
 
                         <div className="text-xs text-muted-foreground mb-2 flex gap-2">
-                          {item.size && (
-                            <span>
-                              {item.productId === 'veterinary-notebook' ? 'Formato' : 'Talla'}: {item.size}
-                            </span>
-                          )}
+                          {item.size && <span>Talla: {item.size}</span>}
                           {item.size && item.color && <span>·</span>}
                           {item.color && <span>{item.color}</span>}
                         </div>

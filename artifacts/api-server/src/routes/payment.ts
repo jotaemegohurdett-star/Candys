@@ -1,145 +1,37 @@
 import { Router, type IRouter } from "express";
 import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
-import { db, stockTable, ordersTable, settingsTable } from "@workspace/db";
+import { db, stockTable, ordersTable } from "@workspace/db";
 import { eq, sql } from "drizzle-orm";
 import { randomUUID } from "crypto";
 import { logger } from "../lib/logger";
 
 const router: IRouter = Router();
 
-const LEGACY_CUSTOM_ITEM_PRICES: Record<string, number> = {
-  A6: 12990,
-  A5: 15990,
+const CUSTOM_ITEM_PRICES: Record<string, number> = {
+  "custom-veterinary-notebook-A6": 12990,
+  "custom-veterinary-notebook-A5": 15990,
 };
-const VETERINARY_NOTEBOOK_ID = "veterinary-notebook";
 const SHIPPING_COST = 3500;
 const FREE_SHIPPING_THRESHOLD = 49900;
-const SHIPPING_PROVIDER_NAMES: Record<string, string> = {
-  "blue-express": "Blue Express",
-  starken: "Starken",
-  chilexpress: "Chilexpress",
-};
-
-function isVeterinaryNotebook(productId: string): boolean {
-  return productId === VETERINARY_NOTEBOOK_ID || productId.startsWith("custom-veterinary-notebook");
-}
 
 function isStockManagedProduct(productId: string): boolean {
-  return productId !== "shipping" && !productId.startsWith("custom-") && !isVeterinaryNotebook(productId);
+  return productId !== "shipping" && !productId.startsWith("custom-");
 }
 
-type PaymentItem = {
-  productId: string;
-  title: string;
-  quantity: number;
-  unit_price: number;
-  currency_id: string;
-  size: string;
-  color?: string;
-};
-
-type RequestedPaymentItem = {
-  productId?: unknown;
-  quantity?: unknown;
-  size?: unknown;
-  color?: unknown;
-};
-
-function configuredPrice(value: string | undefined): number | null {
-  if (!value?.trim()) return null;
-  const price = Number(value);
-  return Number.isInteger(price) && price > 0 ? price : null;
+function normalizeItemPrice<T extends { productId: string; size: string; unit_price: number }>(item: T): T {
+  const configuredPrice = CUSTOM_ITEM_PRICES[`${item.productId}-${item.size}`];
+  return configuredPrice === undefined ? item : { ...item, unit_price: configuredPrice };
 }
 
-async function normalizePaymentItems(
-  requestedItems: RequestedPaymentItem[],
-  shippingRequested: boolean,
-  shippingProvider: string | undefined,
-): Promise<PaymentItem[]> {
-  const [settingsRows, stockRows] = await Promise.all([
-    db.select().from(settingsTable),
-    db.select().from(stockTable),
-  ]);
-  const settings = Object.fromEntries(settingsRows.map((row) => [row.key, row.value]));
-  const productNames = new Map(stockRows.map((row) => [row.productId, row.productName]));
-  const priceBySize = {
-    M: configuredPrice(settings.price_m),
-    L: configuredPrice(settings.price_l),
-  } as const;
-
-  const normalizedItems = requestedItems.map((requested): PaymentItem => {
-    const productId = typeof requested.productId === "string" ? requested.productId : "";
-    const quantity = Number(requested.quantity);
-    const color = typeof requested.color === "string" ? requested.color.trim() : "";
-
-    if (
-      !productId ||
-      productId === "shipping" ||
-      !Number.isInteger(quantity) ||
-      quantity < 1 ||
-      quantity > 100
-    ) {
-      throw new Error("INVALID_ITEM");
-    }
-
-    if (isVeterinaryNotebook(productId)) {
-      const format = typeof requested.size === "string" ? requested.size.toUpperCase() : "";
-      const priceKey = format === "A5" ? "price_carnet_a5" : format === "A6" ? "price_carnet_a6" : null;
-      const unitPrice = priceKey
-        ? configuredPrice(settings[priceKey]) ?? LEGACY_CUSTOM_ITEM_PRICES[format]
-        : null;
-
-      if (!priceKey || !unitPrice) throw new Error("PRICE_NOT_CONFIGURED");
-
-      return {
-        productId,
-        title: `Carnet veterinario personalizado · Formato ${format}${color ? ` · ${color}` : ""}`,
-        quantity,
-        unit_price: unitPrice,
-        currency_id: "CLP",
-        size: format,
-        ...(color ? { color } : {}),
-      };
-    }
-
-    const size = typeof requested.size === "string" ? requested.size.toUpperCase() : "";
-    const productName = productNames.get(productId);
-    const unitPrice = size === "M" || size === "L" ? priceBySize[size] : null;
-
-    if (!productName) throw new Error("INVALID_ITEM");
-    if (!unitPrice) throw new Error("PRICE_NOT_CONFIGURED");
-
-    return {
-      productId,
-      title: `${productName} · Talla ${size}${color ? ` · ${color}` : ""}`,
-      quantity,
-      unit_price: unitPrice,
-      currency_id: "CLP",
-      size,
-      ...(color ? { color } : {}),
-    };
-  });
-
-  if (!shippingRequested) return normalizedItems;
-
-  const subtotal = normalizedItems.reduce(
-    (total, item) => total + item.unit_price * item.quantity,
-    0,
-  );
+function normalizeShippingPrice<T extends { productId: string; unit_price: number }>(items: T[]): T[] {
+  const subtotal = items
+    .filter((item) => item.productId !== "shipping")
+    .reduce((total, item) => total + item.unit_price, 0);
   const shippingPrice = subtotal > FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
-  const providerName = SHIPPING_PROVIDER_NAMES[shippingProvider ?? ""] ?? "transportista seleccionado";
 
-  return [
-    ...normalizedItems,
-    {
-      productId: "shipping",
-      title: `Despacho con ${providerName}`,
-      quantity: 1,
-      unit_price: shippingPrice,
-      currency_id: "CLP",
-      size: "shipping",
-    },
-  ];
+  return items.map((item) =>
+    item.productId === "shipping" ? { ...item, unit_price: shippingPrice } : item,
+  );
 }
 
 function getMpClient() {
@@ -170,9 +62,7 @@ async function deductStock(
  *
  * Creates a MercadoPago Checkout Pro preference and a pending order.
  * Body:
- *   items:    [{ productId, quantity, size, color }]
- *   shippingRequested: boolean
- *   shippingProvider: "blue-express" | "starken" | "chilexpress"
+ *   items:    [{ productId, title, quantity, unit_price, size, color }]
  *   back_url: string
  */
 router.post("/preference", async (req, res) => {
@@ -186,16 +76,17 @@ router.post("/preference", async (req, res) => {
     return;
   }
 
-  const {
-    items,
-    back_url,
-    shippingRequested,
-    shippingProvider,
-  } = req.body as {
-    items?: unknown;
-    back_url?: unknown;
-    shippingRequested?: unknown;
-    shippingProvider?: unknown;
+  const { items, back_url } = req.body as {
+    items: {
+      productId: string;
+      title: string;
+      quantity: number;
+      unit_price: number;
+      currency_id: string;
+      size: string;
+      color?: string;
+    }[];
+    back_url: string;
   };
 
   if (!Array.isArray(items) || items.length === 0) {
@@ -203,32 +94,7 @@ router.post("/preference", async (req, res) => {
     return;
   }
 
-  let normalizedItems: PaymentItem[];
-  try {
-    normalizedItems = await normalizePaymentItems(
-      items as RequestedPaymentItem[],
-      shippingRequested === true,
-      typeof shippingProvider === "string" ? shippingProvider : undefined,
-    );
-  } catch (err) {
-    if (err instanceof Error && err.message === "PRICE_NOT_CONFIGURED") {
-      res.status(409).json({
-        error: "PRICE_NOT_CONFIGURED",
-        message: "El precio del formato seleccionado aún no está configurado.",
-      });
-      return;
-    }
-    if (err instanceof Error && err.message === "INVALID_ITEM") {
-      res.status(400).json({
-        error: "INVALID_ITEMS",
-        message: "El carrito contiene un producto, talla o cantidad no válida.",
-      });
-      return;
-    }
-    logger.error({ err }, "Failed to validate payment items");
-    res.status(500).json({ error: "PAYMENT_VALIDATION_ERROR" });
-    return;
-  }
+  const normalizedItems = normalizeShippingPrice(items.map(normalizeItemPrice));
 
   // Verify stock before creating preference
   for (const item of normalizedItems) {
@@ -253,14 +119,14 @@ router.post("/preference", async (req, res) => {
 
   try {
     const orderId = randomUUID();
-    const origin = back_url ?? "https://candyspet.cl";
-    const totalAmount = normalizedItems.reduce((acc, i) => acc + i.unit_price * i.quantity, 0);
+    const origin = back_url ?? "https://candyspet.replit.app";
+     const totalAmount = normalizedItems.reduce((acc, i) => acc + i.unit_price * i.quantity, 0);
 
     const preference = new Preference(client);
     const result = await preference.create({
       body: {
         external_reference: orderId,
-        items: normalizedItems.map((item) => ({
+         items: normalizedItems.map((item) => ({
           id: `${item.productId}-${item.size}`,
           title: item.title,
           quantity: item.quantity,
@@ -286,7 +152,7 @@ router.post("/preference", async (req, res) => {
       id: orderId,
       mpPreferenceId: result.id ?? "",
       status: "pending",
-      items: normalizedItems as unknown as Record<string, unknown>[],
+       items: normalizedItems as unknown as Record<string, unknown>[],
       totalAmount,
     });
 

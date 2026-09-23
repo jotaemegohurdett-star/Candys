@@ -53,7 +53,7 @@ router.get("/me", adminGuard, (_req, res) => {
 
 router.get("/stock", adminGuard, async (_req, res) => {
   try {
-    const rows = await db.select().from(productImagesTable).orderBy(asc(productImagesTable.productId), asc(productImagesTable.position));
+    const rows = await db.select().from(stockTable).orderBy(asc(stockTable.id));
     res.json(rows);
   } catch (err) {
     logger.error({ err }, "admin: stock fetch failed");
@@ -84,7 +84,7 @@ router.put("/stock/:id", adminGuard, async (req, res) => {
 
 router.get("/settings", adminGuard, async (_req, res) => {
   try {
-    const rows = await db.select().from(settingsTable).orderBy(asc(settingsTable.key));
+    const rows = await db.select().from(settingsTable);
     const map: Record<string, string> = {};
     for (const r of rows) map[r.key] = r.value;
     res.json(map);
@@ -98,13 +98,6 @@ router.put("/settings/:key", adminGuard, async (req, res) => {
   const key = getRouteParam(req.params.key);
   const { value } = req.body as { value: string };
   if (!value) { res.status(400).json({ error: "MISSING_VALUE" }); return; }
-  if (
-    (key === "price_carnet_a6" || key === "price_carnet_a5") &&
-    (!/^\d+$/.test(value.trim()) || Number(value) < 1)
-  ) {
-    res.status(400).json({ error: "INVALID_PRICE" });
-    return;
-  }
   try {
     await db
       .insert(settingsTable)
@@ -151,7 +144,7 @@ router.post("/products", adminGuard, async (req, res) => {
 
   try {
     // Determine next product ID (find max pN number)
-    const rows = await db.select().from(productImagesTable).orderBy(asc(productImagesTable.productId), asc(productImagesTable.position));
+    const rows = await db.select({ id: stockTable.productId }).from(stockTable);
     const nums = [...new Set(rows.map(r => r.id))]
       .map(id => { const m = id.match(/^p(\d+)$/); return m ? parseInt(m[1]) : 0; });
     const nextN = (nums.length ? Math.max(...nums) : 4) + 1;
@@ -234,7 +227,7 @@ router.post("/images", adminGuard, async (req, res) => {
     color?: string | null;
   };
   if (!productId || !url) { res.status(400).json({ error: "MISSING_FIELDS" }); return; }
-  const id = getRouteParam(req.params.id);
+  const id = randomUUID();
   try {
     // Calculate next position so images maintain insertion order
     const [maxRow] = await db

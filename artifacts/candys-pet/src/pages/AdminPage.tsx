@@ -799,8 +799,6 @@ function PricesTab() {
   const fields = [
     { key: 'price_m', label: 'Precio Talla M', sub: 'Hasta 3,5 kg — desde 2 meses', color: 'hsl(340 84% 50%)' },
     { key: 'price_l', label: 'Precio Talla L', sub: 'Hasta 10 kg — caben 2 perritos', color: 'hsl(270 70% 55%)' },
-    { key: 'price_carnet_a6', label: 'Precio Carnet A6', sub: 'Formato pequeño · personalizado', color: 'hsl(190 80% 48%)' },
-    { key: 'price_carnet_a5', label: 'Precio Carnet A5', sub: 'Formato grande · personalizado', color: 'hsl(25 90% 55%)' },
   ];
 
   return (

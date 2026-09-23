@@ -19,6 +19,7 @@ await build({
   logLevel: "info",
   external: [
     "*.node",
+    "@google-cloud/*",
     "sharp",
     "better-sqlite3",
     "sqlite3",
