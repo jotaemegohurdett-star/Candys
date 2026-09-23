@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Check, ChevronLeft, ChevronRight, Clock3, MessageCircle, Ruler, ShoppingBag, Truck, Volume2 } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, Clock3, Ruler, ShoppingBag, Truck, Volume2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCart } from '../context/CartContext';
 import { customProductWaLink } from '../lib/constants';
 import { requestAudioFocus } from '../lib/audioFocus';
-import { WhatsAppIcon } from './WhatsAppIcon';
 
 import promoImage from '@assets/carnet-veterinario-whatsapp.jpg';
 import colorOptionsImage from '@assets/IMG-20260923-WA0009_1790139464278.jpg';
@@ -242,8 +241,21 @@ export function PersonalizedVeterinaryNotebook() {
                 transition={{ duration: 0.45 }}
                 src={activeImage.src}
                 alt={`${activeImage.label} del carnet veterinario personalizado`}
-                className="h-full w-full object-cover"
+                className={`h-full w-full object-cover transition ${
+                  galleryIndex === 0 ? 'cursor-pointer hover:brightness-105' : ''
+                }`}
               />
+              {galleryIndex === 0 && (
+                <a
+                  href={customProductWaLink(whatsappMessage)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Pedir este carnet por WhatsApp"
+                  className="absolute bottom-[4%] left-[7%] right-[7%] h-[24%] rounded-[1.5rem] outline-none focus-visible:ring-4 focus-visible:ring-[#25D366] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                >
+                  <span className="sr-only">Pedir este carnet por WhatsApp</span>
+                </a>
+              )}
               {galleryIndex !== 0 && (
                 <>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/10" />
@@ -289,18 +301,6 @@ export function PersonalizedVeterinaryNotebook() {
                   <img src={image.src} alt="" className="h-full w-full object-cover" loading="lazy" />
                 </button>
               ))}
-            </div>
-            <div className="border-t border-white/10 bg-black/20 p-3">
-              <a
-                href={customProductWaLink(whatsappMessage)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-center text-sm font-bold text-white shadow-lg shadow-[#25D366]/20 transition hover:bg-[#20bd5a]"
-              >
-                <WhatsAppIcon className="h-4 w-4" />
-                Pedir este carnet por WhatsApp
-                <MessageCircle className="h-4 w-4 opacity-75" />
-              </a>
             </div>
           </motion.div>
 
