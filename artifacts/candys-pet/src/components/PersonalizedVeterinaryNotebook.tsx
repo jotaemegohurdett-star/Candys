@@ -151,16 +151,20 @@ export function PersonalizedVeterinaryNotebook() {
                 alt={`${activeImage.label} del carnet veterinario personalizado`}
                 className="h-full w-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/10" />
-              <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-4">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/60">Detalle</p>
-                  <p className="mt-1 font-heading text-xl font-bold text-white">{activeImage.label}</p>
-                </div>
-                <span className="rounded-full bg-black/50 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur">
-                  {galleryIndex + 1}/{GALLERY.length}
-                </span>
-              </div>
+              {galleryIndex !== 0 && (
+                <>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/10" />
+                  <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-4">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/60">Detalle</p>
+                      <p className="mt-1 font-heading text-xl font-bold text-white">{activeImage.label}</p>
+                    </div>
+                    <span className="rounded-full bg-black/50 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur">
+                      {galleryIndex + 1}/{GALLERY.length}
+                    </span>
+                  </div>
+                </>
+              )}
               <button
                 type="button"
                 aria-label="Imagen anterior"
