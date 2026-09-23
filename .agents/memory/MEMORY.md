@@ -1,2 +1,3 @@
 - [Video artifacts and exports](video-artifact-exports.md) — distinguish the live Animation artifact from separately rendered MP4 deliverables before wiring download links.
 - [Customer image privacy](customer-image-privacy.md) — sanitize contact details in derived public assets; never render the original customer photo in the storefront.
+- [Vercel monorepo API entry](vercel-monorepo-api-entry.md) — Vercel function typechecking can differ from local TypeScript; serve a prebuilt Express bundle through a JavaScript entry.

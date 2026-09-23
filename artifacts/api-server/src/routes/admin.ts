@@ -11,6 +11,10 @@ const router: IRouter = Router();
 const SECRET   = process.env["SESSION_SECRET"] ?? "dev-secret";
 const PASSWORD = process.env["ADMIN_PASSWORD"] ?? "candys2025";
 
+function getRouteParam(value: string | string[] | undefined): string {
+  return Array.isArray(value) ? value[0] ?? "" : value ?? "";
+}
+
 /* ──────────────────── AUTH ──────────────────── */
 
 router.post("/login", (req, res) => {
@@ -58,7 +62,7 @@ router.get("/stock", adminGuard, async (_req, res) => {
 });
 
 router.put("/stock/:id", adminGuard, async (req, res) => {
-  const { id } = req.params;
+  const id = getRouteParam(req.params.id);
   const { qty } = req.body as { qty: number };
   if (typeof qty !== "number" || qty < 0) {
     res.status(400).json({ error: "INVALID_QTY" });
@@ -91,7 +95,7 @@ router.get("/settings", adminGuard, async (_req, res) => {
 });
 
 router.put("/settings/:key", adminGuard, async (req, res) => {
-  const { key } = req.params;
+  const key = getRouteParam(req.params.key);
   const { value } = req.body as { value: string };
   if (!value) { res.status(400).json({ error: "MISSING_VALUE" }); return; }
   try {
@@ -179,7 +183,7 @@ router.post("/products", adminGuard, async (req, res) => {
 
 /** Rename a product — updates productName in all its stock rows */
 router.put("/products/:id/name", adminGuard, async (req, res) => {
-  const { id } = req.params;
+  const id = getRouteParam(req.params.id);
   const { name } = req.body as { name?: string };
   if (!name?.trim()) { res.status(400).json({ error: "MISSING_NAME" }); return; }
   try {
@@ -193,7 +197,7 @@ router.put("/products/:id/name", adminGuard, async (req, res) => {
 
 /** Delete a product — removes all its stock rows and images */
 router.delete("/products/:id", adminGuard, async (req, res) => {
-  const { id } = req.params;
+  const id = getRouteParam(req.params.id);
   try {
     await db.delete(stockTable).where(eq(stockTable.productId, id));
     await db.delete(productImagesTable).where(eq(productImagesTable.productId, id));
@@ -248,7 +252,7 @@ router.post("/images", adminGuard, async (req, res) => {
 });
 
 router.put("/images/:id", adminGuard, async (req, res) => {
-  const { id } = req.params;
+  const id = getRouteParam(req.params.id);
   const { url, color } = req.body as { url?: string; color?: string | null };
   if (!url && color === undefined) { res.status(400).json({ error: "MISSING_FIELDS" }); return; }
   try {
@@ -268,7 +272,7 @@ router.put("/images/:id", adminGuard, async (req, res) => {
 });
 
 router.delete("/images/:id", adminGuard, async (req, res) => {
-  const { id } = req.params;
+  const id = getRouteParam(req.params.id);
   try {
     await db.delete(productImagesTable).where(eq(productImagesTable.id, id));
     res.json({ ok: true });
