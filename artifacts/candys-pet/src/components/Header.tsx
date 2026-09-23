@@ -11,6 +11,7 @@ const navLinks = [
   { name: 'Inicio', href: '#home' },
   { name: 'Beneficios', href: '#benefits' },
   { name: 'Catálogo', href: '#products' },
+  { name: 'Personalizados', href: '#carnet-veterinario' },
   { name: 'Guía de Tallas', href: '#size-guide' },
   { name: 'Reseñas', href: '#testimonials' },
   { name: 'Contacto', href: '#location' },
