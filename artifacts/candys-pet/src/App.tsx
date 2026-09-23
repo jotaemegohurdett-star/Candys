@@ -6,6 +6,7 @@ import { Hero } from './components/Hero';
 import { TrustBar } from './components/TrustBar';
 import { Benefits } from './components/Benefits';
 import { Products } from './components/Products';
+import { PersonalizedVeterinaryNotebook } from './components/PersonalizedVeterinaryNotebook';
 import { VideoSection } from './components/VideoSection';
 import { SizeGuide } from './components/SizeGuide';
 import { Testimonials } from './components/Testimonials';
@@ -41,6 +42,7 @@ function StoreFront() {
           <TrustBar />
           <VideoSection />
           <Products />
+          <PersonalizedVeterinaryNotebook />
           <Benefits />
           <SizeGuide />
           <Testimonials />

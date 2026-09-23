@@ -6,6 +6,7 @@ id = "lAfeZXWWBEIh0ngt1SGwJ"
 uri = "file://artifacts/candys-pet-video/public/audio/bg_music.mp3"
 type = "audio"
 title = "playful pet brand background music"
+logical_id = "a271072c-bcae-45d1-99a4-9de0d08b12c0"
 
 [[outputs]]
 id = "goLI49dgbi-_vsScyu4va"
@@ -13,6 +14,7 @@ uri = "file://attached_assets/Screenshot_20260721-214654_Instagram_2-removebg-pr
 type = "image"
 title = "Logo original de Candy's Pet"
 description = "Logo original de Candy’s Pet en formato PNG, listo para descargar y usar en Google Business Profile."
+logical_id = "5cf5f2cf-689c-45dc-9b30-3bca43984f56"
 
 [[outputs]]
 id = "qQx3l71ZvnlV99q1hJgqJ"
@@ -20,6 +22,7 @@ uri = "file://artifacts/candys-pet-video/public/downloads/candys-pet-instagram.m
 type = "video"
 title = "Candy's Pet — Video Instagram 9:16"
 description = "Versión vertical para Instagram: 1080×1920, 9:16, 52,48 segundos, con audio de ElevenLabs y capturas reales del sitio."
+logical_id = "a9df7705-9eb3-4463-9615-b47de547f800"
 
 [[outputs]]
 id = "8v8R2HleQm0zUhCJXiQZG"
@@ -27,6 +30,7 @@ uri = "file://artifacts/candys-pet-video/public/downloads/candys-pet-web.mp4"
 type = "video"
 title = "Candy's Pet — Video web 16:9"
 description = "Versión horizontal para la página web: 1920×1080, 16:9, 52,48 segundos, con audio de ElevenLabs y capturas reales del sitio."
+logical_id = "0b4e1529-a867-4c1d-829f-78104de5e022"
 
 [[outputs]]
 id = "8hkLnqFCfJYHxbzOmZsbU"
@@ -34,3 +38,18 @@ uri = "file://artifacts/candys-pet-video/public/videos/cozy-puppy.mp4"
 type = "video"
 title = "Candy's Pet — Video extra horizontal"
 description = "Tercer MP4 guardado en el proyecto: 1280×720, 16:9, 6 segundos. Es un clip separado de las dos versiones finales de 52,48 segundos."
+logical_id = "855fec37-5c92-4e14-b716-ce78eba4f3b4"
+
+[[outputs]]
+id = "Hzo0JwdyOcFcIw3M2J7eB"
+uri = "file://attached_assets/carnet-veterinario-whatsapp.jpg"
+type = "image"
+title = "Promoción carnet veterinario por WhatsApp"
+description = "Pieza promocional actualizada con el CTA de WhatsApp y el número +56 9 9050 4762."
+logical_id = "36d00da4-ca4a-4cdb-abd8-1bbe0b8fda92"
+content_hash = "sha256:4162a0f7a0596611dd711116f6e7611cec195dcb0163a8621412ba3238a02ef9"
+size = 592976
+mtime_ms = 1790139976338
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:c3b3173d-9874-4722-b19d-40eff54307f0/36d00da4-ca4a-4cdb-abd8-1bbe0b8fda92/f81d2e62-ad24-4129-ae06-6084d9c21cd9"
+storage_version_token = "1790140038343795"
+content_type = "image/jpeg"
