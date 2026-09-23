@@ -3,10 +3,9 @@
  * Upload endpoint protected by adminGuard (HMAC cookie).
  * Serve endpoint is public (product images are public assets).
  */
-import { Readable } from 'stream';
 import express from 'express';
 import { Router, type IRouter, type Request, type Response } from 'express';
-import { ObjectNotFoundError, ObjectStorageService } from '../lib/objectStorage';
+import { ObjectStorageService } from '../lib/objectStorage';
 import { adminGuard } from '../middleware/adminAuth';
 import { logger } from '../lib/logger';
 
@@ -23,7 +22,7 @@ router.put(
   express.raw({ type: '*/*', limit: '10mb' }),
   async (req: Request, res: Response) => {
     if (!storage.usesVercelBlob()) {
-      res.status(404).json({ error: 'Vercel Blob is not configured' });
+      res.status(503).json({ error: 'Vercel Blob is not configured' });
       return;
     }
 
@@ -50,7 +49,7 @@ router.put(
 
 /**
  * POST /api/storage/uploads/request-url
- * Admin only — generates a presigned PUT URL for direct-to-GCS upload.
+ * Admin only — generates a server-proxied upload URL for Vercel Blob.
  * Client sends metadata (NOT the file). File is PUT directly to the returned URL.
  */
 router.post('/storage/uploads/request-url', adminGuard, async (req: Request, res: Response) => {
@@ -62,20 +61,18 @@ router.post('/storage/uploads/request-url', adminGuard, async (req: Request, res
     return;
   }
 
-  try {
-    if (storage.usesVercelBlob()) {
-      const objectPath = storage.createVercelObjectPath();
-      res.json({
-        uploadURL: `/api/storage/uploads/direct?path=${encodeURIComponent(objectPath)}`,
-        objectPath,
-        metadata: { name, size, contentType },
-      });
-      return;
-    }
+  if (!storage.usesVercelBlob()) {
+    res.status(503).json({ error: 'Vercel Blob is not configured' });
+    return;
+  }
 
-    const uploadURL = await storage.getObjectEntityUploadURL();
-    const objectPath = storage.normalizeObjectEntityPath(uploadURL);
-    res.json({ uploadURL, objectPath, metadata: { name, size, contentType } });
+  try {
+    const objectPath = storage.createVercelObjectPath();
+    res.json({
+      uploadURL: `/api/storage/uploads/direct?path=${encodeURIComponent(objectPath)}`,
+      objectPath,
+      metadata: { name, size, contentType },
+    });
   } catch (err) {
     logger.error({ err }, 'Error generating upload URL');
     res.status(500).json({ error: 'Failed to generate upload URL' });
@@ -88,24 +85,16 @@ router.post('/storage/uploads/request-url', adminGuard, async (req: Request, res
  */
 router.get('/storage/public-objects/*filePath', async (req: Request, res: Response) => {
   try {
-    const raw = req.params.filePath;
-    const filePath = Array.isArray(raw) ? raw.join('/') : raw;
-    if (storage.usesVercelBlob()) {
-      const url = await storage.getVercelObjectUrl(`/public-objects/${filePath}`);
-      if (!url) { res.status(404).json({ error: 'File not found' }); return; }
-      res.redirect(302, url);
+    if (!storage.usesVercelBlob()) {
+      res.status(503).json({ error: 'Vercel Blob is not configured' });
       return;
     }
 
-    const file = await storage.searchPublicObject(filePath);
-    if (!file) { res.status(404).json({ error: 'File not found' }); return; }
-
-    const response = await storage.downloadObject(file);
-    res.status(response.status);
-    response.headers.forEach((value, key) => res.setHeader(key, value));
-    if (response.body) {
-      Readable.fromWeb(response.body as ReadableStream<Uint8Array>).pipe(res);
-    } else { res.end(); }
+    const raw = req.params.filePath;
+    const filePath = Array.isArray(raw) ? raw.join('/') : raw;
+    const url = await storage.getVercelObjectUrl(`/public-objects/${filePath}`);
+    if (!url) { res.status(404).json({ error: 'File not found' }); return; }
+    res.redirect(302, url);
   } catch (err) {
     logger.error({ err }, 'Error serving public object');
     res.status(500).json({ error: 'Failed to serve object' });
@@ -118,29 +107,18 @@ router.get('/storage/public-objects/*filePath', async (req: Request, res: Respon
  */
 router.get('/storage/objects/*path', async (req: Request, res: Response) => {
   try {
+    if (!storage.usesVercelBlob()) {
+      res.status(503).json({ error: 'Vercel Blob is not configured' });
+      return;
+    }
+
     const raw = req.params.path;
     const wildcardPath = Array.isArray(raw) ? raw.join('/') : raw;
     const objectPath = `/objects/${wildcardPath}`;
-    if (storage.usesVercelBlob()) {
-      const url = await storage.getVercelObjectUrl(objectPath);
-      if (!url) { res.status(404).json({ error: 'Object not found' }); return; }
-      res.redirect(302, url);
-      return;
-    }
-
-    const file = await storage.getObjectEntityFile(objectPath);
-
-    const response = await storage.downloadObject(file);
-    res.status(response.status);
-    response.headers.forEach((value, key) => res.setHeader(key, value));
-    if (response.body) {
-      Readable.fromWeb(response.body as ReadableStream<Uint8Array>).pipe(res);
-    } else { res.end(); }
+    const url = await storage.getVercelObjectUrl(objectPath);
+    if (!url) { res.status(404).json({ error: 'Object not found' }); return; }
+    res.redirect(302, url);
   } catch (err) {
-    if (err instanceof ObjectNotFoundError) {
-      res.status(404).json({ error: 'Object not found' });
-      return;
-    }
     logger.error({ err }, 'Error serving object');
     res.status(500).json({ error: 'Failed to serve object' });
   }
