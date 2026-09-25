@@ -5,11 +5,19 @@ import { customProductWaLink } from '../lib/constants';
 import { WhatsAppIcon } from './WhatsAppIcon';
 
 import dogSampleImage from '@assets/IMG-20260923-WA0060_1790140389348.jpg';
+import perlaSampleImage from '@assets/IMG-20260923-WA0163(1)_1790303908485.jpg';
 import frontSampleImage from '@assets/IMG-20260923-WA0061_1790140389391.jpg';
 import protectedBackImage from '@assets/llavero-reverso-datos-protegidos.jpg';
 
-const GALLERY = [
+type GalleryImage = {
+  src: string;
+  label: string;
+  fit?: 'cover' | 'contain';
+};
+
+const GALLERY: GalleryImage[] = [
   { src: dogSampleImage, label: 'Ejemplo personalizado' },
+  { src: perlaSampleImage, label: 'Perla con su placa personalizada', fit: 'contain' },
   { src: frontSampleImage, label: 'Detalle de la chapita' },
   { src: protectedBackImage, label: 'Reverso con datos protegidos' },
 ];
@@ -52,7 +60,7 @@ export function PersonalizedKeychain() {
                 transition={{ duration: 0.4 }}
                 src={activeImage.src}
                 alt={`${activeImage.label} del llavero personalizado`}
-                className="h-full w-full object-cover"
+                className={`h-full w-full ${activeImage.fit === 'contain' ? 'object-contain' : 'object-cover'}`}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/10" />
               <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-3">
@@ -81,7 +89,7 @@ export function PersonalizedKeychain() {
                 <ChevronRight className="h-5 w-5" />
               </button>
             </div>
-            <div className="grid grid-cols-3 gap-2 border-t border-white/10 bg-black/20 p-3">
+            <div className="grid grid-cols-4 gap-2 border-t border-white/10 bg-black/20 p-3">
               {GALLERY.map((image, index) => (
                 <button
                   key={image.src}
