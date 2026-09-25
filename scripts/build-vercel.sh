@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+
+pnpm --filter @workspace/api-server run build
+pnpm --filter @workspace/api-server run build:vercel
+PORT=26272 BASE_PATH=/candys-pet-video/ pnpm --filter @workspace/candys-pet-video run build
+PORT=25253 BASE_PATH=/ pnpm --filter @workspace/candys-pet run build
+
+rm -rf artifacts/candys-pet/dist/public/candys-pet-video
+cp -R artifacts/candys-pet-video/dist/public artifacts/candys-pet/dist/public/candys-pet-video
