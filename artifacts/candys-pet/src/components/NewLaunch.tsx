@@ -1,10 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
-import { ArrowDownRight, Check, Pause, Play, Volume2, VolumeX } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import { ArrowDownRight, Check } from 'lucide-react';
 import launchVideo from '@assets/VID-20261004-WA0023(1)_1791149720846.mp4';
 import launchVideoWebM from '../assets/new-launch.webm';
+import launchMusic from '../assets/new-launch-music.mp3';
 import launchPoster from '@assets/IMG-20261004-WA0017_1791149720773.jpg';
 import lifestylePink from '@assets/IMG-20261004-WA0018_1791149720799.jpg';
 import lifestyleGray from '@assets/IMG-20261004-WA0016_1791149720822.jpg';
+import lifestyleBlack from '@assets/IMG-20261004-WA0019_1791149720742.jpg';
+import lifestyleYellow from '@assets/IMG-20261004-WA0020_1791149720657.jpg';
 import { useCatalog } from '../hooks/useCatalog';
 import { waLink } from '../lib/constants';
 import { requestAudioFocus } from '../lib/audioFocus';
@@ -12,14 +15,18 @@ import { requestAudioFocus } from '../lib/audioFocus';
 const formatPrice = (amount: number) =>
   `$${new Intl.NumberFormat('es-CL').format(amount)}`;
 
+const lifestylePhotos = [
+  { src: lifestylePink, alt: 'Portamascotas rosado durante un paseo al aire libre' },
+  { src: lifestyleGray, alt: 'Portamascotas gris usado durante un paseo' },
+  { src: lifestyleBlack, alt: 'Perro viajando en portamascotas negro durante un paseo en moto' },
+  { src: lifestyleYellow, alt: 'Perro viajando en portamascotas negro con una chaqueta amarilla' },
+];
+
 export function NewLaunch() {
   const { catalog } = useCatalog();
   const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const soundOnRef = useRef(false);
-  const [visible, setVisible] = useState(false);
-  const [soundOn, setSoundOn] = useState(false);
-  const [playing, setPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const priceM = catalog.prices.price_p25_m ?? 22990;
   const priceL = catalog.prices.price_p25_l ?? 24990;
@@ -29,20 +36,30 @@ export function NewLaunch() {
     if (!section) return;
     const observer = new IntersectionObserver(([entry]) => {
       const isVisible = entry.isIntersecting;
-      setVisible(isVisible);
       if (isVisible) {
-        requestAudioFocus('launch');
+        requestAudioFocus('launch', 0);
         const video = videoRef.current;
         if (video) {
-          video.muted = !soundOnRef.current;
-          void video.play().then(() => setPlaying(true)).catch((error: unknown) => {
+          video.muted = true;
+          void video.play().catch((error: unknown) => {
             console.warn('[NewLaunch] Video autoplay did not start:', error);
-            setPlaying(false);
+          });
+        }
+        const audio = audioRef.current;
+        if (audio) {
+          audio.volume = 0.82;
+          audio.currentTime = 0;
+          void audio.play().catch((error: unknown) => {
+            console.warn('[NewLaunch] Music autoplay did not start:', error);
           });
         }
       } else {
         videoRef.current?.pause();
-        setPlaying(false);
+        const audio = audioRef.current;
+        if (audio) {
+          audio.pause();
+          audio.currentTime = 0;
+        }
         requestAudioFocus('intro');
       }
     }, { threshold: 0, rootMargin: '120px 0px' });
@@ -50,43 +67,11 @@ export function NewLaunch() {
     return () => {
       observer.disconnect();
       videoRef.current?.pause();
-      setPlaying(false);
+      audioRef.current?.pause();
+      if (audioRef.current) audioRef.current.currentTime = 0;
       requestAudioFocus('intro');
     };
   }, []);
-
-  const toggleSound = async () => {
-    const video = videoRef.current;
-    if (!video) return;
-    if (!soundOn) {
-      video.muted = false;
-      soundOnRef.current = true;
-      setSoundOn(true);
-      if (video.paused && visible) await video.play().catch(() => {});
-    } else {
-      video.muted = true;
-      soundOnRef.current = false;
-      setSoundOn(false);
-    }
-  };
-
-  const togglePlayback = async () => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    if (video.paused) {
-      try {
-        await video.play();
-        setPlaying(true);
-      } catch {
-        setPlaying(false);
-      }
-      return;
-    }
-
-    video.pause();
-    setPlaying(false);
-  };
 
   return (
     <section
@@ -164,40 +149,35 @@ export function NewLaunch() {
                   playsInline
                   loop
                   controls={false}
-                  aria-label="Video de 18 segundos del nuevo Portamascotas Tipo Banano en uso"
+                  aria-label="Video en bucle del nuevo Portamascotas Tipo Banano en uso"
                   className="absolute inset-0 h-full w-full object-cover"
                 >
                   <source src={launchVideoWebM} type="video/webm" />
                   <source src={launchVideo} type="video/mp4" />
                 </video>
+                <audio
+                  ref={audioRef}
+                  src={launchMusic}
+                  preload="none"
+                  loop
+                  aria-label="Música del nuevo lanzamiento"
+                  data-testid="audio-launch-music"
+                />
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#111219]/75 via-transparent to-[#111219]/10" />
                 <span className="absolute left-4 top-4 rounded-full border border-white/20 bg-[#111219]/55 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/90 backdrop-blur-sm sm:left-6 sm:top-6">Candy’s Pet · nuevo</span>
-                <button
-                  type="button"
-                  onClick={() => void toggleSound()}
-                  aria-pressed={soundOn}
-                  aria-label={soundOn ? 'Silenciar el video' : 'Activar sonido del video'}
-                  data-testid="button-launch-sound"
-                  className="absolute bottom-4 right-4 z-10 inline-flex min-h-11 items-center gap-2 rounded-full border border-white/30 bg-[#111219]/70 px-4 text-xs font-medium text-white backdrop-blur-md transition-colors hover:bg-[#111219]/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:bottom-6 sm:right-6"
-                >
-                  {soundOn ? <Volume2 aria-hidden="true" className="h-4 w-4" /> : <VolumeX aria-hidden="true" className="h-4 w-4" />}
-                  {soundOn ? 'Sonido activado' : 'Activar sonido'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => void togglePlayback()}
-                  aria-label={playing ? 'Pausar video del portamascotas' : 'Reproducir video del portamascotas'}
-                  aria-pressed={playing}
-                  data-testid="button-launch-playback"
-                  className="absolute bottom-4 left-4 z-10 inline-flex min-h-11 items-center gap-2 rounded-full border border-white/30 bg-[#111219]/70 px-4 text-xs font-medium text-white backdrop-blur-md transition-colors hover:bg-[#111219]/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:bottom-6 sm:left-6"
-                >
-                  {playing ? <Pause aria-hidden="true" className="h-4 w-4" /> : <Play aria-hidden="true" className="h-4 w-4" />}
-                  {playing ? 'Pausar' : 'Reproducir'}
-                </button>
               </div>
-              <div className="grid grid-cols-2 gap-2 p-2 sm:gap-3 sm:p-3">
-                <img src={lifestylePink} alt="Portamascotas tipo banano rosado en un paseo al aire libre" loading="lazy" decoding="async" className="h-28 w-full rounded-xl object-cover object-center sm:h-36" />
-                <img src={lifestyleGray} alt="Portamascotas tipo banano gris usado durante un paseo" loading="lazy" decoding="async" className="h-28 w-full rounded-xl object-cover object-center sm:h-36" />
+              <div className="grid grid-cols-2 gap-2 p-2 sm:gap-3 sm:p-3" aria-label="Fotos del portamascotas">
+                {lifestylePhotos.map((photo, index) => (
+                  <img
+                    key={photo.src}
+                    src={photo.src}
+                    alt={photo.alt}
+                    loading="lazy"
+                    decoding="async"
+                    data-testid={`img-launch-lifestyle-${index + 1}`}
+                    className="h-28 w-full rounded-xl object-cover object-center sm:h-36"
+                  />
+                ))}
               </div>
             </div>
           </div>
