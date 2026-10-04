@@ -8,6 +8,18 @@
 import * as zod from 'zod';
 
 
+export const getAdminProductsResponseDescriptionMax = 2000;
+
+
+
+export const GetAdminProductsResponseItem = zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "description": zod.string().max(getAdminProductsResponseDescriptionMax)
+})
+export const GetAdminProductsResponse = zod.array(GetAdminProductsResponseItem)
+
+
 export const createProductBodyNameMax = 200;
 
 export const createProductBodyQtyMMin = 0;
@@ -27,6 +39,28 @@ export const CreateProductBody = zod.object({
 })
 
 export const CreateProductResponse = zod.unknown()
+
+
+export const UpdateProductDescriptionParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const updateProductDescriptionBodyDescriptionMax = 2000;
+
+
+
+export const UpdateProductDescriptionBody = zod.object({
+  "description": zod.string().max(updateProductDescriptionBodyDescriptionMax)
+})
+
+export const updateProductDescriptionResponseDescriptionMax = 2000;
+
+
+
+export const UpdateProductDescriptionResponse = zod.object({
+  "productId": zod.string(),
+  "description": zod.string().max(updateProductDescriptionResponseDescriptionMax)
+})
 
 
 export const UpdateProductPricesParams = zod.object({
@@ -95,11 +129,16 @@ export const CreatePaymentPreferenceBody = zod.object({
 export const CreatePaymentPreferenceResponse = zod.unknown()
 
 
+export const getCatalogResponseProductsItemDescriptionMax = 2000;
+
+
+
 export const GetCatalogResponse = zod.object({
   "prices": zod.record(zod.string(), zod.string()),
   "products": zod.array(zod.object({
   "id": zod.string(),
-  "name": zod.string()
+  "name": zod.string(),
+  "description": zod.string().max(getCatalogResponseProductsItemDescriptionMax)
 })),
   "images": zod.record(zod.string(), zod.array(zod.object({
   "url": zod.string(),

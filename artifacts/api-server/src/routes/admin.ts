@@ -8,12 +8,16 @@ import { adminGuard, signToken } from "../middleware/adminAuth";
 import { positiveInteger, priceKey, resolvePrice } from "../lib/catalog-pricing";
 import {
   CreateProductBody,
+  GetAdminProductsResponse,
+  UpdateProductDescriptionBody,
+  UpdateProductDescriptionResponse,
   UpdateProductPricesBody,
   UpdateProductPricesResponse,
   UpdateSettingBody,
 } from "@workspace/api-zod";
 
 const router: IRouter = Router();
+const PRODUCT_DESCRIPTION_PREFIX = "product_description_";
 
 const SECRET   = process.env["SESSION_SECRET"] ?? "dev-secret";
 const PASSWORD = process.env["ADMIN_PASSWORD"] ?? "candys2025";
@@ -124,19 +128,32 @@ router.put("/settings/:key", adminGuard, async (req, res) => {
 
 /* ──────────────────── PRODUCTS (CRUD) ──────────────────── */
 
-/** Returns unique products [{id, name}] derived from the stock table */
-router.get("/products", adminGuard, async (_req, res) => {
+/** Returns unique products and their saved descriptions */
+router.get("/products", adminGuard, async (_req, res): Promise<void> => {
   try {
-    const rows = await db.select().from(stockTable).orderBy(asc(stockTable.productId));
+    const [rows, settingRows] = await Promise.all([
+      db.select().from(stockTable).orderBy(asc(stockTable.productId)),
+      db.select().from(settingsTable),
+    ]);
+    const descriptions = new Map<string, string>();
+    for (const setting of settingRows) {
+      if (setting.key.startsWith(PRODUCT_DESCRIPTION_PREFIX)) {
+        descriptions.set(setting.key.slice(PRODUCT_DESCRIPTION_PREFIX.length), setting.value);
+      }
+    }
     const seen = new Set<string>();
-    const products: { id: string; name: string }[] = [];
+    const products: { id: string; name: string; description: string }[] = [];
     for (const r of rows) {
       if (!seen.has(r.productId)) {
         seen.add(r.productId);
-        products.push({ id: r.productId, name: r.productName });
+        products.push({
+          id: r.productId,
+          name: r.productName,
+          description: descriptions.get(r.productId) ?? "",
+        });
       }
     }
-    res.json(products);
+    res.json(GetAdminProductsResponse.parse(products));
   } catch (err) {
     logger.error({ err }, "admin: products fetch failed");
     res.status(500).json({ error: "DB_ERROR" });
@@ -204,6 +221,46 @@ router.put("/products/:id/name", adminGuard, async (req, res) => {
   }
 });
 
+router.put("/products/:id/description", adminGuard, async (req, res): Promise<void> => {
+  const id = getRouteParam(req.params.id);
+  const parsed = UpdateProductDescriptionBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "INVALID_DESCRIPTION" });
+    return;
+  }
+
+  const description = parsed.data.description.trim();
+  try {
+    const updated = await db.transaction(async tx => {
+      const [product] = await tx
+        .select({ id: stockTable.productId })
+        .from(stockTable)
+        .where(eq(stockTable.productId, id))
+        .limit(1);
+      if (!product) return false;
+
+      await tx.insert(settingsTable).values({
+        key: `${PRODUCT_DESCRIPTION_PREFIX}${id}`,
+        value: description,
+        updatedAt: new Date(),
+      }).onConflictDoUpdate({
+        target: settingsTable.key,
+        set: { value: sql`excluded.value`, updatedAt: new Date() },
+      });
+      return true;
+    });
+
+    if (!updated) {
+      res.status(404).json({ error: "PRODUCT_NOT_FOUND" });
+      return;
+    }
+    res.json(UpdateProductDescriptionResponse.parse({ productId: id, description }));
+  } catch (err) {
+    logger.error({ err, productId: id }, "admin: product description update failed");
+    res.status(500).json({ error: "DB_ERROR" });
+  }
+});
+
 router.put("/products/:id/prices", adminGuard, async (req, res) => {
   const id = getRouteParam(req.params.id);
   const parsed = UpdateProductPricesBody.safeParse(req.body);
@@ -256,7 +313,11 @@ router.delete("/products/:id", adminGuard, async (req, res) => {
   try {
     await db.delete(stockTable).where(eq(stockTable.productId, id));
     await db.delete(productImagesTable).where(eq(productImagesTable.productId, id));
-    await db.delete(settingsTable).where(inArray(settingsTable.key, [priceKey(id, "M"), priceKey(id, "L")]));
+    await db.delete(settingsTable).where(inArray(settingsTable.key, [
+      priceKey(id, "M"),
+      priceKey(id, "L"),
+      `${PRODUCT_DESCRIPTION_PREFIX}${id}`,
+    ]));
     res.json({ ok: true });
   } catch (err) {
     logger.error({ err }, "admin: product delete failed");

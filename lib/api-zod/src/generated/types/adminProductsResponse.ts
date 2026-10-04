@@ -5,10 +5,6 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { AdminProduct } from './adminProduct';
 
-export interface CatalogProduct {
-  id: string;
-  name: string;
-  /** @maxLength 2000 */
-  description: string;
-}
+export type AdminProductsResponse = AdminProduct[];

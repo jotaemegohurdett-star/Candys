@@ -34,6 +34,26 @@ export interface ProductPricesResponse {
   priceL: string;
 }
 
+export interface ProductDescriptionInput {
+  /** @maxLength 2000 */
+  description: string;
+}
+
+export interface ProductDescriptionResponse {
+  productId: string;
+  /** @maxLength 2000 */
+  description: string;
+}
+
+export interface AdminProduct {
+  id: string;
+  name: string;
+  /** @maxLength 2000 */
+  description: string;
+}
+
+export type AdminProductsResponse = AdminProduct[];
+
 export interface SettingInput {
   /** @minLength 1 */
   value: string;
@@ -90,6 +110,8 @@ export type CatalogImages = {[key: string]: CatalogImage[]};
 export interface CatalogProduct {
   id: string;
   name: string;
+  /** @maxLength 2000 */
+  description: string;
 }
 
 export interface Catalog {

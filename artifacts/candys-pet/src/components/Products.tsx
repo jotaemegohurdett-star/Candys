@@ -155,7 +155,10 @@ export function Products() {
 
     return apiProducts.map(p => {
       const known = KNOWN_PRODUCTS.find(k => k.id === p.id);
-      return known ? { ...known, name: p.name } : makeGenericProduct(p.id, p.name);
+      const description = p.description?.trim();
+      if (known) return { ...known, name: p.name, description: description || known.description };
+      const generic = makeGenericProduct(p.id, p.name);
+      return description ? { ...generic, description } : generic;
     });
   }, [catalog.catalog.products, catalog.ready]);
   const priceM = products.length ? Math.min(...products.map(product => catalog.getPrice('M', product.id))) : catalog.getPrice('M');

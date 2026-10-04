@@ -6,9 +6,8 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface CatalogProduct {
-  id: string;
-  name: string;
+export interface ProductDescriptionResponse {
+  productId: string;
   /** @maxLength 2000 */
   description: string;
 }
