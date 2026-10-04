@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { ArrowDownRight, Check } from 'lucide-react';
+import { ArrowDownRight, Check, PawPrint } from 'lucide-react';
 import launchVideo from '@assets/VID-20261004-WA0023(1)_1791149720846.mp4';
 import launchVideoWebM from '../assets/new-launch.webm';
 import launchMusic from '../assets/new-launch-music.mp3';
@@ -11,6 +11,7 @@ import lifestyleYellow from '@assets/IMG-20261004-WA0020_1791149720657.jpg';
 import { useCatalog } from '../hooks/useCatalog';
 import { waLink } from '../lib/constants';
 import { requestAudioFocus } from '../lib/audioFocus';
+import './NewLaunch.css';
 
 const formatPrice = (amount: number) =>
   `$${new Intl.NumberFormat('es-CL').format(amount)}`;
@@ -83,17 +84,35 @@ export function NewLaunch() {
       <div className="pointer-events-none absolute -left-36 top-8 h-96 w-96 rounded-full bg-[hsl(340_84%_50%/0.18)] blur-3xl" />
       <div className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-[hsl(38_72%_58%/0.11)] blur-3xl" />
       <div className="relative mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-24 lg:px-12">
-        <div className="mb-9 flex items-center gap-3">
-          <span className="h-px w-10 bg-[hsl(340_84%_65%)]" />
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/65">Nuevo lanzamiento · Hecho para ir contigo</p>
+        <div className="mb-12 flex justify-center sm:mb-14">
+          <div
+            className="new-launch-badge"
+            aria-label="Nuevo lanzamiento, hecho para ir contigo"
+            data-testid="text-launch-promo"
+          >
+            <div className="new-launch-paw-frame" aria-hidden="true">
+              {Array.from({ length: 8 }, (_, index) => (
+                <PawPrint
+                  key={index}
+                  className={`new-launch-paw new-launch-paw-${index + 1}`}
+                  aria-hidden="true"
+                />
+              ))}
+            </div>
+            <div className="new-launch-badge-copy">
+              <span className="new-launch-badge-label">Nuevo</span>
+              <span className="new-launch-badge-title">Lanzamiento</span>
+              <span className="new-launch-badge-tagline">Hecho para ir contigo</span>
+            </div>
+          </div>
         </div>
 
         <div className="grid items-center gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:gap-16">
           <div className="relative z-10 order-2 lg:order-1">
             <p className="mb-4 font-heading text-xl italic text-[hsl(38_72%_68%)]">Para los paseos que se vuelven aventura.</p>
-            <h2 id="launch-title" className="max-w-xl font-heading text-5xl leading-[0.98] tracking-tight sm:text-6xl lg:text-7xl">
+            <h2 id="launch-title" className="new-launch-gold-sweep max-w-xl font-heading text-5xl leading-[0.98] tracking-tight sm:text-6xl lg:text-7xl">
               Cerca, sin<br />
-              <span className="italic text-[hsl(340_84%_66%)]">dejar tus manos.</span>
+              <span className="italic">dejar tus manos.</span>
             </h2>
             <p className="mt-6 max-w-lg text-base leading-7 text-white/68 sm:text-lg">
               Conoce el nuevo Portamascotas Tipo Banano: una forma cómoda de llevar a tu compañero contigo, con ajuste en cintura y cuello.
