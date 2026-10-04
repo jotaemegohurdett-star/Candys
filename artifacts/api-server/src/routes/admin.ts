@@ -6,7 +6,12 @@ import { randomUUID } from "crypto";
 import { logger } from "../lib/logger";
 import { adminGuard, signToken } from "../middleware/adminAuth";
 import { positiveInteger, priceKey, resolvePrice } from "../lib/catalog-pricing";
-import { CreateProductBody, UpdateSettingBody } from "@workspace/api-zod";
+import {
+  CreateProductBody,
+  UpdateProductPricesBody,
+  UpdateProductPricesResponse,
+  UpdateSettingBody,
+} from "@workspace/api-zod";
 
 const router: IRouter = Router();
 
@@ -195,6 +200,52 @@ router.put("/products/:id/name", adminGuard, async (req, res) => {
     res.json({ ok: true });
   } catch (err) {
     logger.error({ err }, "admin: product rename failed");
+    res.status(500).json({ error: "DB_ERROR" });
+  }
+});
+
+router.put("/products/:id/prices", adminGuard, async (req, res) => {
+  const id = getRouteParam(req.params.id);
+  const parsed = UpdateProductPricesBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "INVALID_PRICE", message: "Ingresa precios enteros mayores que cero." });
+    return;
+  }
+  if (positiveInteger(parsed.data.priceM) === null || positiveInteger(parsed.data.priceL) === null) {
+    res.status(400).json({ error: "INVALID_PRICE", message: "Ingresa precios enteros mayores que cero." });
+    return;
+  }
+
+  try {
+    const updated = await db.transaction(async tx => {
+      const [product] = await tx
+        .select({ id: stockTable.productId })
+        .from(stockTable)
+        .where(eq(stockTable.productId, id))
+        .limit(1);
+      if (!product) return false;
+
+      await tx.insert(settingsTable).values([
+        { key: priceKey(id, "M"), value: parsed.data.priceM, updatedAt: new Date() },
+        { key: priceKey(id, "L"), value: parsed.data.priceL, updatedAt: new Date() },
+      ]).onConflictDoUpdate({
+        target: settingsTable.key,
+        set: { value: sql`excluded.value`, updatedAt: new Date() },
+      });
+      return true;
+    });
+
+    if (!updated) {
+      res.status(404).json({ error: "PRODUCT_NOT_FOUND" });
+      return;
+    }
+    res.json(UpdateProductPricesResponse.parse({
+      productId: id,
+      priceM: parsed.data.priceM,
+      priceL: parsed.data.priceL,
+    }));
+  } catch (err) {
+    logger.error({ err, productId: id }, "admin: product prices update failed");
     res.status(500).json({ error: "DB_ERROR" });
   }
 });

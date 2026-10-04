@@ -55,10 +55,15 @@ export function useCatalog() {
     fetch_();
     const interval = window.setInterval(fetch_, 30000);
     const refresh = () => { fetch_(); };
+    const refreshWhenAnotherTabUpdates = (event: StorageEvent) => {
+      if (event.key === 'candys-pet-catalog-updated') fetch_();
+    };
     window.addEventListener('focus', refresh);
+    window.addEventListener('storage', refreshWhenAnotherTabUpdates);
     return () => {
       window.clearInterval(interval);
       window.removeEventListener('focus', refresh);
+      window.removeEventListener('storage', refreshWhenAnotherTabUpdates);
     };
   }, [fetch_]);
 

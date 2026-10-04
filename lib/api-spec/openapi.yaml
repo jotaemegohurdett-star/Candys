@@ -29,6 +29,35 @@ paths:
           description: Admin authentication required
         "500":
           description: Database error
+  /admin/products/{id}/prices:
+    put:
+      operationId: updateProductPrices
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductPricesInput"
+      responses:
+        "200":
+          description: Both product variant prices were saved atomically and are now used by the catalog and checkout
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductPricesResponse"
+        "400":
+          description: Prices must be positive whole CLP amounts
+        "401":
+          description: Admin authentication required
+        "404":
+          description: Product not found
+        "500":
+          description: Database error
   /admin/settings/{key}:
     put:
       operationId: updateSetting
@@ -109,6 +138,19 @@ components:
         qtyL: { type: integer, minimum: 0 }
         priceM: { type: string, pattern: '^[0-9]+$' }
         priceL: { type: string, pattern: '^[0-9]+$' }
+    ProductPricesInput:
+      type: object
+      required: [priceM, priceL]
+      properties:
+        priceM: { type: string, pattern: '^[1-9][0-9]*$' }
+        priceL: { type: string, pattern: '^[1-9][0-9]*$' }
+    ProductPricesResponse:
+      type: object
+      required: [productId, priceM, priceL]
+      properties:
+        productId: { type: string }
+        priceM: { type: string }
+        priceL: { type: string }
     SettingInput:
       type: object
       required: [value]
