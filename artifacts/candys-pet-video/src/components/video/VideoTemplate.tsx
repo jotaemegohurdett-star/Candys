@@ -81,6 +81,12 @@ export default function VideoTemplate({
         void audio.play().catch(() => {});
       }
 
+      if (durationMs <= 0) {
+        audio.volume = targetVolume;
+        if (focus !== 'intro') audio.pause();
+        return;
+      }
+
       const animate = (now: number) => {
         const progress = Math.min((now - startedAt) / durationMs, 1);
         const eased = 1 - Math.pow(1 - progress, 3);
@@ -104,7 +110,12 @@ export default function VideoTemplate({
         event.data.focus === 'carnet' || event.data.focus === 'launch'
           ? event.data.focus
           : 'intro';
-      fadeAudio(focus, Number(event.data.transitionMs) || 900);
+      const requestedTransitionMs = Number(event.data.transitionMs);
+      const transitionMs =
+        Number.isFinite(requestedTransitionMs) && requestedTransitionMs >= 0
+          ? requestedTransitionMs
+          : 900;
+      fadeAudio(focus, transitionMs);
     };
 
     window.addEventListener('message', handleAudioFocus);

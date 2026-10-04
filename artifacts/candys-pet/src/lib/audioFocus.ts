@@ -2,10 +2,10 @@ export type StorefrontAudioFocus = 'intro' | 'carnet' | 'launch';
 
 export const AUDIO_FOCUS_EVENT = 'candys:audio-focus';
 
-export function requestAudioFocus(focus: StorefrontAudioFocus): void {
+export function requestAudioFocus(focus: StorefrontAudioFocus, transitionMs = 900): void {
   window.dispatchEvent(
     new CustomEvent(AUDIO_FOCUS_EVENT, {
-      detail: { focus, transitionMs: 900 },
+      detail: { focus, transitionMs },
     }),
   );
 }
