@@ -326,15 +326,15 @@ export function CartDrawer() {
                   {wantsShipping && (
                     <div className="rounded-xl border border-border/60 bg-muted/20 p-3">
                       <p className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                        Medio de despacho · fuera de la VI Región
+                        Elige tu servicio de despacho
                       </p>
-                      <div className="grid grid-cols-3 gap-2">
+                      <div className="grid grid-cols-2 gap-2">
                         {SHIPPING_PROVIDERS.map((provider) => (
                           <button
                             key={provider.id}
                             type="button"
                             onClick={() => setShippingProvider(provider.id)}
-                            className={`flex min-h-[62px] flex-col items-center justify-center gap-1 rounded-lg border bg-white px-1.5 py-2 transition ${
+                            className={`flex min-h-[76px] flex-col items-center justify-center gap-1 rounded-lg border bg-white px-1.5 py-2 transition ${
                               shippingProvider === provider.id
                                 ? 'border-primary ring-2 ring-primary/15'
                                 : 'border-border hover:border-primary/40'
@@ -344,14 +344,17 @@ export function CartDrawer() {
                             <img
                               src={provider.logo}
                               alt={provider.name}
-                              className={`${provider.logoClassName} w-auto object-contain`}
+                              className={`${provider.logoClassName} ${provider.id === 'paket' ? '' : 'w-auto object-contain'}`}
                             />
                             <span className="text-[9px] font-semibold text-foreground">{provider.name}</span>
+                            <span className="text-center text-[8px] leading-tight text-muted-foreground">
+                              {provider.id === 'paket' ? 'RM a VI Región · $3.500' : 'Despacho nacional'}
+                            </span>
                           </button>
                         ))}
                       </div>
                       <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-                        Despachamos fuera de la VI Región y a todo Chile. Gratis en compras superiores a $49.900.
+                        Paket cubre la Región Metropolitana hasta la VI Región por $3.500. Gratis en compras superiores a $49.900.
                       </p>
                     </div>
                   )}
