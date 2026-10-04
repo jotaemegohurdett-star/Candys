@@ -59,11 +59,11 @@ export default function VideoTemplate({
   const SceneComponent = SCENE_COMPONENTS[baseSceneKey];
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const audioFocusRef = useRef<'intro' | 'carnet'>('intro');
+  const audioFocusRef = useRef<'intro' | 'carnet' | 'launch'>('intro');
   const audioAnimationRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const fadeAudio = (focus: 'intro' | 'carnet', durationMs: number) => {
+    const fadeAudio = (focus: 'intro' | 'carnet' | 'launch', durationMs: number) => {
       const audio = audioRef.current;
       if (!audio || muted) return;
 
@@ -92,7 +92,7 @@ export default function VideoTemplate({
         }
 
         audioAnimationRef.current = null;
-        if (focus === 'carnet') audio.pause();
+        if (focus !== 'intro') audio.pause();
       };
 
       audioAnimationRef.current = requestAnimationFrame(animate);
@@ -100,7 +100,10 @@ export default function VideoTemplate({
 
     const handleAudioFocus = (event: MessageEvent) => {
       if (event.data?.type !== 'candys:audio-focus') return;
-      const focus = event.data.focus === 'carnet' ? 'carnet' : 'intro';
+      const focus =
+        event.data.focus === 'carnet' || event.data.focus === 'launch'
+          ? event.data.focus
+          : 'intro';
       fadeAudio(focus, Number(event.data.transitionMs) || 900);
     };
 

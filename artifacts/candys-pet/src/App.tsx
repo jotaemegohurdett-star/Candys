@@ -3,6 +3,7 @@ import { Switch, Route } from 'wouter';
 import { Toaster } from 'sonner';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
+import { NewLaunch } from './components/NewLaunch';
 import { TrustBar } from './components/TrustBar';
 import { Benefits } from './components/Benefits';
 import { Products } from './components/Products';
@@ -41,6 +42,7 @@ function StoreFront() {
         <Header />
         <main>
           <Hero />
+          <NewLaunch />
           <TrustBar />
           <VideoSection />
           <Products />

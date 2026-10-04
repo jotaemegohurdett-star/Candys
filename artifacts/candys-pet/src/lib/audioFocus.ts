@@ -1,4 +1,4 @@
-export type StorefrontAudioFocus = 'intro' | 'carnet';
+export type StorefrontAudioFocus = 'intro' | 'carnet' | 'launch';
 
 export const AUDIO_FOCUS_EVENT = 'candys:audio-focus';
 
