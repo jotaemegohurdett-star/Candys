@@ -10,3 +10,4 @@
 - [Checkout pricing compatibility](checkout-pricing-compatibility.md) — preserve legacy global prices as fallback; confirm changed checkout totals before redirecting to Mercado Pago.
 - [Generated validation compatibility](generated-validation-compatibility.md) — new OpenAPI formats can generate validation APIs newer than the installed runtime.
 - [Storefront campaign video playback](storefront-campaign-video.md) — use a WebM fallback and intersection-based muted autoplay for reliable scroll-triggered campaigns.
+- [Vercel and GitHub branch verification](vercel-github-branch-verification.md) — verify remote refs and deployment SHAs before retrying a push or concluding a commit is missing.
