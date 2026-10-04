@@ -126,7 +126,7 @@ export function PersonalizedVeterinaryNotebook() {
     const animate = (now: number) => {
       const progress = Math.min((now - startedAt) / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
-      video.volume = startVolume + (targetVolume - startVolume) * eased;
+      video.volume = Math.max(0, Math.min(1, startVolume + (targetVolume - startVolume) * eased));
 
       if (progress < 1) {
         audioAnimationRef.current = requestAnimationFrame(animate);
