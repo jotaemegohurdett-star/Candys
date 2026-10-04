@@ -146,21 +146,20 @@ export function Products() {
   const stock = useStock();
   const catalog = useCatalog();
 
-  const priceM = catalog.getPrice('M');
-  const priceL = catalog.getPrice('L');
-
   // The database is the source of truth when it responds. This keeps production
   // products in sync with the admin panel instead of adding stale local models.
   // The bundled products are only a fallback while the API is unavailable.
   const products = useMemo<ProductData[]>(() => {
     const apiProducts = catalog.catalog.products.filter(product => !HIDDEN_PRODUCT_IDS.has(product.id));
-    if (apiProducts.length === 0) return KNOWN_PRODUCTS;
+    if (!catalog.ready) return KNOWN_PRODUCTS;
 
     return apiProducts.map(p => {
       const known = KNOWN_PRODUCTS.find(k => k.id === p.id);
       return known ? { ...known, name: p.name } : makeGenericProduct(p.id, p.name);
     });
-  }, [catalog.catalog.products]);
+  }, [catalog.catalog.products, catalog.ready]);
+  const priceM = products.length ? Math.min(...products.map(product => catalog.getPrice('M', product.id))) : catalog.getPrice('M');
+  const priceL = products.length ? Math.min(...products.map(product => catalog.getPrice('L', product.id))) : catalog.getPrice('L');
 
   // ── Infinite Carousel ──
   // We render [original + clone] side by side.
@@ -261,13 +260,13 @@ export function Products() {
                 className="px-3 py-1.5 rounded-full text-xs font-bold text-white"
                 style={{ background: 'hsl(340 84% 50%)' }}
               >
-                Talla M · ${priceM.toLocaleString('es-CL')}
+                Talla M desde · ${priceM.toLocaleString('es-CL')}
               </span>
               <span
                 className="px-3 py-1.5 rounded-full text-xs font-bold text-white"
                 style={{ background: 'hsl(270 70% 55%)' }}
               >
-                Talla L · ${priceL.toLocaleString('es-CL')}
+                Talla L desde · ${priceL.toLocaleString('es-CL')}
               </span>
             </div>
             <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
@@ -382,7 +381,7 @@ function ProductCard({
   const cardRef = useRef<HTMLDivElement>(null);
 
   // Dynamic price from DB, fallback to local constant
-  const currentPrice = catalog.getPrice(selectedSize);
+  const currentPrice = catalog.getPrice(selectedSize, product.id);
   // Dynamic image gallery from admin panel, fallback to the bundled asset.
   const uploadedImages = catalog.catalog.images[product.id] ?? [];
   const galleryImages = uploadedImages.length > 0
@@ -532,7 +531,7 @@ function ProductCard({
 
                 {/* Price range — dynamic from DB */}
                 <p className="text-sm font-bold mb-3" style={{ color: 'hsl(340 84% 62%)' }}>
-                  Desde ${catalog.getPrice('M').toLocaleString('es-CL')}
+                  Desde ${Math.min(catalog.getPrice('M', product.id), catalog.getPrice('L', product.id)).toLocaleString('es-CL')}
                 </p>
 
                 <p className="text-xs mt-auto" style={{ color: 'rgba(255,255,255,0.45)' }}>
@@ -734,7 +733,7 @@ function ProductCard({
                       >
                         <span className="text-lg font-black leading-none">{size}</span>
                         <span className="text-[10px] font-bold mt-1 opacity-80">
-                          ${catalog.getPrice(size).toLocaleString('es-CL')}
+                          ${catalog.getPrice(size, product.id).toLocaleString('es-CL')}
                         </span>
                         <span className="text-[9px] mt-0.5 leading-tight max-w-[80px] text-center opacity-65">
                           {SIZE_INFO[size]}

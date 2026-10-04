@@ -148,6 +148,12 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
   const create = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim()) return;
+    if ([form.priceM, form.priceL].some(value => value !== '' && (!/^\d+$/.test(value) || !Number.isSafeInteger(Number(value)) || Number(value) <= 0))) {
+      toast.error('Los precios deben ser enteros mayores que cero'); return;
+    }
+    if ([form.qtyM, form.qtyL].some(value => value !== '' && (!/^\d+$/.test(value) || !Number.isSafeInteger(Number(value))))) {
+      toast.error('El stock debe ser un entero igual o mayor que cero'); return;
+    }
     setCreating(true);
     try {
       await api('POST', '/products', {
@@ -766,7 +772,7 @@ function StockTab({ products }: { products: Product[] }) {
 }
 
 /* ─────────────── PRECIOS TAB ─────────────── */
-function PricesTab() {
+function PricesTab({ products }: { products: Product[] }) {
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [editing, setEditing] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState<Record<string, boolean>>({});
@@ -783,7 +789,9 @@ function PricesTab() {
 
   const save = async (key: string) => {
     const value = editing[key];
-    if (!value) return;
+    if (!value || !/^\d+$/.test(value) || !Number.isSafeInteger(Number(value)) || Number(value) <= 0) {
+      toast.error('Ingresa un precio entero mayor que cero'); return;
+    }
     setSaving(s => ({ ...s, [key]: true }));
     try {
       await api('PUT', `/settings/${key}`, { value });
@@ -797,18 +805,25 @@ function PricesTab() {
   if (loading) return <Spinner />;
 
   const fields = [
-    { key: 'price_m', label: 'Precio Talla M', sub: 'Hasta 3,5 kg — desde 2 meses', color: 'hsl(340 84% 50%)' },
-    { key: 'price_l', label: 'Precio Talla L', sub: 'Hasta 10 kg — caben 2 perritos', color: 'hsl(270 70% 55%)' },
+    { key: 'price_m', label: 'Precio general M', sub: 'Respaldo para productos sin precio propio', color: 'hsl(340 84% 50%)', fallback: '17990' },
+    { key: 'price_l', label: 'Precio general L', sub: 'Respaldo para productos sin precio propio', color: 'hsl(270 70% 55%)', fallback: '18990' },
+    ...products.flatMap(product => (['M', 'L'] as const).map(size => ({
+      key: `price_${product.id}_${size.toLowerCase()}`,
+      label: `${product.name} · Talla ${size}`,
+      sub: 'Precio exclusivo de este producto y talla',
+      color: size === 'M' ? 'hsl(340 84% 50%)' : 'hsl(270 70% 55%)',
+      fallback: settings[`price_${size.toLowerCase()}`] ?? (size === 'M' ? '17990' : '18990'),
+    }))),
   ];
 
   return (
     <div className="space-y-4">
       <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
-        Los precios se actualizan en tiempo real en la tienda. Los valores están en pesos chilenos (CLP).
+        Precios en pesos chilenos (CLP). La tienda se actualiza al recargar o en un máximo de 30 segundos. Los precios propios no cambian al editar los generales.
       </p>
       <div className="grid sm:grid-cols-2 gap-4">
         {fields.map(f => {
-          const current = settings[f.key] ?? '';
+           const current = settings[f.key] ?? f.fallback;
           const val = editing[f.key] ?? current;
           const changed = editing[f.key] !== undefined && editing[f.key] !== current;
           return (
@@ -826,7 +841,7 @@ function PricesTab() {
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-sm"
                     style={{ color: 'rgba(255,255,255,0.4)' }}>$</span>
                   <input
-                    type="number" min={0} step={10}
+                    type="number" min={1} step={1}
                     value={val}
                     onChange={e => setEditing(ed => ({ ...ed, [f.key]: e.target.value }))}
                     className="w-full pl-7 pr-4 py-3 rounded-xl text-white font-mono text-lg font-bold focus:outline-none"
@@ -1196,7 +1211,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
               transition={{ duration: 0.18 }}>
               {tab === 'products' && <ProductsTab products={products} onRefresh={loadProducts} />}
               {tab === 'stock'    && <StockTab products={products} />}
-              {tab === 'prices'   && <PricesTab />}
+              {tab === 'prices'   && <PricesTab products={products} />}
               {tab === 'images'   && <ImagesTab products={products} />}
             </motion.div>
           </AnimatePresence>

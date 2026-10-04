@@ -1,37 +1,16 @@
 import { Router, type IRouter } from "express";
 import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
-import { db, stockTable, ordersTable } from "@workspace/db";
+import { db, stockTable, ordersTable, settingsTable } from "@workspace/db";
 import { eq, sql } from "drizzle-orm";
 import { randomUUID } from "crypto";
 import { logger } from "../lib/logger";
+import { priceCheckout, CheckoutError } from "../lib/catalog-pricing";
+import { CreatePaymentPreferenceBody } from "@workspace/api-zod";
 
 const router: IRouter = Router();
 
-const CUSTOM_ITEM_PRICES: Record<string, number> = {
-  "custom-veterinary-notebook-A6": 12990,
-  "custom-veterinary-notebook-A5": 15990,
-};
-const SHIPPING_COST = 3500;
-const FREE_SHIPPING_THRESHOLD = 49900;
-
 function isStockManagedProduct(productId: string): boolean {
   return productId !== "shipping" && !productId.startsWith("custom-");
-}
-
-function normalizeItemPrice<T extends { productId: string; size: string; unit_price: number }>(item: T): T {
-  const configuredPrice = CUSTOM_ITEM_PRICES[`${item.productId}-${item.size}`];
-  return configuredPrice === undefined ? item : { ...item, unit_price: configuredPrice };
-}
-
-function normalizeShippingPrice<T extends { productId: string; unit_price: number }>(items: T[]): T[] {
-  const subtotal = items
-    .filter((item) => item.productId !== "shipping")
-    .reduce((total, item) => total + item.unit_price, 0);
-  const shippingPrice = subtotal > FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
-
-  return items.map((item) =>
-    item.productId === "shipping" ? { ...item, unit_price: shippingPrice } : item,
-  );
 }
 
 function getMpClient() {
@@ -76,57 +55,48 @@ router.post("/preference", async (req, res) => {
     return;
   }
 
-  const { items, back_url } = req.body as {
-    items: {
-      productId: string;
-      title: string;
-      quantity: number;
-      unit_price: number;
-      currency_id: string;
-      size: string;
-      color?: string;
-    }[];
-    back_url: string;
-  };
+  const parsed = CreatePaymentPreferenceBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "INVALID_ITEMS", message: "Revisa los productos y cantidades del carrito." }); return;
+  }
+  const { items, back_url } = parsed.data;
+  let origin: string;
+  try {
+    const returnUrl = new URL(back_url);
+    if (!["https:", "http:"].includes(returnUrl.protocol) || returnUrl.username || returnUrl.password) throw new Error("Invalid URL");
+    origin = `${returnUrl.origin}${returnUrl.pathname}`.replace(/\/$/, "");
+  } catch {
+    res.status(400).json({ error: "INVALID_RETURN_URL" }); return;
+  }
 
   if (!Array.isArray(items) || items.length === 0) {
     res.status(400).json({ error: "INVALID_ITEMS" });
     return;
   }
 
-  const normalizedItems = normalizeShippingPrice(items.map(normalizeItemPrice));
-
-  // Verify stock before creating preference
-  for (const item of normalizedItems) {
-    if (!isStockManagedProduct(item.productId)) continue;
-    const stockId = `${item.productId}-${item.size}`;
-    const [stockRow] = await db
-      .select()
-      .from(stockTable)
-      .where(eq(stockTable.id, stockId));
-
-    if (stockRow && stockRow.qty < item.quantity) {
+  try {
+    const [settingRows, stockRows] = await Promise.all([
+      db.select().from(settingsTable),
+      db.select().from(stockTable),
+    ]);
+    const settings = Object.fromEntries(settingRows.map(row => [row.key, row.value]));
+    const normalizedItems = priceCheckout(items, settings, stockRows);
+    if (normalizedItems.some((item, index) => item.unit_price !== items[index]?.unit_price)) {
       res.status(409).json({
-        error: "OUT_OF_STOCK",
-        message: `Sin stock para ${item.title} (Talla ${item.size}). Quedan ${stockRow.qty} unidades.`,
-        productId: item.productId,
-        size: item.size,
-        available: stockRow.qty,
+        error: "PRICE_CHANGED",
+        message: "Los precios se actualizaron. Revisa el total y vuelve a iniciar el pago.",
+        items: normalizedItems,
       });
       return;
     }
-  }
-
-  try {
     const orderId = randomUUID();
-    const origin = back_url ?? "https://candyspet.replit.app";
      const totalAmount = normalizedItems.reduce((acc, i) => acc + i.unit_price * i.quantity, 0);
 
     const preference = new Preference(client);
     const result = await preference.create({
       body: {
         external_reference: orderId,
-         items: normalizedItems.map((item) => ({
+         items: normalizedItems.filter(item => item.unit_price > 0).map((item) => ({
           id: `${item.productId}-${item.size}`,
           title: item.title,
           quantity: item.quantity,
@@ -165,6 +135,12 @@ router.post("/preference", async (req, res) => {
       sandbox_init_point: result.sandbox_init_point,
     });
   } catch (err) {
+    if (err instanceof CheckoutError) {
+      res.status(err.code === "OUT_OF_STOCK" ? 409 : 400).json({
+        error: err.code, message: err.message, ...err.details,
+      });
+      return;
+    }
     logger.error({ err }, "Failed to create MP preference");
     res.status(500).json({
       error: "MP_ERROR",

@@ -7,6 +7,7 @@ import { Router, type IRouter } from "express";
 import { db, settingsTable, productImagesTable, stockTable } from "@workspace/db";
 import { asc } from "drizzle-orm";
 import { logger } from "../lib/logger";
+import { GetCatalogResponse } from "@workspace/api-zod";
 
 const router: IRouter = Router();
 
@@ -42,7 +43,8 @@ router.get("/", async (_req, res) => {
       }
     }
 
-    res.json({ prices, images, products });
+    res.setHeader("Cache-Control", "no-store");
+    res.json(GetCatalogResponse.parse({ prices, images, products }));
   } catch (err) {
     logger.error({ err }, "Failed to fetch catalog");
     res.status(500).json({ error: "CATALOG_ERROR" });

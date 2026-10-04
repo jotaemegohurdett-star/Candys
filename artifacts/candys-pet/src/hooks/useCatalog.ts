@@ -7,7 +7,7 @@ import { useState, useEffect, useCallback } from 'react';
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 export interface CatalogData {
-  prices: { price_m: number; price_l: number };
+  prices: Record<string, number>;
   /** productId → ordered gallery images with optional color labels */
   images: Record<string, { url: string; color: string | null }[]>;
   /** All products registered in admin, in order: [{id, name}] */
@@ -23,6 +23,7 @@ const DEFAULTS: CatalogData = {
 export function useCatalog() {
   const [catalog, setCatalog] = useState<CatalogData>(DEFAULTS);
   const [loading, setLoading] = useState(true);
+  const [ready, setReady] = useState(false);
 
   const fetch_ = useCallback(async () => {
     try {
@@ -35,12 +36,14 @@ export function useCatalog() {
       };
       setCatalog({
         prices: {
+          ...Object.fromEntries(Object.entries(data.prices).filter(([key]) => key.startsWith('price_')).map(([key, value]) => [key, Number(value)])),
           price_m: parseInt(data.prices['price_m'] ?? '17990', 10) || 17990,
           price_l: parseInt(data.prices['price_l'] ?? '18990', 10) || 18990,
         },
         images: data.images ?? {},
         products: data.products ?? [],
       });
+      setReady(true);
     } catch {
       // silently keep defaults
     } finally {
@@ -48,14 +51,24 @@ export function useCatalog() {
     }
   }, []);
 
-  useEffect(() => { fetch_(); }, [fetch_]);
+  useEffect(() => {
+    fetch_();
+    const interval = window.setInterval(fetch_, 30000);
+    const refresh = () => { fetch_(); };
+    window.addEventListener('focus', refresh);
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener('focus', refresh);
+    };
+  }, [fetch_]);
 
-  const getPrice = (size: 'M' | 'L'): number =>
-    size === 'M' ? catalog.prices.price_m : catalog.prices.price_l;
+  const getPrice = (size: 'M' | 'L', productId?: string): number =>
+    (productId ? catalog.prices[`price_${productId}_${size.toLowerCase()}`] : undefined)
+      ?? catalog.prices[`price_${size.toLowerCase()}`]!;
 
   /** Returns first image URL for a product from the DB, or null if none uploaded yet. */
   const getPrimaryImage = (productId: string): string | null =>
     catalog.images[productId]?.[0]?.url ?? null;
 
-  return { catalog, loading, getPrice, getPrimaryImage };
+  return { catalog, loading, ready, getPrice, getPrimaryImage };
 }
