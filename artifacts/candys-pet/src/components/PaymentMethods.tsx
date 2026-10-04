@@ -172,29 +172,34 @@ export function PaymentMethods() {
                 <Truck className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="font-heading text-xl font-bold text-white">Despachos fuera de la VI Región</h3>
+                <h3 className="font-heading text-xl font-bold text-white">Servicios de transporte y despacho</h3>
                 <p className="mt-1 max-w-xl text-sm leading-relaxed text-white/50">
-                  Enviamos a todo Chile. Elige el transportista al activar despacho en el carrito.
-                  Las compras superiores a ${FREE_SHIPPING_THRESHOLD.toLocaleString('es-CL')} tienen despacho gratis.
+                  Paket despacha en la Región Metropolitana y hasta la VI Región por $3.500.
+                  También puedes elegir Blue Express, Starken o Chilexpress. Despacho gratis en compras
+                  superiores a ${FREE_SHIPPING_THRESHOLD.toLocaleString('es-CL')}.
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2 text-xs font-semibold text-cyan-200">
               <MapPin className="h-4 w-4" />
-              Todo Chile
+              RM · VI Región
             </div>
           </div>
-          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          <div className="mt-5 grid gap-3 grid-cols-2 lg:grid-cols-4">
             {SHIPPING_PROVIDERS.map((provider) => (
               <div
                 key={provider.id}
-                className="flex min-h-[76px] items-center justify-center rounded-2xl border border-white/10 bg-white px-4 py-3"
+                className="flex min-h-[104px] flex-col items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white px-3 py-3"
               >
                 <img
                   src={provider.logo}
                   alt={`Logo de ${provider.name}`}
-                  className={`${provider.logoClassName} w-auto object-contain`}
+                  className={`${provider.logoClassName} ${provider.id === 'paket' ? '' : 'w-auto object-contain'}`}
                 />
+                <span className="text-center text-[11px] font-semibold leading-tight text-slate-700">
+                  {provider.coverage}
+                  {provider.id === 'paket' && ' · $3.500'}
+                </span>
               </div>
             ))}
           </div>
