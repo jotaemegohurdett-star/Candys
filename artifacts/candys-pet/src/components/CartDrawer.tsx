@@ -45,6 +45,7 @@ export function CartDrawer() {
     items,
     removeFromCart,
     updateQuantity,
+    updatePrices,
     totalPrice,
     isCartOpen,
     closeCart,
@@ -117,7 +118,7 @@ export function CartDrawer() {
               size: item.size ?? 'M',
               color: item.color,
             })),
-            ...(shippingApplies ? [{
+            ...(shippingRequested ? [{
               productId: 'shipping',
               title: `Despacho con ${SHIPPING_PROVIDERS.find((option) => option.id === shippingProvider)?.name ?? 'transportista seleccionado'}`,
               quantity: 1,
@@ -142,6 +143,15 @@ export function CartDrawer() {
           toast.error(`Sin stock: ${data.message}`, { duration: 6000 });
           return;
         }
+        if (data.error === 'PRICE_CHANGED') {
+          updatePrices(data.items);
+          toast.info(data.message, { duration: 6000 });
+          return;
+        }
+        if (res.status === 400) {
+          toast.error(data.message ?? 'Hay un producto no disponible en el carrito. Revísalo antes de pagar.');
+          return;
+        }
         throw new Error(data.message ?? 'Error desconocido');
       }
 
@@ -155,7 +165,7 @@ export function CartDrawer() {
     } finally {
       setLoadingMp(false);
     }
-  }, [items, buildWaLink, closeCart, shippingApplies, shippingCost, shippingProvider]);
+  }, [items, buildWaLink, closeCart, updatePrices, shippingRequested, shippingCost, shippingProvider]);
 
   return (
     <>

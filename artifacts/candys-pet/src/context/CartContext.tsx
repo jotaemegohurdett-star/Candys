@@ -8,6 +8,7 @@ import React, {
   type ReactNode,
 } from 'react';
 import { WA_NUMBER } from '../lib/constants';
+import { useCatalog } from '../hooks/useCatalog';
 
 export interface CartItem {
   id: string;
@@ -26,6 +27,7 @@ interface CartContextType {
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
+  updatePrices: (prices: { productId: string; size?: string; unit_price: number }[]) => void;
   totalItems: number;
   totalPrice: number;
   generateWhatsAppLink: () => string;
@@ -50,6 +52,30 @@ function loadSavedCart(): CartItem[] {
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(loadSavedCart);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const { catalog, ready } = useCatalog();
+
+  useEffect(() => {
+    if (!ready) return;
+    setItems(previous => {
+      let changed = false;
+      const next = previous.map(item => {
+        if (item.productId.startsWith('custom-') || !['M', 'L'].includes(item.size ?? '')) return item;
+        const size = item.size!.toLowerCase();
+        const price = catalog.prices[`price_${item.productId}_${size}`] ?? catalog.prices[`price_${size}`];
+        if (!price || !Number.isSafeInteger(price) || price === item.price) return item;
+        changed = true;
+        return { ...item, price };
+      });
+      return changed ? next : previous;
+    });
+  }, [catalog, ready]);
+
+  const updatePrices = useCallback((prices: { productId: string; size?: string; unit_price: number }[]) => {
+    setItems(previous => previous.map(item => {
+      const current = prices.find(price => price.productId === item.productId && price.size === item.size);
+      return current ? { ...item, price: current.unit_price } : item;
+    }));
+  }, []);
 
   useEffect(() => {
     try {
@@ -66,7 +92,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const existing = prev.find((item) => item.id === id);
       if (existing) {
         return prev.map((item) =>
-          item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === id ? { ...item, price: newItem.price, quantity: item.quantity + 1 } : item
         );
       }
       return [...prev, { ...newItem, id, quantity: 1 }];
@@ -124,6 +150,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       removeFromCart,
       updateQuantity,
       clearCart,
+      updatePrices,
       totalItems,
       totalPrice,
       generateWhatsAppLink,
@@ -132,7 +159,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       closeCart,
     }),
     [
-      items, addToCart, removeFromCart, updateQuantity, clearCart,
+      items, addToCart, removeFromCart, updateQuantity, clearCart, updatePrices,
       totalItems, totalPrice, generateWhatsAppLink, isCartOpen, openCart, closeCart,
     ]
   );

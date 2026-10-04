@@ -7,3 +7,5 @@
 - [Imported artifact registration](imported-artifact-registration.md) — imported artifact metadata may exist without platform records; use the existing commands to configure minimal workflows when managed services are unavailable.
 - [GitHub push authentication](github-push-auth.md) — Replit Git and the GitHub connector may have separate credentials and write permissions.
 - [Durable sandbox text decoding](durable-sandbox-text-decoding.md) — the durable CodeExecution scope may lack Web/Node byte-decoding globals; verify runtime support before parsing encoded data.
+- [Checkout pricing compatibility](checkout-pricing-compatibility.md) — preserve legacy global prices as fallback; confirm changed checkout totals before redirecting to Mercado Pago.
+- [Generated validation compatibility](generated-validation-compatibility.md) — new OpenAPI formats can generate validation APIs newer than the installed runtime.

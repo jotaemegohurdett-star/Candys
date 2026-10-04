@@ -1,10 +1,12 @@
 import { Router, type IRouter } from "express";
 import { createHmac } from "crypto";
 import { db, stockTable, settingsTable, productImagesTable } from "@workspace/db";
-import { eq, asc, max } from "drizzle-orm";
+import { eq, asc, max, sql, inArray } from "drizzle-orm";
 import { randomUUID } from "crypto";
 import { logger } from "../lib/logger";
 import { adminGuard, signToken } from "../middleware/adminAuth";
+import { positiveInteger, priceKey, resolvePrice } from "../lib/catalog-pricing";
+import { CreateProductBody, UpdateSettingBody } from "@workspace/api-zod";
 
 const router: IRouter = Router();
 
@@ -64,7 +66,7 @@ router.get("/stock", adminGuard, async (_req, res) => {
 router.put("/stock/:id", adminGuard, async (req, res) => {
   const id = getRouteParam(req.params.id);
   const { qty } = req.body as { qty: number };
-  if (typeof qty !== "number" || qty < 0) {
+  if (!Number.isSafeInteger(qty) || qty < 0) {
     res.status(400).json({ error: "INVALID_QTY" });
     return;
   }
@@ -96,8 +98,13 @@ router.get("/settings", adminGuard, async (_req, res) => {
 
 router.put("/settings/:key", adminGuard, async (req, res) => {
   const key = getRouteParam(req.params.key);
-  const { value } = req.body as { value: string };
-  if (!value) { res.status(400).json({ error: "MISSING_VALUE" }); return; }
+  const parsed = UpdateSettingBody.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "INVALID_SETTING" }); return; }
+  const { value } = parsed.data;
+  if (typeof value !== "string" || !value.trim()) { res.status(400).json({ error: "MISSING_VALUE" }); return; }
+  if (key.startsWith("price_") && positiveInteger(value) === null) {
+    res.status(400).json({ error: "INVALID_PRICE", message: "Ingresa un precio entero mayor que cero." }); return;
+  }
   try {
     await db
       .insert(settingsTable)
@@ -133,14 +140,16 @@ router.get("/products", adminGuard, async (_req, res) => {
 
 /** Create a new product — inserts M + L stock rows with optional initial qty and prices */
 router.post("/products", adminGuard, async (req, res) => {
-  const { name, qtyM, qtyL, priceM, priceL } = req.body as {
-    name?: string;
-    qtyM?: number;
-    qtyL?: number;
-    priceM?: string;
-    priceL?: string;
-  };
-  if (!name?.trim()) { res.status(400).json({ error: "MISSING_NAME" }); return; }
+  const parsed = CreateProductBody.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "INVALID_PRODUCT", message: "Revisa el nombre, los precios y las cantidades." }); return; }
+  const { name, qtyM, qtyL, priceM, priceL } = parsed.data;
+  if (typeof name !== "string" || !name.trim()) { res.status(400).json({ error: "MISSING_NAME" }); return; }
+  if ([qtyM, qtyL].some(qty => qty !== undefined && (!Number.isSafeInteger(qty) || qty < 0))) {
+    res.status(400).json({ error: "INVALID_QTY" }); return;
+  }
+  if ([priceM, priceL].some(price => price !== undefined && positiveInteger(price) === null)) {
+    res.status(400).json({ error: "INVALID_PRICE" }); return;
+  }
 
   try {
     // Determine next product ID (find max pN number)
@@ -153,26 +162,21 @@ router.post("/products", adminGuard, async (req, res) => {
     const initialQtyM = typeof qtyM === "number" && qtyM >= 0 ? qtyM : 0;
     const initialQtyL = typeof qtyL === "number" && qtyL >= 0 ? qtyL : 0;
 
-    await db.insert(stockTable).values([
-      { id: `${productId}-M`, productId, productName: name.trim(), size: "M", qty: initialQtyM },
-      { id: `${productId}-L`, productId, productName: name.trim(), size: "L", qty: initialQtyL },
-    ]);
-
-    // Optionally update global prices
-    const priceUpdates: Promise<unknown>[] = [];
-    if (priceM?.trim()) {
-      priceUpdates.push(
-        db.insert(settingsTable).values({ key: "price_m", value: priceM.trim(), updatedAt: new Date() })
-          .onConflictDoUpdate({ target: settingsTable.key, set: { value: priceM.trim(), updatedAt: new Date() } })
-      );
-    }
-    if (priceL?.trim()) {
-      priceUpdates.push(
-        db.insert(settingsTable).values({ key: "price_l", value: priceL.trim(), updatedAt: new Date() })
-          .onConflictDoUpdate({ target: settingsTable.key, set: { value: priceL.trim(), updatedAt: new Date() } })
-      );
-    }
-    await Promise.all(priceUpdates);
+    await db.transaction(async tx => {
+      const settingRows = await tx.select().from(settingsTable);
+      const settings = Object.fromEntries(settingRows.map(row => [row.key, row.value]));
+      const m = priceM === undefined ? resolvePrice(settings, productId, "M") : positiveInteger(priceM);
+      const l = priceL === undefined ? resolvePrice(settings, productId, "L") : positiveInteger(priceL);
+      if (m === null || l === null) throw new Error("Invalid configured price");
+      await tx.insert(stockTable).values([
+        { id: `${productId}-M`, productId, productName: name.trim(), size: "M", qty: initialQtyM },
+        { id: `${productId}-L`, productId, productName: name.trim(), size: "L", qty: initialQtyL },
+      ]);
+      await tx.insert(settingsTable).values([
+        { key: priceKey(productId, "M"), value: String(m) },
+        { key: priceKey(productId, "L"), value: String(l) },
+      ]).onConflictDoUpdate({ target: settingsTable.key, set: { value: sql`excluded.value`, updatedAt: new Date() } });
+    });
 
     res.json({ ok: true, id: productId, name: name.trim() });
   } catch (err) {
@@ -201,6 +205,7 @@ router.delete("/products/:id", adminGuard, async (req, res) => {
   try {
     await db.delete(stockTable).where(eq(stockTable.productId, id));
     await db.delete(productImagesTable).where(eq(productImagesTable.productId, id));
+    await db.delete(settingsTable).where(inArray(settingsTable.key, [priceKey(id, "M"), priceKey(id, "L")]));
     res.json({ ok: true });
   } catch (err) {
     logger.error({ err }, "admin: product delete failed");

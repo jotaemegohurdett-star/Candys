@@ -11,6 +11,80 @@ tags:
   - name: health
     description: Health operations
 paths:
+  /admin/products:
+    post:
+      operationId: createProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "200":
+          description: Product and its M/L stock and prices created atomically
+        "400":
+          description: Invalid name, quantity or price
+        "401":
+          description: Admin authentication required
+        "500":
+          description: Database error
+  /admin/settings/{key}:
+    put:
+      operationId: updateSetting
+      parameters:
+        - in: path
+          name: key
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SettingInput"
+      responses:
+        "200":
+          description: Setting saved; price keys require positive integer CLP values
+        "400":
+          description: Invalid setting
+        "401":
+          description: Admin authentication required
+        "500":
+          description: Database error
+  /payment/preference:
+    post:
+      operationId: createPaymentPreference
+      summary: Create a checkout using authoritative product prices and aggregated stock
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckoutInput"
+      responses:
+        "200":
+          description: Mercado Pago preference created
+        "400":
+          description: Invalid item, variant, quantity or return URL
+        "409":
+          description: OUT_OF_STOCK or PRICE_CHANGED; updated items returned for price confirmation
+        "503":
+          description: Mercado Pago not configured
+        "500":
+          description: Payment provider or database error
+  /catalog:
+    get:
+      operationId: getCatalog
+      responses:
+        "200":
+          description: Current products, galleries and settings (price_m/price_l plus price_PRODUCTID_m/l overrides)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Catalog"
+        "500":
+          description: Database error
   /healthz:
     get:
       operationId: healthCheck
@@ -26,6 +100,71 @@ paths:
                 $ref: "#/components/schemas/HealthStatus"
 components:
   schemas:
+    ProductInput:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 200 }
+        qtyM: { type: integer, minimum: 0 }
+        qtyL: { type: integer, minimum: 0 }
+        priceM: { type: string, pattern: '^[0-9]+$' }
+        priceL: { type: string, pattern: '^[0-9]+$' }
+    SettingInput:
+      type: object
+      required: [value]
+      properties:
+        value: { type: string, minLength: 1 }
+    CheckoutInput:
+      type: object
+      required: [items, back_url]
+      properties:
+        items:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            $ref: "#/components/schemas/CheckoutItem"
+        back_url: { type: string, pattern: '^https?://' }
+    CheckoutItem:
+      type: object
+      required: [productId, title, quantity]
+      properties:
+        productId: { type: string, minLength: 1 }
+        title: { type: string, minLength: 1, maxLength: 500 }
+        size: { type: string, enum: [M, L, A5, A6] }
+        color: { type: string, maxLength: 200 }
+        quantity: { type: integer, minimum: 1 }
+        unit_price: { type: number, minimum: 0 }
+        currency_id: { type: string }
+    Catalog:
+      type: object
+      required: [prices, products, images]
+      properties:
+        prices:
+          type: object
+          additionalProperties: { type: string }
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/CatalogProduct"
+        images:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: "#/components/schemas/CatalogImage"
+    CatalogProduct:
+      type: object
+      required: [id, name]
+      properties:
+        id: { type: string }
+        name: { type: string }
+    CatalogImage:
+      type: object
+      required: [url, color]
+      properties:
+        url: { type: string }
+        color: { type: [string, "null"] }
     HealthStatus:
       type: object
       properties:
