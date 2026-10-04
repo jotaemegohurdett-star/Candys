@@ -9,3 +9,4 @@
 - [Durable sandbox text decoding](durable-sandbox-text-decoding.md) — the durable CodeExecution scope may lack Web/Node byte-decoding globals; verify runtime support before parsing encoded data.
 - [Checkout pricing compatibility](checkout-pricing-compatibility.md) — preserve legacy global prices as fallback; confirm changed checkout totals before redirecting to Mercado Pago.
 - [Generated validation compatibility](generated-validation-compatibility.md) — new OpenAPI formats can generate validation APIs newer than the installed runtime.
+- [Storefront campaign video playback](storefront-campaign-video.md) — use a WebM fallback and intersection-based muted autoplay for reliable scroll-triggered campaigns.
