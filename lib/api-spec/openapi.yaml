@@ -12,6 +12,19 @@ tags:
     description: Health operations
 paths:
   /admin/products:
+    get:
+      operationId: getAdminProducts
+      responses:
+        "200":
+          description: Products available in the admin panel, including their saved descriptions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminProductsResponse"
+        "401":
+          description: Admin authentication required
+        "500":
+          description: Database error
     post:
       operationId: createProduct
       requestBody:
@@ -27,6 +40,35 @@ paths:
           description: Invalid name, quantity or price
         "401":
           description: Admin authentication required
+        "500":
+          description: Database error
+  /admin/products/{id}/description:
+    put:
+      operationId: updateProductDescription
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductDescriptionInput"
+      responses:
+        "200":
+          description: Product description saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductDescriptionResponse"
+        "400":
+          description: Description is invalid or too long
+        "401":
+          description: Admin authentication required
+        "404":
+          description: Product not found
         "500":
           description: Database error
   /admin/products/{id}/prices:
@@ -151,6 +193,28 @@ components:
         productId: { type: string }
         priceM: { type: string }
         priceL: { type: string }
+    ProductDescriptionInput:
+      type: object
+      required: [description]
+      properties:
+        description: { type: string, maxLength: 2000 }
+    ProductDescriptionResponse:
+      type: object
+      required: [productId, description]
+      properties:
+        productId: { type: string }
+        description: { type: string, maxLength: 2000 }
+    AdminProduct:
+      type: object
+      required: [id, name, description]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        description: { type: string, maxLength: 2000 }
+    AdminProductsResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/AdminProduct"
     SettingInput:
       type: object
       required: [value]
@@ -197,10 +261,11 @@ components:
               $ref: "#/components/schemas/CatalogImage"
     CatalogProduct:
       type: object
-      required: [id, name]
+      required: [id, name, description]
       properties:
         id: { type: string }
         name: { type: string }
+        description: { type: string, maxLength: 2000 }
     CatalogImage:
       type: object
       required: [url, color]

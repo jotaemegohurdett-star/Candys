@@ -6,6 +6,8 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './adminProduct';
+export * from './adminProductsResponse';
 export * from './catalog';
 export * from './catalogImage';
 export * from './catalogImages';
@@ -15,6 +17,8 @@ export * from './checkoutInput';
 export * from './checkoutItem';
 export * from './checkoutItemSize';
 export * from './healthStatus';
+export * from './productDescriptionInput';
+export * from './productDescriptionResponse';
 export * from './productInput';
 export * from './productPricesInput';
 export * from './productPricesResponse';

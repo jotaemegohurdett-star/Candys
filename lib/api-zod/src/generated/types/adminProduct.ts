@@ -6,7 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface CatalogProduct {
+export interface AdminProduct {
   id: string;
   name: string;
   /** @maxLength 2000 */

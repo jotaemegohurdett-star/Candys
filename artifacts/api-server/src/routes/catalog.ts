@@ -10,6 +10,7 @@ import { logger } from "../lib/logger";
 import { GetCatalogResponse } from "@workspace/api-zod";
 
 const router: IRouter = Router();
+const PRODUCT_DESCRIPTION_PREFIX = "product_description_";
 
 router.get("/", async (_req, res) => {
   try {
@@ -22,9 +23,16 @@ router.get("/", async (_req, res) => {
       db.select().from(stockTable).orderBy(asc(stockTable.productId)),
     ]);
 
-    // Build prices map: { price_m: "17990", price_l: "20990" }
+    // Only expose pricing settings; product descriptions are returned with each product.
     const prices: Record<string, string> = {};
-    for (const r of settingsRows) prices[r.key] = r.value;
+    const descriptions: Record<string, string> = {};
+    for (const r of settingsRows) {
+      if (r.key.startsWith("price_")) {
+        prices[r.key] = r.value;
+      } else if (r.key.startsWith(PRODUCT_DESCRIPTION_PREFIX)) {
+        descriptions[r.key.slice(PRODUCT_DESCRIPTION_PREFIX.length)] = r.value;
+      }
+    }
 
     // Build ordered image galleries with optional color labels.
     const images: Record<string, { url: string; color: string | null }[]> = {};
@@ -33,13 +41,17 @@ router.get("/", async (_req, res) => {
       images[r.productId].push({ url: r.url, color: r.color ?? null });
     }
 
-    // Build products list: unique [{id, name}] from stock table
+    // Build products list: unique [{id, name, description}] from stock table and settings.
     const seen = new Set<string>();
-    const products: { id: string; name: string }[] = [];
+    const products: { id: string; name: string; description: string }[] = [];
     for (const r of stockRows) {
       if (!seen.has(r.productId)) {
         seen.add(r.productId);
-        products.push({ id: r.productId, name: r.productName });
+        products.push({
+          id: r.productId,
+          name: r.productName,
+          description: descriptions[r.productId] ?? "",
+        });
       }
     }
 

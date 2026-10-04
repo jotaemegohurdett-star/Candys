@@ -10,8 +10,8 @@ export interface CatalogData {
   prices: Record<string, number>;
   /** productId → ordered gallery images with optional color labels */
   images: Record<string, { url: string; color: string | null }[]>;
-  /** All products registered in admin, in order: [{id, name}] */
-  products: { id: string; name: string }[];
+  /** All products registered in admin, including their saved public descriptions. */
+  products: { id: string; name: string; description: string }[];
 }
 
 const DEFAULTS: CatalogData = {
@@ -32,7 +32,7 @@ export function useCatalog() {
       const data = await res.json() as {
         prices: Record<string, string>;
         images: Record<string, { url: string; color: string | null }[]>;
-        products?: { id: string; name: string }[];
+        products?: { id: string; name: string; description?: string }[];
       };
       setCatalog({
         prices: {
@@ -41,7 +41,10 @@ export function useCatalog() {
           price_l: parseInt(data.prices['price_l'] ?? '18990', 10) || 18990,
         },
         images: data.images ?? {},
-        products: data.products ?? [],
+        products: (data.products ?? []).map(product => ({
+          ...product,
+          description: product.description ?? '',
+        })),
       });
       setReady(true);
     } catch {
