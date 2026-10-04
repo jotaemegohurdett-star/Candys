@@ -21,6 +21,19 @@ export interface ProductInput {
   priceL?: string;
 }
 
+export interface ProductPricesInput {
+  /** @pattern ^[1-9][0-9]*$ */
+  priceM: string;
+  /** @pattern ^[1-9][0-9]*$ */
+  priceL: string;
+}
+
+export interface ProductPricesResponse {
+  productId: string;
+  priceM: string;
+  priceL: string;
+}
+
 export interface SettingInput {
   /** @minLength 1 */
   value: string;

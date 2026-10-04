@@ -16,4 +16,6 @@ export * from './checkoutItem';
 export * from './checkoutItemSize';
 export * from './healthStatus';
 export * from './productInput';
+export * from './productPricesInput';
+export * from './productPricesResponse';
 export * from './settingInput';

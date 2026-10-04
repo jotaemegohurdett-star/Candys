@@ -9,6 +9,11 @@ import {
 import { toast } from 'sonner';
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
+const CATALOG_UPDATED_KEY = 'candys-pet-catalog-updated';
+
+function notifyCatalogUpdated() {
+  try { localStorage.setItem(CATALOG_UPDATED_KEY, String(Date.now())); } catch { /* catalog polling remains available */ }
+}
 
 /* ─────────────── helpers ─────────────── */
 async function api(method: string, path: string, body?: unknown) {
@@ -124,7 +129,81 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
   const [deleting, setDeleting] = useState<Record<string, boolean>>({});
   const [renaming, setRenaming] = useState<Record<string, string>>({});
   const [savingName, setSavingName] = useState<Record<string, boolean>>({});
+  const [priceSettings, setPriceSettings] = useState<Record<string, string>>({});
+  const [pricesLoaded, setPricesLoaded] = useState(false);
+  const [editingPrices, setEditingPrices] = useState<Record<string, { M: string; L: string }>>({});
+  const [savingPrices, setSavingPrices] = useState<Record<string, boolean>>({});
+  const [editingPriceProduct, setEditingPriceProduct] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  const refreshPriceSettings = useCallback(async () => {
+    try {
+      setPriceSettings(await api('GET', '/settings') as Record<string, string>);
+      setPricesLoaded(true);
+    } catch {
+      toast.error('No se pudieron cargar los precios actuales');
+    }
+  }, []);
+
+  useEffect(() => { void refreshPriceSettings(); }, [refreshPriceSettings]);
+
+  const currentPrice = (productId: string, size: 'M' | 'L') =>
+    priceSettings[`price_${productId}_${size.toLowerCase()}`]
+      ?? priceSettings[`price_${size.toLowerCase()}`]
+      ?? (size === 'M' ? '17990' : '18990');
+
+  const beginPriceEdit = (product: Product) => {
+    if (editingPriceProduct === product.id) {
+      setEditingPriceProduct(null);
+      return;
+    }
+    setEditingPrices(prices => ({
+      ...prices,
+      [product.id]: {
+        M: currentPrice(product.id, 'M'),
+        L: currentPrice(product.id, 'L'),
+      },
+    }));
+    setEditingPriceProduct(product.id);
+  };
+
+  const saveProductPrices = async (product: Product) => {
+    const prices = editingPrices[product.id];
+    if (!prices) return;
+    if ((['M', 'L'] as const).some(size =>
+      !/^[1-9]\d*$/.test(prices[size]) || !Number.isSafeInteger(Number(prices[size]))
+    )) {
+      toast.error('Ingresa un precio entero mayor que cero para ambas tallas');
+      return;
+    }
+
+    setSavingPrices(current => ({ ...current, [product.id]: true }));
+    try {
+      const saved = await api('PUT', `/products/${product.id}/prices`, {
+        priceM: prices.M,
+        priceL: prices.L,
+      }) as { priceM: string; priceL: string };
+      setPriceSettings(current => ({
+        ...current,
+        [`price_${product.id}_m`]: saved.priceM,
+        [`price_${product.id}_l`]: saved.priceL,
+      }));
+      setEditingPriceProduct(null);
+      setEditingPrices(current => {
+        const next = { ...current };
+        delete next[product.id];
+        return next;
+      });
+      notifyCatalogUpdated();
+      toast.success('Precio guardado. Catálogo y checkout actualizados ✓');
+    } catch (error) {
+      toast.error(error instanceof Error && error.message === 'PRODUCT_NOT_FOUND'
+        ? 'El producto ya no existe. Actualiza la lista e intenta de nuevo.'
+        : 'No se pudieron guardar los precios');
+    } finally {
+      setSavingPrices(current => ({ ...current, [product.id]: false }));
+    }
+  };
 
   // Pre-fill current prices when opening the form
   const openForm = async () => {
@@ -163,6 +242,8 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
         priceM: form.priceM.trim() || undefined,
         priceL: form.priceL.trim() || undefined,
       });
+      await refreshPriceSettings();
+      notifyCatalogUpdated();
       toast.success(`Producto "${form.name.trim()}" creado ✓`);
       setForm(EMPTY_FORM);
       setShowForm(false);
@@ -177,6 +258,8 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
     try {
       await api('DELETE', `/products/${p.id}`);
       toast.success(`"${p.name}" eliminado`);
+      notifyCatalogUpdated();
+      void refreshPriceSettings();
       onRefresh();
     } catch { toast.error('Error al eliminar'); }
     finally { setDeleting(d => ({ ...d, [p.id]: false })); }
@@ -189,6 +272,7 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
     try {
       await api('PUT', `/products/${p.id}/name`, { name: newN });
       toast.success('Nombre actualizado ✓');
+      notifyCatalogUpdated();
       setRenaming(r => { const n = { ...r }; delete n[p.id]; return n; });
       onRefresh();
     } catch { toast.error('Error al renombrar'); }
@@ -199,7 +283,7 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
-          Creá, renombrá o eliminá productos. Stock e imágenes se gestionan en las otras pestañas.
+          Edita el precio M/L en cada producto. Stock e imágenes se gestionan en las otras pestañas.
         </p>
         <button
           onClick={() => { if (showForm) { setShowForm(false); setForm(EMPTY_FORM); } else openForm(); }}
@@ -295,7 +379,7 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
             </div>
 
             <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
-              * Los precios aplican globalmente a todas las tallas M y L de la tienda.
+              * Estos precios son exclusivos de este producto. Los generales solo se usan como respaldo para productos antiguos.
             </p>
 
             <button
@@ -327,9 +411,10 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
                   setSelectedProduct(p);
                 }
               }}
-              className="flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer transition-colors hover:border-pink-500/50 focus:outline-none focus:ring-2 focus:ring-pink-500/60"
+              className="flex flex-col items-stretch gap-3 px-4 py-3 rounded-2xl cursor-pointer transition-colors hover:border-pink-500/50 focus:outline-none focus:ring-2 focus:ring-pink-500/60"
               style={{ background: 'hsl(220 25% 12%)', border: '1px solid hsl(220 25% 20%)' }}
             >
+              <div className="flex w-full min-w-0 items-center gap-3">
               <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 text-xs font-black text-white"
                 style={{ background: 'linear-gradient(135deg, hsl(340 84% 45%), hsl(280 70% 50%))' }}>
                 {p.id.replace('p', '')}
@@ -368,6 +453,22 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
                     </button>
                   </>
                 ) : (
+                  <button
+                    type="button"
+                    onClick={e => { e.stopPropagation(); beginPriceEdit(p); }}
+                    disabled={!pricesLoaded || savingPrices[p.id]}
+                    aria-expanded={editingPriceProduct === p.id}
+                    aria-label={`Editar precios M y L de ${p.name}`}
+                    title="Editar precios M y L"
+                    className="flex h-8 items-center gap-1 rounded-lg px-2 text-xs font-semibold text-pink-300 transition-colors hover:bg-pink-400/10 disabled:opacity-50"
+                  >
+                    <DollarSign className="h-3.5 w-3.5" />
+                    Precios
+                  </button>
+                )}
+                {isRenaming ? (
+                  null
+                ) : (
                    <button onClick={e => { e.stopPropagation(); setRenaming(r => ({ ...r, [p.id]: p.name })); }}
                     className="w-8 h-8 rounded-lg flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-colors"
                     title="Renombrar">
@@ -380,6 +481,60 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
                   {deleting[p.id] ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
                 </button>
               </div>
+              </div>
+
+              {editingPriceProduct === p.id && editingPrices[p.id] && (
+                <div
+                  id={`product-prices-${p.id}`}
+                  className="grid w-full gap-3 rounded-xl border border-white/10 p-3 sm:grid-cols-[1fr_1fr_auto]"
+                  style={{ background: 'hsl(220 25% 8%)' }}
+                  onClick={event => event.stopPropagation()}
+                  onKeyDown={event => event.stopPropagation()}
+                >
+                  {(['M', 'L'] as const).map(size => (
+                    <label key={size} className="block text-xs font-semibold text-white/65">
+                      Talla {size} · CLP
+                      <input
+                        type="number"
+                        min={1}
+                        step={1}
+                        inputMode="numeric"
+                        value={editingPrices[p.id]![size]}
+                        onChange={event => setEditingPrices(current => ({
+                          ...current,
+                          [p.id]: { ...current[p.id]!, [size]: event.target.value },
+                        }))}
+                        className="mt-1.5 w-full rounded-lg px-3 py-2 text-sm font-mono text-white focus:outline-none focus:ring-1 focus:ring-pink-400"
+                        style={{ background: 'hsl(220 25% 12%)', border: '1px solid hsl(220 25% 24%)' }}
+                        aria-label={`Precio actual y nuevo precio de ${p.name}, talla ${size}`}
+                      />
+                      <span className="mt-1 block font-normal text-white/40">
+                        Actual: ${Number(currentPrice(p.id, size)).toLocaleString('es-CL')}
+                      </span>
+                    </label>
+                  ))}
+                  <div className="flex items-end gap-2 sm:justify-end">
+                    <button
+                      type="button"
+                      onClick={() => setEditingPriceProduct(null)}
+                      disabled={savingPrices[p.id]}
+                      className="rounded-lg px-3 py-2 text-xs font-semibold text-white/60 hover:bg-white/10 disabled:opacity-50"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void saveProductPrices(p)}
+                      disabled={savingPrices[p.id] || !pricesLoaded}
+                      className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
+                      style={{ background: 'hsl(340 84% 50%)' }}
+                    >
+                      {savingPrices[p.id] ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+                      Guardar M y L
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           );
         })}
@@ -796,6 +951,7 @@ function PricesTab({ products }: { products: Product[] }) {
     try {
       await api('PUT', `/settings/${key}`, { value });
       setSettings(s => ({ ...s, [key]: value }));
+      notifyCatalogUpdated();
       setEditing(e => { const n = { ...e }; delete n[key]; return n; });
       toast.success('Precio actualizado ✓');
     } catch { toast.error('Error al guardar'); }

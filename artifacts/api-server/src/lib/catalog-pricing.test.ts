@@ -19,6 +19,10 @@ test("product overrides are isolated and old products retain their global prices
   assert.equal(priceKey("p5", "M"), "price_p5_m");
   assert.equal(resolvePrice(settings, "p5", "M"), 22990);
   assert.equal(resolvePrice(settings, "p5", "L"), 25990);
+  const editedProductSettings = { ...settings, [priceKey("p5", "M")]: "24990" };
+  assert.equal(resolvePrice(editedProductSettings, "p5", "M"), 24990);
+  assert.equal(priceCheckout([item()], editedProductSettings, stocks)[0].unit_price, 24990);
+  assert.equal(resolvePrice(editedProductSettings, "p5", "L"), 25990);
   assert.equal(resolvePrice(settings, "p1", "M"), 17990);
   assert.equal(resolvePrice({ ...settings, price_m: "19990" }, "p5", "M"), 22990);
   assert.equal(resolvePrice({}, "p1", "L"), 18990);

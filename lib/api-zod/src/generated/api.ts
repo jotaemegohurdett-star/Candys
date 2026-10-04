@@ -29,6 +29,26 @@ export const CreateProductBody = zod.object({
 export const CreateProductResponse = zod.unknown()
 
 
+export const UpdateProductPricesParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const updateProductPricesBodyPriceMRegExp = new RegExp('^[1-9][0-9]*$');
+export const updateProductPricesBodyPriceLRegExp = new RegExp('^[1-9][0-9]*$');
+
+
+export const UpdateProductPricesBody = zod.object({
+  "priceM": zod.string().regex(updateProductPricesBodyPriceMRegExp),
+  "priceL": zod.string().regex(updateProductPricesBodyPriceLRegExp)
+})
+
+export const UpdateProductPricesResponse = zod.object({
+  "productId": zod.string(),
+  "priceM": zod.string(),
+  "priceL": zod.string()
+})
+
+
 export const UpdateSettingParams = zod.object({
   "key": zod.coerce.string()
 })
