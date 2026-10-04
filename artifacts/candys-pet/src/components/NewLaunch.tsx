@@ -79,7 +79,7 @@ export function NewLaunch() {
       ref={sectionRef}
       id="new-launch"
       aria-labelledby="launch-title"
-      className="relative isolate overflow-hidden bg-[hsl(220_25%_8%)] text-[#fff8f0]"
+      className="relative isolate scroll-mt-24 overflow-hidden bg-[hsl(220_25%_8%)] text-[#fff8f0]"
     >
       <div className="pointer-events-none absolute -left-36 top-8 h-96 w-96 rounded-full bg-[hsl(340_84%_50%/0.18)] blur-3xl" />
       <div className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-[hsl(38_72%_58%/0.11)] blur-3xl" />
