@@ -12,3 +12,4 @@
 - [Storefront campaign video playback](storefront-campaign-video.md) — use a WebM fallback and intersection-based muted autoplay for reliable scroll-triggered campaigns.
 - [Vercel and GitHub branch verification](vercel-github-branch-verification.md) — verify remote refs and deployment SHAs before retrying a push or concluding a commit is missing.
 - [Vercel API redeploys](vercel-api-redeploys.md) — include the source deployment name and verify database-backed routes after Vercel reports READY.
+- [Catalog recovery source](catalog-recovery-source.md) — distinguish Candy's original Replit production records from the separate Vercel database before claiming catalog recovery.
