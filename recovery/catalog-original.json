@@ -1,0 +1,450 @@
+{
+  "stock": [
+    {
+      "id": "p11-L",
+      "product_id": "p11",
+      "product_name": "Porta mascota algodón Estampado Minnie/Mickey (semi elastizada)",
+      "size": "L",
+      "qty": 0,
+      "updated_at": "2026-09-10T05:51:50.754"
+    },
+    {
+      "id": "p11-M",
+      "product_id": "p11",
+      "product_name": "Porta mascota algodón Estampado Minnie/Mickey (semi elastizada)",
+      "size": "M",
+      "qty": 5,
+      "updated_at": "2026-08-01T00:28:28.706"
+    },
+    {
+      "id": "p12-L",
+      "product_id": "p12",
+      "product_name": "Porta mascotaTela Bomber todas las temporadas (semi elastizada)",
+      "size": "L",
+      "qty": 1,
+      "updated_at": "2026-07-24T09:50:13.023183"
+    },
+    {
+      "id": "p12-M",
+      "product_id": "p12",
+      "product_name": "Porta mascotaTela Bomber todas las temporadas (semi elastizada)",
+      "size": "M",
+      "qty": 6,
+      "updated_at": "2026-07-24T09:50:13.023183"
+    },
+    {
+      "id": "p13-L",
+      "product_id": "p13",
+      "product_name": "Porta mascota tela algodón estampado unicornio (semi elastizada)",
+      "size": "L",
+      "qty": 4,
+      "updated_at": "2026-09-10T05:52:12.159"
+    },
+    {
+      "id": "p13-M",
+      "product_id": "p13",
+      "product_name": "Porta mascota tela algodón estampado unicornio (semi elastizada)",
+      "size": "M",
+      "qty": 0,
+      "updated_at": "2026-07-24T10:08:35.208632"
+    },
+    {
+      "id": "p16-L",
+      "product_id": "p16",
+      "product_name": "Porta mascota Tela corderito invierno azul piedra",
+      "size": "L",
+      "qty": 0,
+      "updated_at": "2026-07-24T11:49:13.112695"
+    },
+    {
+      "id": "p16-M",
+      "product_id": "p16",
+      "product_name": "Porta mascota Tela corderito invierno azul piedra",
+      "size": "M",
+      "qty": 4,
+      "updated_at": "2026-07-24T11:49:13.112695"
+    },
+    {
+      "id": "p17-L",
+      "product_id": "p17",
+      "product_name": "Porta mascota clásico liso fucsia (semi elastizada)",
+      "size": "L",
+      "qty": 0,
+      "updated_at": "2026-09-10T05:52:41.337"
+    },
+    {
+      "id": "p17-M",
+      "product_id": "p17",
+      "product_name": "Porta mascota clásico liso fucsia (semi elastizada)",
+      "size": "M",
+      "qty": 3,
+      "updated_at": "2026-08-15T13:20:48.064"
+    },
+    {
+      "id": "p18-L",
+      "product_id": "p18",
+      "product_name": "Porta mascota tela polar / mimetizado",
+      "size": "L",
+      "qty": 0,
+      "updated_at": "2026-08-15T13:19:07.638255"
+    },
+    {
+      "id": "p18-M",
+      "product_id": "p18",
+      "product_name": "Porta mascota tela polar / mimetizado",
+      "size": "M",
+      "qty": 3,
+      "updated_at": "2026-08-15T13:19:07.638255"
+    },
+    {
+      "id": "p19-L",
+      "product_id": "p19",
+      "product_name": "PORTA MASCOTA TELA POLAR AZUL PIEDRA",
+      "size": "L",
+      "qty": 0,
+      "updated_at": "2026-09-10T10:54:37.536505"
+    },
+    {
+      "id": "p19-M",
+      "product_id": "p19",
+      "product_name": "PORTA MASCOTA TELA POLAR AZUL PIEDRA",
+      "size": "M",
+      "qty": 2,
+      "updated_at": "2026-09-10T10:54:37.536505"
+    },
+    {
+      "id": "p20-L",
+      "product_id": "p20",
+      "product_name": "PORTA MASCOTA AZUL ELECTRICO",
+      "size": "L",
+      "qty": 0,
+      "updated_at": "2026-09-14T06:09:32.673361"
+    },
+    {
+      "id": "p20-M",
+      "product_id": "p20",
+      "product_name": "PORTA MASCOTA AZUL ELECTRICO",
+      "size": "M",
+      "qty": 1,
+      "updated_at": "2026-09-14T06:09:32.673361"
+    },
+    {
+      "id": "p21-L",
+      "product_id": "p21",
+      "product_name": "PORTA MASCOTA CLASICO TELA BOMBER ROSADO (semi elastizada)",
+      "size": "L",
+      "qty": 0,
+      "updated_at": "2026-09-14T06:11:35.585004"
+    },
+    {
+      "id": "p21-M",
+      "product_id": "p21",
+      "product_name": "PORTA MASCOTA CLASICO TELA BOMBER ROSADO (semi elastizada)",
+      "size": "M",
+      "qty": 0,
+      "updated_at": "2026-09-14T06:11:35.585004"
+    },
+    {
+      "id": "p22-L",
+      "product_id": "p22",
+      "product_name": "PORTA MASCOTA TELA BOMBER (semi elastizada) COLOR CAFE CHOCOLATE",
+      "size": "L",
+      "qty": 0,
+      "updated_at": "2026-09-14T09:04:27.698295"
+    },
+    {
+      "id": "p22-M",
+      "product_id": "p22",
+      "product_name": "PORTA MASCOTA TELA BOMBER (semi elastizada) COLOR CAFE CHOCOLATE",
+      "size": "M",
+      "qty": 2,
+      "updated_at": "2026-09-14T09:04:27.698295"
+    },
+    {
+      "id": "p23-L",
+      "product_id": "p23",
+      "product_name": "PORTA MASCOTA TELA BOMBER COLOR CHOCOLATE (para duplas hasta 10 kilos total )",
+      "size": "L",
+      "qty": 0,
+      "updated_at": "2026-09-14T09:15:58.334961"
+    },
+    {
+      "id": "p23-M",
+      "product_id": "p23",
+      "product_name": "PORTA MASCOTA TELA BOMBER COLOR CHOCOLATE (para duplas hasta 10 kilos total )",
+      "size": "M",
+      "qty": 0,
+      "updated_at": "2026-09-14T09:15:58.334961"
+    },
+    {
+      "id": "p24-L",
+      "product_id": "p24",
+      "product_name": "PORTA MASCOTA TELA BOMBER COLOR NEGRO  (para duplas hasta 10 kilos total )",
+      "size": "L",
+      "qty": 0,
+      "updated_at": "2026-09-22T22:09:13.513"
+    },
+    {
+      "id": "p24-M",
+      "product_id": "p24",
+      "product_name": "PORTA MASCOTA TELA BOMBER COLOR NEGRO  (para duplas hasta 10 kilos total )",
+      "size": "M",
+      "qty": 0,
+      "updated_at": "2026-09-14T09:25:52.657086"
+    },
+    {
+      "id": "p6-L",
+      "product_id": "p6",
+      "product_name": "Porta mascota Tela Bomber  todas las temporadas (semi elastizada)",
+      "size": "L",
+      "qty": 0,
+      "updated_at": "2026-07-24T09:37:01.123281"
+    },
+    {
+      "id": "p6-M",
+      "product_id": "p6",
+      "product_name": "Porta mascota Tela Bomber  todas las temporadas (semi elastizada)",
+      "size": "M",
+      "qty": 0,
+      "updated_at": "2026-07-24T09:37:01.123281"
+    },
+    {
+      "id": "p7-L",
+      "product_id": "p7",
+      "product_name": "Porta mascota Tela polar azul celeste",
+      "size": "L",
+      "qty": 0,
+      "updated_at": "2026-07-24T09:38:58.81202"
+    },
+    {
+      "id": "p7-M",
+      "product_id": "p7",
+      "product_name": "Porta mascota Tela polar azul celeste",
+      "size": "M",
+      "qty": 4,
+      "updated_at": "2026-07-24T09:38:58.81202"
+    },
+    {
+      "id": "p9-L",
+      "product_id": "p9",
+      "product_name": "Porta mascota Tela Bomber Clásico  (semi elastizada)",
+      "size": "L",
+      "qty": 0,
+      "updated_at": "2026-07-24T09:42:04.14"
+    },
+    {
+      "id": "p9-M",
+      "product_id": "p9",
+      "product_name": "Porta mascota Tela Bomber Clásico  (semi elastizada)",
+      "size": "M",
+      "qty": 0,
+      "updated_at": "2026-07-24T10:29:59.782"
+    }
+  ],
+  "images": [
+    {
+      "id": "14a77857-a9c9-4556-9555-feca7891be25",
+      "product_id": "p11",
+      "url": "/api/storage/objects/uploads/4a6d6688-256c-45ac-a6af-5e2bfc3f6040",
+      "position": 0,
+      "updated_at": "2026-07-24T09:49:41.289",
+      "color": null
+    },
+    {
+      "id": "791b8ab5-3357-426b-8b37-7e7a04c0b352",
+      "product_id": "p11",
+      "url": "/api/storage/objects/uploads/7df2d3a5-9adf-45c3-93b1-f2ed43a5f89a",
+      "position": 1,
+      "updated_at": "2026-09-14T09:13:20.073",
+      "color": null
+    },
+    {
+      "id": "52938a44-4d03-4fc6-9d2e-f8f2d074f3ef",
+      "product_id": "p11",
+      "url": "/api/storage/objects/uploads/a87d5c08-7d13-430f-b39f-309d972bdc29",
+      "position": 2,
+      "updated_at": "2026-09-14T09:13:25.874",
+      "color": null
+    },
+    {
+      "id": "f58c806e-3f91-440b-aec9-713b870f3b1d",
+      "product_id": "p12",
+      "url": "/api/storage/objects/uploads/f1dab42d-0b42-481d-9161-9759b0b3a2c6",
+      "position": 0,
+      "updated_at": "2026-07-24T09:50:26.012",
+      "color": null
+    },
+    {
+      "id": "4ac18b80-f51b-47be-944c-c500755543fc",
+      "product_id": "p12",
+      "url": "/api/storage/objects/uploads/771f23c6-4a55-423a-885a-87634726c36c",
+      "position": 1,
+      "updated_at": "2026-09-14T09:32:42.104",
+      "color": null
+    },
+    {
+      "id": "bb9adb06-7ace-4b14-b746-93acea42eefb",
+      "product_id": "p13",
+      "url": "/api/storage/objects/uploads/32b5e968-f289-46f1-b37b-602cd3fc9c07",
+      "position": 1,
+      "updated_at": "2026-09-14T06:05:09.156",
+      "color": null
+    },
+    {
+      "id": "0afc9adf-e920-435b-811c-b5a5f8301521",
+      "product_id": "p13",
+      "url": "/api/storage/objects/uploads/ee795454-9625-409c-a7fb-b378bf4ddcc4",
+      "position": 2,
+      "updated_at": "2026-09-14T09:36:48.567",
+      "color": null
+    },
+    {
+      "id": "666c94be-7b9c-424f-8ad0-05957ea5e0a7",
+      "product_id": "p13",
+      "url": "/api/storage/objects/uploads/fd150262-8549-4a3b-b5f7-f80215185d2b",
+      "position": 3,
+      "updated_at": "2026-09-14T09:38:35.306",
+      "color": null
+    },
+    {
+      "id": "c533ef44-5aea-4b14-943a-275f729585eb",
+      "product_id": "p16",
+      "url": "/api/storage/objects/uploads/66fecefa-3b2d-4592-929b-4c9a1930d89e",
+      "position": 0,
+      "updated_at": "2026-07-24T11:49:59.679",
+      "color": null
+    },
+    {
+      "id": "debdbe2e-d670-4828-a375-35fea2f5ca91",
+      "product_id": "p17",
+      "url": "/api/storage/objects/uploads/589386d7-d919-42f9-92a5-03db9441928f",
+      "position": 0,
+      "updated_at": "2026-08-07T20:29:28.735",
+      "color": null
+    },
+    {
+      "id": "561acfc8-c6b8-4692-8f8e-8061d007dae9",
+      "product_id": "p17",
+      "url": "/api/storage/objects/uploads/c993dd7e-ad53-4682-9186-8fdba6419c8c",
+      "position": 1,
+      "updated_at": "2026-09-14T09:14:14.712",
+      "color": null
+    },
+    {
+      "id": "31f11df2-7437-45f1-b839-569515bb41de",
+      "product_id": "p18",
+      "url": "/api/storage/objects/uploads/19ac2c0f-c137-4742-a87b-2a207bf28cac",
+      "position": 0,
+      "updated_at": "2026-08-15T13:20:02.365",
+      "color": null
+    },
+    {
+      "id": "6d8a7e79-bec7-4a4a-a588-08fdb68e7ab3",
+      "product_id": "p18",
+      "url": "/api/storage/objects/uploads/231f4898-02ad-4e39-b532-f3c1b298219b",
+      "position": 1,
+      "updated_at": "2026-09-14T09:00:50.109",
+      "color": null
+    },
+    {
+      "id": "20236dfb-59ec-474c-b7bd-2a6c38c45356",
+      "product_id": "p19",
+      "url": "/api/storage/objects/uploads/4a702336-3f40-4e0a-94ee-406cd2bea177",
+      "position": 0,
+      "updated_at": "2026-09-10T10:55:03.563",
+      "color": null
+    },
+    {
+      "id": "c2cd17ae-cb1e-4ee5-bd3f-b764e8feee23",
+      "product_id": "p20",
+      "url": "/api/storage/objects/uploads/79627f04-dfb0-4a1e-ac6f-3f8abeb178b0",
+      "position": 0,
+      "updated_at": "2026-09-14T06:09:49.764",
+      "color": null
+    },
+    {
+      "id": "1087bdae-0c2b-40a7-b8ab-fe14391f1be6",
+      "product_id": "p21",
+      "url": "/api/storage/objects/uploads/a217ef47-a285-44c7-94b5-60235fb2f344",
+      "position": 0,
+      "updated_at": "2026-09-14T06:12:07.739",
+      "color": null
+    },
+    {
+      "id": "fe8e7155-5d07-4a4b-8b42-c4ccc6450bdd",
+      "product_id": "p22",
+      "url": "/api/storage/objects/uploads/9679cc56-677d-4855-b54f-a608a96d2b96",
+      "position": 0,
+      "updated_at": "2026-09-14T09:04:46.424",
+      "color": null
+    },
+    {
+      "id": "22ca97d1-2dba-4ff3-8f7b-2c6de0df0c7e",
+      "product_id": "p22",
+      "url": "/api/storage/objects/uploads/ee2fac27-5850-4a7d-95db-d4a7fa500b48",
+      "position": 1,
+      "updated_at": "2026-09-14T09:04:55.201",
+      "color": null
+    },
+    {
+      "id": "f41f9785-19dc-4726-945d-163fd1c2f7df",
+      "product_id": "p23",
+      "url": "/api/storage/objects/uploads/6e44b15a-76f7-4b37-af31-ac8ca8906901",
+      "position": 0,
+      "updated_at": "2026-09-14T09:16:27.441",
+      "color": null
+    },
+    {
+      "id": "f7557374-94ea-4a45-b3e2-9cd00b446e66",
+      "product_id": "p24",
+      "url": "/api/storage/objects/uploads/8d469132-7ff3-4883-9242-24b5f117e72d",
+      "position": 0,
+      "updated_at": "2026-09-14T09:26:03.375",
+      "color": null
+    },
+    {
+      "id": "e302528e-656e-40e5-9aa7-bd1d5e662f39",
+      "product_id": "p6",
+      "url": "/api/storage/objects/uploads/7d869680-c03c-41a4-8d17-ab96c7f795e7",
+      "position": 0,
+      "updated_at": "2026-07-24T09:37:14.822",
+      "color": null
+    },
+    {
+      "id": "de644f90-713b-4ac0-84ea-3a5d3aba02de",
+      "product_id": "p7",
+      "url": "/api/storage/objects/uploads/adb393d0-db7d-49fc-a148-7092a7e3a3f9",
+      "position": 1,
+      "updated_at": "2026-09-14T06:07:20.506",
+      "color": null
+    },
+    {
+      "id": "69c7b38b-1596-401e-80dd-971fc0b50b17",
+      "product_id": "p7",
+      "url": "/api/storage/objects/uploads/8c4d73b1-306a-4bec-ad7c-dff8fec53c50",
+      "position": 2,
+      "updated_at": "2026-09-14T06:08:44.062",
+      "color": null
+    },
+    {
+      "id": "bd088c3d-8870-4066-a3f8-07ac24536f03",
+      "product_id": "p9",
+      "url": "/api/storage/objects/uploads/f63e9511-a1d9-429b-afec-907741c79105",
+      "position": 0,
+      "updated_at": "2026-07-24T09:41:04.162",
+      "color": null
+    }
+  ],
+  "settings": [
+    {
+      "key": "price_l",
+      "value": "18990",
+      "updated_at": "2026-09-14T09:25:52.665"
+    },
+    {
+      "key": "price_m",
+      "value": "0",
+      "updated_at": "2026-09-14T09:25:52.665"
+    }
+  ]
+}
