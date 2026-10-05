@@ -73,6 +73,7 @@ export function PersonalizedVeterinaryNotebook() {
   const productVideoRef = useRef<HTMLVideoElement>(null);
   const audioAnimationRef = useRef<number | null>(null);
   const carnetAudioFocusedRef = useRef(false);
+  const carnetVideoVisibleRef = useRef(false);
 
   const activeImage = GALLERY[galleryIndex];
   const selectedFormat = useMemo(
@@ -175,12 +176,14 @@ export function PersonalizedVeterinaryNotebook() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        const isFocused = entry.isIntersecting && entry.intersectionRatio >= 0.35;
-        if (isFocused === carnetAudioFocusedRef.current) return;
-        carnetAudioFocusedRef.current = isFocused;
-        if (isFocused) requestAudioFocus('carnet', 700);
-        else releaseAudioFocus('carnet', 700);
-        fadeCarnetAudio(isFocused);
+        const isVisible = entry.isIntersecting && entry.intersectionRatio >= 0.35;
+        if (isVisible === carnetVideoVisibleRef.current) return;
+        carnetVideoVisibleRef.current = isVisible;
+        if (!isVisible) return;
+
+        carnetAudioFocusedRef.current = true;
+        requestAudioFocus('carnet', 700);
+        fadeCarnetAudio(true);
       },
       { threshold: [0, 0.35, 0.65], rootMargin: '-22% 0px -22% 0px' },
     );

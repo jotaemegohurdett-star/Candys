@@ -34,6 +34,7 @@ export function NewLaunch() {
   const { catalog } = useCatalog();
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const audioAnimationRef = useRef<number | null>(null);
 
   const priceM = catalog.prices.price_p25_m ?? 22990;
   const priceL = catalog.prices.price_p25_l ?? 24990;
@@ -43,43 +44,71 @@ export function NewLaunch() {
     const audio = audioRef.current;
     if (!video || !audio) return;
 
-    const playMusic = () => {
+    const fadeMusicTo = (targetVolume: number, durationMs: number, pauseAtEnd = false) => {
+      if (audioAnimationRef.current !== null) {
+        cancelAnimationFrame(audioAnimationRef.current);
+        audioAnimationRef.current = null;
+      }
+
+      const startVolume = audio.volume;
+      if (durationMs <= 0) {
+        audio.volume = targetVolume;
+        if (pauseAtEnd) audio.pause();
+        return;
+      }
+
+      const startedAt = performance.now();
+      const animate = (now: number) => {
+        const progress = Math.min((now - startedAt) / durationMs, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        audio.volume = Math.max(0, Math.min(1, startVolume + (targetVolume - startVolume) * eased));
+
+        if (progress < 1) {
+          audioAnimationRef.current = requestAnimationFrame(animate);
+          return;
+        }
+
+        audioAnimationRef.current = null;
+        if (pauseAtEnd) audio.pause();
+      };
+
+      audioAnimationRef.current = requestAnimationFrame(animate);
+    };
+
+    const playMusic = (transitionMs = 300) => {
       if (getAudioFocus() !== 'launch') return;
-      audio.volume = 0.82;
-      void audio.play().catch(() => {
+      if (audio.paused && audio.currentTime > 0) audio.currentTime = 0;
+      void audio.play().then(() => {
+        if (getAudioFocus() === 'launch') fadeMusicTo(0.82, transitionMs);
+      }).catch(() => {
         // Browsers that block sound autoplay retry after the first user gesture.
       });
     };
     const handleAudioFocus = (event: Event) => {
-      const focus = (event as CustomEvent<{ focus: StorefrontAudioFocus }>).detail?.focus;
+      const detail = (event as CustomEvent<{ focus: StorefrontAudioFocus; transitionMs?: number }>).detail;
+      const focus = detail?.focus;
+      const transitionMs = detail?.transitionMs ?? 700;
       if (focus === 'launch') {
-        if (audio.paused && audio.currentTime > 0) audio.currentTime = 0;
-        playMusic();
+        playMusic(transitionMs);
       } else {
-        audio.pause();
+        fadeMusicTo(0, transitionMs, true);
       }
     };
 
-    let launchVideoWasVisible = false;
     const removeUnlockListener = addAudioUnlockListener(playMusic);
     window.addEventListener(AUDIO_FOCUS_EVENT, handleAudioFocus);
 
-    audio.volume = 0.82;
+    audio.volume = 0;
     audio.currentTime = 0;
     requestAudioFocus('launch', 0);
 
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        launchVideoWasVisible = true;
         video.muted = true;
         void video.play().catch(() => {});
-        if (getAudioFocus() !== 'launch') requestAudioFocus('launch', 0);
+        if (getAudioFocus() !== 'launch') requestAudioFocus('launch', 700);
       } else {
         video.pause();
-        if (launchVideoWasVisible) {
-          launchVideoWasVisible = false;
-          releaseAudioFocus('launch', 0);
-        }
       }
     }, { threshold: 0, rootMargin: '0px' });
     observer.observe(video);
@@ -89,6 +118,7 @@ export function NewLaunch() {
       releaseAudioFocus('launch', 0);
       window.removeEventListener(AUDIO_FOCUS_EVENT, handleAudioFocus);
       removeUnlockListener();
+      if (audioAnimationRef.current !== null) cancelAnimationFrame(audioAnimationRef.current);
       video.pause();
       audio.pause();
     };
