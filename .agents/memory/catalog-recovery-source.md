@@ -3,8 +3,8 @@ name: Catalog recovery source
 description: Recovering Candy's Pet catalog after the storefront API and its production database diverge
 ---
 
-The original Replit production database was a verified source for product stock, names, prices, and product-image links after Vercel began using a separate database. An empty development database or failing Vercel API does not prove that the original catalog was deleted.
+The original Replit production database and API remain the verified source for product stock, names, prices, and product-image links. Vercel had been pointed at a separate database that failed, so its empty or failing catalog did not prove the original catalog was deleted.
 
-**Why:** The catalog appeared to be missing, but the older production database still contained real product records and image associations. The Vercel API could not access its configured database, so a Git deployment alone did not restore the production data.
+**Why:** The older production API still returned the original products, 24 image associations, stock rows, and admin image records. A Vercel deployment by itself did not repair the separate database connection.
 
-**How to apply:** Read the original production catalog before recovery, preserve a snapshot and original image bytes, merge by stable IDs without overwriting newer edits, and verify the database-backed production catalog before saying recovery is complete.
+**How to apply:** Keep Vercel's API routes proxying to the verified production API while the databases differ. Before changing that arrangement, migrate the original records and images by stable IDs without overwriting newer edits; verify catalog, admin, stock, and image requests before calling recovery complete.
