@@ -10,7 +10,14 @@ import lifestyleBlack from '@assets/IMG-20261004-WA0019_1791149720742.jpg';
 import lifestyleYellow from '@assets/IMG-20261004-WA0020_1791149720657.jpg';
 import { useCatalog } from '../hooks/useCatalog';
 import { waLink } from '../lib/constants';
-import { requestAudioFocus } from '../lib/audioFocus';
+import {
+  addAudioUnlockListener,
+  AUDIO_FOCUS_EVENT,
+  getAudioFocus,
+  releaseAudioFocus,
+  requestAudioFocus,
+  type StorefrontAudioFocus,
+} from '../lib/audioFocus';
 import './NewLaunch.css';
 
 const formatPrice = (amount: number) =>
@@ -25,7 +32,6 @@ const lifestylePhotos = [
 
 export function NewLaunch() {
   const { catalog } = useCatalog();
-  const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -33,50 +39,63 @@ export function NewLaunch() {
   const priceL = catalog.prices.price_p25_l ?? 24990;
 
   useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      const isVisible = entry.isIntersecting;
-      if (isVisible) {
-        requestAudioFocus('launch', 0);
-        const video = videoRef.current;
-        if (video) {
-          video.muted = true;
-          void video.play().catch((error: unknown) => {
-            console.warn('[NewLaunch] Video autoplay did not start:', error);
-          });
-        }
-        const audio = audioRef.current;
-        if (audio) {
-          audio.volume = 0.82;
-          audio.currentTime = 0;
-          void audio.play().catch((error: unknown) => {
-            console.warn('[NewLaunch] Music autoplay did not start:', error);
-          });
-        }
+    const video = videoRef.current;
+    const audio = audioRef.current;
+    if (!video || !audio) return;
+
+    const playMusic = () => {
+      if (getAudioFocus() !== 'launch') return;
+      audio.volume = 0.82;
+      void audio.play().catch(() => {
+        // Browsers that block sound autoplay retry after the first user gesture.
+      });
+    };
+    const handleAudioFocus = (event: Event) => {
+      const focus = (event as CustomEvent<{ focus: StorefrontAudioFocus }>).detail?.focus;
+      if (focus === 'launch') {
+        if (audio.paused && audio.currentTime > 0) audio.currentTime = 0;
+        playMusic();
       } else {
-        videoRef.current?.pause();
-        const audio = audioRef.current;
-        if (audio) {
-          audio.pause();
-          audio.currentTime = 0;
-        }
-        requestAudioFocus('intro');
+        audio.pause();
       }
-    }, { threshold: 0, rootMargin: '120px 0px' });
-    observer.observe(section);
+    };
+
+    let launchVideoWasVisible = false;
+    const removeUnlockListener = addAudioUnlockListener(playMusic);
+    window.addEventListener(AUDIO_FOCUS_EVENT, handleAudioFocus);
+
+    audio.volume = 0.82;
+    audio.currentTime = 0;
+    requestAudioFocus('launch', 0);
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        launchVideoWasVisible = true;
+        video.muted = true;
+        void video.play().catch(() => {});
+        if (getAudioFocus() !== 'launch') requestAudioFocus('launch', 0);
+      } else {
+        video.pause();
+        if (launchVideoWasVisible) {
+          launchVideoWasVisible = false;
+          releaseAudioFocus('launch', 0);
+        }
+      }
+    }, { threshold: 0, rootMargin: '0px' });
+    observer.observe(video);
+
     return () => {
       observer.disconnect();
-      videoRef.current?.pause();
-      audioRef.current?.pause();
-      if (audioRef.current) audioRef.current.currentTime = 0;
-      requestAudioFocus('intro');
+      releaseAudioFocus('launch', 0);
+      window.removeEventListener(AUDIO_FOCUS_EVENT, handleAudioFocus);
+      removeUnlockListener();
+      video.pause();
+      audio.pause();
     };
   }, []);
 
   return (
     <section
-      ref={sectionRef}
       id="new-launch"
       aria-labelledby="launch-title"
       className="relative isolate scroll-mt-24 overflow-hidden bg-[hsl(220_25%_8%)] text-[#fff8f0]"
@@ -177,8 +196,9 @@ export function NewLaunch() {
                 <audio
                   ref={audioRef}
                   src={launchMusic}
-                  preload="none"
+                  preload="auto"
                   loop
+                  autoPlay
                   aria-label="Música del nuevo lanzamiento"
                   data-testid="audio-launch-music"
                 />

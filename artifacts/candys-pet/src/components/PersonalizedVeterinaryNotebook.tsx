@@ -1,10 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Check, ChevronLeft, ChevronRight, Clock3, Ruler, ShoppingBag, Truck, Volume2 } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, Clock3, Ruler, ShoppingBag, Truck } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCart } from '../context/CartContext';
 import { customProductWaLink } from '../lib/constants';
-import { requestAudioFocus } from '../lib/audioFocus';
+import {
+  addAudioUnlockListener,
+  AUDIO_FOCUS_EVENT,
+  releaseAudioFocus,
+  requestAudioFocus,
+  type StorefrontAudioFocus,
+} from '../lib/audioFocus';
 
 import promoImage from '@assets/carnet-veterinario-whatsapp.jpg';
 import colorOptionsImage from '@assets/IMG-20260923-WA0009_1790139464278.jpg';
@@ -64,10 +70,9 @@ export function PersonalizedVeterinaryNotebook() {
   const [color, setColor] = useState<(typeof COLOR_OPTIONS)[number]['id']>('Rosado');
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [videoMuted, setVideoMuted] = useState(true);
-  const [audioNeedsGesture, setAudioNeedsGesture] = useState(false);
-  const [carnetAudioFocused, setCarnetAudioFocused] = useState(false);
   const productVideoRef = useRef<HTMLVideoElement>(null);
   const audioAnimationRef = useRef<number | null>(null);
+  const carnetAudioFocusedRef = useRef(false);
 
   const activeImage = GALLERY[galleryIndex];
   const selectedFormat = useMemo(
@@ -119,7 +124,6 @@ export function PersonalizedVeterinaryNotebook() {
       void video.play().catch(() => {
         video.muted = true;
         setVideoMuted(true);
-        setAudioNeedsGesture(true);
       });
     }
 
@@ -137,30 +141,11 @@ export function PersonalizedVeterinaryNotebook() {
       if (!shouldPlay) {
         video.muted = true;
         setVideoMuted(true);
+        video.pause();
       }
     };
 
     audioAnimationRef.current = requestAnimationFrame(animate);
-  }, []);
-
-  const activateCarnetAudio = useCallback(async () => {
-    const video = productVideoRef.current;
-    if (!video) return;
-
-    requestAudioFocus('carnet');
-    setCarnetAudioFocused(true);
-    video.muted = false;
-    video.volume = 0.82;
-    setVideoMuted(false);
-
-    try {
-      await video.play();
-      setAudioNeedsGesture(false);
-    } catch {
-      video.muted = true;
-      setVideoMuted(true);
-      setAudioNeedsGesture(true);
-    }
   }, []);
 
   useEffect(() => {
@@ -168,11 +153,33 @@ export function PersonalizedVeterinaryNotebook() {
     if (!video) return;
 
     video.volume = 0;
+    video.muted = true;
+    const removeUnlockListener = addAudioUnlockListener(() => {
+      if (!carnetAudioFocusedRef.current) return;
+      video.muted = false;
+      video.volume = 0.82;
+      setVideoMuted(false);
+      void video.play().catch(() => {
+        video.muted = true;
+        setVideoMuted(true);
+      });
+    });
+    const handleAudioFocus = (event: Event) => {
+      const focus = (event as CustomEvent<{ focus: StorefrontAudioFocus }>).detail?.focus;
+      if (focus !== 'carnet' && carnetAudioFocusedRef.current) {
+        carnetAudioFocusedRef.current = false;
+        fadeCarnetAudio(false);
+      }
+    };
+    window.addEventListener(AUDIO_FOCUS_EVENT, handleAudioFocus);
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         const isFocused = entry.isIntersecting && entry.intersectionRatio >= 0.35;
-        setCarnetAudioFocused(isFocused);
-        requestAudioFocus(isFocused ? 'carnet' : 'intro');
+        if (isFocused === carnetAudioFocusedRef.current) return;
+        carnetAudioFocusedRef.current = isFocused;
+        if (isFocused) requestAudioFocus('carnet', 700);
+        else releaseAudioFocus('carnet', 700);
         fadeCarnetAudio(isFocused);
       },
       { threshold: [0, 0.35, 0.65], rootMargin: '-22% 0px -22% 0px' },
@@ -182,7 +189,11 @@ export function PersonalizedVeterinaryNotebook() {
     return () => {
       observer.disconnect();
       if (audioAnimationRef.current !== null) cancelAnimationFrame(audioAnimationRef.current);
-      requestAudioFocus('intro');
+      if (carnetAudioFocusedRef.current) releaseAudioFocus('carnet', 0);
+      carnetAudioFocusedRef.current = false;
+      removeUnlockListener();
+      window.removeEventListener(AUDIO_FOCUS_EVENT, handleAudioFocus);
+      video.pause();
     };
   }, [fadeCarnetAudio]);
 
@@ -425,33 +436,17 @@ export function PersonalizedVeterinaryNotebook() {
           </div>
            <div className="relative overflow-hidden rounded-2xl bg-black">
             <video
-               ref={productVideoRef}
+              ref={productVideoRef}
               className="aspect-video w-full object-cover"
               src={productVideo}
               autoPlay
-               muted={videoMuted}
+              muted={videoMuted}
               loop
               playsInline
-              controls
+              controls={false}
               preload="metadata"
               aria-label="Video del carnet veterinario personalizado"
             />
-             {carnetAudioFocused && !audioNeedsGesture && (
-               <div className="pointer-events-none absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/55 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-white backdrop-blur-md">
-                 <Volume2 className="h-3.5 w-3.5 text-cyan-300" />
-                 Música del carnet
-               </div>
-             )}
-             {carnetAudioFocused && audioNeedsGesture && (
-               <button
-                 type="button"
-                 onClick={activateCarnetAudio}
-                 className="absolute inset-x-4 bottom-4 flex items-center justify-center gap-2 rounded-full bg-pink-500 px-4 py-3 text-sm font-bold text-white shadow-xl shadow-pink-900/30 transition hover:bg-pink-400"
-               >
-                 <Volume2 className="h-4 w-4" />
-                 Activar música del carnet
-               </button>
-             )}
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useVideoPlayer } from '@/lib/video';
 import { AnimatePresence } from 'framer-motion';
 
@@ -48,6 +48,7 @@ export default function VideoTemplate({
   muted?: boolean;
   onSceneChange?: (sceneKey: string) => void;
 } = {}) {
+  const parentManagedAudio = typeof window !== 'undefined' && window.parent !== window;
   const { currentScene, currentSceneKey } = useVideoPlayer({ durations, loop });
 
   useEffect(() => {
@@ -59,13 +60,26 @@ export default function VideoTemplate({
   const SceneComponent = SCENE_COMPONENTS[baseSceneKey];
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const audioFocusRef = useRef<'intro' | 'carnet' | 'launch'>('intro');
+  const [audioMuted, setAudioMuted] = useState(() => muted || parentManagedAudio);
+  const audioFocusRef = useRef<'none' | 'intro' | 'carnet' | 'launch'>(
+    parentManagedAudio ? 'none' : 'intro',
+  );
   const audioAnimationRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const fadeAudio = (focus: 'intro' | 'carnet' | 'launch', durationMs: number) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.volume = parentManagedAudio ? 0 : 0.45;
+    if (parentManagedAudio) {
+      audio.muted = true;
+      audio.pause();
+    }
+  }, [parentManagedAudio]);
+
+  useEffect(() => {
+    const fadeAudio = (focus: 'none' | 'intro' | 'carnet' | 'launch', durationMs: number) => {
       const audio = audioRef.current;
-      if (!audio || muted) return;
+      if (!audio) return;
 
       if (audioAnimationRef.current !== null) {
         cancelAnimationFrame(audioAnimationRef.current);
@@ -73,24 +87,33 @@ export default function VideoTemplate({
       }
 
       audioFocusRef.current = focus;
-      const startVolume = audio.volume;
-      const targetVolume = focus === 'intro' ? 0.45 : 0;
+      const startVolume = Math.max(0, Math.min(1, audio.volume));
+      const shouldPlay = focus === 'intro' && !muted;
+      const targetVolume = shouldPlay ? 0.45 : 0;
       const startedAt = performance.now();
 
-      if (focus === 'intro') {
+      if (shouldPlay) {
+        audio.muted = false;
+        setAudioMuted(false);
         void audio.play().catch(() => {});
       }
 
       if (durationMs <= 0) {
         audio.volume = targetVolume;
-        if (focus !== 'intro') audio.pause();
+        if (!shouldPlay) {
+          audio.pause();
+          if (parentManagedAudio) {
+            audio.muted = true;
+            setAudioMuted(true);
+          }
+        }
         return;
       }
 
       const animate = (now: number) => {
         const progress = Math.min((now - startedAt) / durationMs, 1);
         const eased = 1 - Math.pow(1 - progress, 3);
-        audio.volume = startVolume + (targetVolume - startVolume) * eased;
+        audio.volume = Math.max(0, Math.min(1, startVolume + (targetVolume - startVolume) * eased));
 
         if (progress < 1) {
           audioAnimationRef.current = requestAnimationFrame(animate);
@@ -98,7 +121,13 @@ export default function VideoTemplate({
         }
 
         audioAnimationRef.current = null;
-        if (focus !== 'intro') audio.pause();
+        if (!shouldPlay) {
+          audio.pause();
+          if (parentManagedAudio) {
+            audio.muted = true;
+            setAudioMuted(true);
+          }
+        }
       };
 
       audioAnimationRef.current = requestAnimationFrame(animate);
@@ -106,10 +135,14 @@ export default function VideoTemplate({
 
     const handleAudioFocus = (event: MessageEvent) => {
       if (event.data?.type !== 'candys:audio-focus') return;
+      const requestedFocus = event.data.focus;
       const focus =
-        event.data.focus === 'carnet' || event.data.focus === 'launch'
-          ? event.data.focus
-          : 'intro';
+        requestedFocus === 'intro' ||
+        requestedFocus === 'carnet' ||
+        requestedFocus === 'launch' ||
+        requestedFocus === 'none'
+          ? requestedFocus
+          : 'none';
       const requestedTransitionMs = Number(event.data.transitionMs);
       const transitionMs =
         Number.isFinite(requestedTransitionMs) && requestedTransitionMs >= 0
@@ -123,19 +156,39 @@ export default function VideoTemplate({
       window.removeEventListener('message', handleAudioFocus);
       if (audioAnimationRef.current !== null) cancelAnimationFrame(audioAnimationRef.current);
     };
-  }, [muted]);
+  }, [muted, parentManagedAudio]);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
     if (audioFocusRef.current !== 'intro' || muted) return;
     audio.volume = 0.45;
+    audio.muted = false;
+    setAudioMuted(false);
     const targetTime = SCENE_START_SEC[baseSceneKey] ?? 0;
     if (Math.abs(audio.currentTime - targetTime) > AUDIO_SEEK_EPSILON_SEC) {
       audio.currentTime = targetTime;
     }
     audio.play().catch(() => {});
   }, [currentSceneKey, baseSceneKey, muted]);
+
+  useEffect(() => {
+    const retryActiveAudio = () => {
+      const audio = audioRef.current;
+      if (!audio || audioFocusRef.current !== 'intro' || muted) return;
+      audio.muted = false;
+      audio.volume = 0.45;
+      setAudioMuted(false);
+      void audio.play().catch(() => {});
+    };
+    const events = ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown', 'wheel'] as const;
+    for (const eventName of events) {
+      window.addEventListener(eventName, retryActiveAudio, { passive: true });
+    }
+    return () => {
+      for (const eventName of events) window.removeEventListener(eventName, retryActiveAudio);
+    };
+  }, [muted]);
 
   return (
     <>
@@ -152,8 +205,8 @@ export default function VideoTemplate({
         ref={audioRef}
         src={`${import.meta.env.BASE_URL}audio/bg_music.mp3`}
         preload="auto"
-        autoPlay
-        muted={muted}
+        autoPlay={!parentManagedAudio && !muted}
+        muted={audioMuted}
       />
     </>
   );
