@@ -45,14 +45,13 @@ export function VideoSection() {
             requestAudioFocus('intro', 700);
           } else if (!entry.isIntersecting && videoIsFocused) {
             videoIsFocused = false;
-            releaseAudioFocus('intro', 700);
           }
         }, { threshold: 0.25 })
       : null;
     if (section && observer) observer.observe(section);
 
     return () => {
-      if (videoIsFocused) releaseAudioFocus('intro', 0);
+      releaseAudioFocus('intro', 0);
       observer?.disconnect();
       removeUnlockListener();
       window.removeEventListener(AUDIO_FOCUS_EVENT, handleAudioFocus);
