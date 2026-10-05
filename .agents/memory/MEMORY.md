@@ -11,3 +11,4 @@
 - [Generated validation compatibility](generated-validation-compatibility.md) — new OpenAPI formats can generate validation APIs newer than the installed runtime.
 - [Storefront campaign video playback](storefront-campaign-video.md) — use a WebM fallback and intersection-based muted autoplay for reliable scroll-triggered campaigns.
 - [Vercel and GitHub branch verification](vercel-github-branch-verification.md) — verify remote refs and deployment SHAs before retrying a push or concluding a commit is missing.
+- [Vercel API redeploys](vercel-api-redeploys.md) — include the source deployment name and verify database-backed routes after Vercel reports READY.
