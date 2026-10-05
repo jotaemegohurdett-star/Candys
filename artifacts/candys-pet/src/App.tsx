@@ -44,9 +44,9 @@ function StoreFront() {
         <main>
           <Hero />
           <NewLaunch />
+          <SafetyFeatures />
           <TrustBar />
           <VideoSection />
-          <SafetyFeatures />
           <Products />
           <PersonalizedVeterinaryNotebook />
           <PersonalizedKeychain />

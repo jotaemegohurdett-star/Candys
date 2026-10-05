@@ -13,3 +13,4 @@
 - [Vercel and GitHub branch verification](vercel-github-branch-verification.md) — verify remote refs and deployment SHAs before retrying a push or concluding a commit is missing.
 - [Vercel API redeploys](vercel-api-redeploys.md) — include the source deployment name and verify database-backed routes after Vercel reports READY.
 - [Catalog recovery source](catalog-recovery-source.md) — distinguish Candy's original Replit production records from the separate Vercel database before claiming catalog recovery.
+- [Safety feature imagery](safety-feature-imagery.md) — preserve the floating, transparent carabiner near the lower-left and keep labels clear of the pet, wearer, and inset photo.

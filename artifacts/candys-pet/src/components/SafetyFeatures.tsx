@@ -6,27 +6,27 @@ import './SafetyFeatures.css';
 const attachmentPoints = [
   {
     number: '01',
-    title: 'Cordón de seguridad interior con mosquetón',
-    detail: 'El cordón queda dentro del portamascotas para ayudar a mantener a tu mascota sujeta.',
+    title: 'Un mosquetón, siempre cerquita',
+    detail: 'Dentro del portamascotas, un cordón con mosquetón acompaña a tu mascota en cada paseo.',
   },
   {
     number: '02',
-    title: 'Cinta inferior con broche en la cintura',
-    detail: 'La cinta se abrocha alrededor de tu cintura para acompañar el ajuste del portamascotas.',
+    title: 'Ajuste que abraza tu cintura',
+    detail: 'La cinta inferior se abrocha alrededor de tu cintura para que salgan juntos con comodidad.',
   },
   {
     number: '03',
-    title: 'Broches a ambos costados del cuello de la mascota',
-    detail: 'Dos broches laterales ayudan a mantener el portamascotas en su lugar alrededor del cuello.',
+    title: 'Broches a ambos lados del cuello',
+    detail: 'Un broche a cada lado del cuello de tu mascota ayuda a ajustar el portamascotas.',
   },
 ];
 
 export function SafetyFeatures() {
   return (
-    <section className="safety-section" aria-labelledby="safety-title">
+    <section id="safety" className="safety-section" aria-labelledby="safety-title">
       <div className="safety-shell">
         <div className="safety-intro">
-          <p className="safety-eyebrow">Cada paseo, más cerca</p>
+          <p className="safety-eyebrow"><span aria-hidden="true" />Cada paseo, más cerca</p>
           <h2 id="safety-title" data-testid="heading-safety">
             Tres puntos de ajuste.<br />
             <span>Un mismo abrazo.</span>
@@ -39,6 +39,7 @@ export function SafetyFeatures() {
 
         <div className="safety-layout">
           <div className="safety-photo-stack" aria-label="El portamascotas en uso">
+            <p className="safety-photo-caption">Juntos, a cada paso.</p>
             <figure className="safety-photo-main">
               <img
                 src={lifestyleFront}
@@ -47,7 +48,6 @@ export function SafetyFeatures() {
                 decoding="async"
                 data-testid="img-safety-pet"
               />
-              <figcaption>Juntos, a cada paso.</figcaption>
             </figure>
             <figure className="safety-photo-detail">
               <img
@@ -60,7 +60,7 @@ export function SafetyFeatures() {
               <figcaption>Ajuste en la cintura</figcaption>
             </figure>
             <div className="safety-clip-orbit" aria-hidden="true">
-              <span className="safety-clip-caption">Detalle del mosquetón</span>
+              <span className="safety-clip-caption">Mosquetón interior</span>
               <img
                 src={safetyClip}
                 alt=""
