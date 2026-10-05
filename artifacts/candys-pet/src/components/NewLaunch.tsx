@@ -36,7 +36,7 @@ export function NewLaunch() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const audioAnimationRef = useRef<number | null>(null);
 
-  const priceM = catalog.prices.price_p25_m ?? 22990;
+  const priceM = catalog.prices.price_p25_m ?? 22999;
   const priceL = catalog.prices.price_p25_l ?? 24990;
 
   useEffect(() => {
