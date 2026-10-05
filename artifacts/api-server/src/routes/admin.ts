@@ -6,6 +6,7 @@ import { randomUUID } from "crypto";
 import { logger } from "../lib/logger";
 import { adminGuard, signToken } from "../middleware/adminAuth";
 import { positiveInteger, priceKey, resolvePrice } from "../lib/catalog-pricing";
+import { recoverOriginalCatalog } from "../lib/recover-catalog";
 import {
   CreateProductBody,
   GetAdminProductsResponse,
@@ -326,6 +327,15 @@ router.delete("/products/:id", adminGuard, async (req, res) => {
 });
 
 /* ──────────────────── PRODUCT IMAGES ──────────────────── */
+
+router.post("/catalog/recover-original", adminGuard, async (_req, res) => {
+  try {
+    res.json({ ok: true, ...await recoverOriginalCatalog() });
+  } catch (err) {
+    logger.error({ err }, "admin: original catalog recovery failed");
+    res.status(500).json({ error: "CATALOG_RECOVERY_FAILED" });
+  }
+});
 
 router.get("/images", adminGuard, async (_req, res) => {
   try {
