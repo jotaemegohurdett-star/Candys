@@ -11,6 +11,7 @@ import { PersonalizedVeterinaryNotebook } from './components/PersonalizedVeterin
 import { PersonalizedKeychain } from './components/PersonalizedKeychain';
 import { PersonalizedMug } from './components/PersonalizedMug';
 import { VideoSection } from './components/VideoSection';
+import { SafetyFeatures } from './components/SafetyFeatures';
 import { SizeGuide } from './components/SizeGuide';
 import { Testimonials } from './components/Testimonials';
 import { Partnerships } from './components/Partnerships';
@@ -45,6 +46,7 @@ function StoreFront() {
           <NewLaunch />
           <TrustBar />
           <VideoSection />
+          <SafetyFeatures />
           <Products />
           <PersonalizedVeterinaryNotebook />
           <PersonalizedKeychain />
