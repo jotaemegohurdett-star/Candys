@@ -11,7 +11,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/api/index.js"
+      "dest": "https://candy-pet.replit.app/api/$1"
     },
     {
       "handle": "filesystem"
