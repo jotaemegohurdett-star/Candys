@@ -1,3 +1,4 @@
+import { PawPrint } from 'lucide-react';
 import lifestyleFront from '@assets/IMG-20261005-WA0001_1791176781818.jpg';
 import lifestyleBack from '@assets/IMG-20261005-WA0002_1791176781771.jpg';
 import safetyClip from '../assets/safety-clip-transparent.png';
@@ -6,24 +7,51 @@ import './SafetyFeatures.css';
 const attachmentPoints = [
   {
     number: '01',
-    title: 'Un mosquetón, siempre cerquita',
-    detail: 'Dentro del portamascotas, un cordón con mosquetón acompaña a tu mascota en cada paseo.',
+    title: 'Mosquetón interior, siempre cerquita',
+    detail: 'El cordón interior incorpora el mosquetón y suma un punto de sujeción discreto dentro del banano.',
   },
   {
     number: '02',
-    title: 'Ajuste que abraza tu cintura',
-    detail: 'La cinta inferior se abrocha alrededor de tu cintura para que salgan juntos con comodidad.',
+    title: 'Un ajuste que se mueve contigo',
+    detail: 'La cinta inferior rodea tu cintura y se abrocha para completar el ajuste del portamascotas.',
   },
   {
     number: '03',
-    title: 'Broches a ambos lados del cuello',
-    detail: 'Un broche a cada lado del cuello de tu mascota ayuda a ajustar el portamascotas.',
+    title: 'Dos broches, a cada lado',
+    detail: 'Ubicados junto al cuello de tu mascota, permiten ajustar el portamascotas desde ambos costados.',
   },
 ];
 
 export function SafetyFeatures() {
   return (
     <section id="safety" className="safety-section" aria-labelledby="safety-title">
+      <div className="safety-transition" aria-hidden="true">
+        <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="safety-transition-spectrum" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#70edff" />
+              <stop offset="34%" stopColor="#d0a0ff" />
+              <stop offset="68%" stopColor="#ff92d0" />
+              <stop offset="100%" stopColor="#ffe8a0" />
+            </linearGradient>
+          </defs>
+          <path
+            d="M0 0H1440V60L1260 47L1080 68L900 49L720 72L540 50L360 73L180 57L0 67Z"
+            fill="hsl(220 25% 8%)"
+          />
+          <path
+            d="M0 67L180 57L360 73L540 50L720 72L900 49L1080 68L1260 47L1440 60"
+            fill="none"
+            stroke="url(#safety-transition-spectrum)"
+            strokeWidth="2"
+            opacity="0.72"
+          />
+        </svg>
+        <PawPrint className="safety-transition-paw safety-transition-paw-one" />
+        <PawPrint className="safety-transition-paw safety-transition-paw-two" />
+        <PawPrint className="safety-transition-paw safety-transition-paw-three" />
+        <PawPrint className="safety-transition-paw safety-transition-paw-four" />
+      </div>
       <div className="safety-shell">
         <div className="safety-intro">
           <p className="safety-eyebrow"><span aria-hidden="true" />Cada paseo, más cerca</p>
@@ -32,8 +60,8 @@ export function SafetyFeatures() {
             <span>Un mismo abrazo.</span>
           </h2>
           <p className="safety-lede">
-            El portamascotas tipo banano reúne tres puntos de sujeción para acompañar esos paseos
-            cotidianos, siempre cerquita de ti.
+            Diseñado para salir juntos: tres detalles de sujeción se integran al portamascotas para
+            acompañarte a cada paso.
           </p>
         </div>
 
