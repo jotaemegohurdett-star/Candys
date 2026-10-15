@@ -74,7 +74,9 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        // In the Base44 sandbox the API runs in its own container, so the
+        // proxy target is configurable. Unset → original localhost behavior.
+        target: process.env.API_PROXY_TARGET ?? 'http://localhost:8080',
         changeOrigin: true,
       },
     },

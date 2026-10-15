@@ -1,0 +1,17 @@
+{
+  "previewPort": 3000,
+  "healthPath": "/",
+  "startCommand": "docker compose -f docker-compose.base44.yml up -d",
+  "secrets": [
+    {
+      "name": "MP_ACCESS_TOKEN",
+      "description": "MercadoPago access token (Chile) — enables the online checkout. Optional: without it the cart falls back to a WhatsApp message for coordinating payment.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "BLOB_READ_WRITE_TOKEN",
+      "description": "Vercel Blob read/write token — lets the admin panel upload product images. Optional: the storefront renders its bundled images without it.",
+      "requiredAtBoot": false
+    }
+  ]
+}
