@@ -23,6 +23,13 @@ docker compose -f docker-compose.base44.yml up -d --build
 - Postgres 16 runs in-compose; `DATABASE_URL=postgres://candy:candy@db:5432/candyspet`.
   The `db-push` one-shot service applies the Drizzle schema (`drizzle-kit push-force`)
   on every `up`, so a fresh volume becomes usable without manual steps.
+- A fresh database is empty; the real catalog lives in
+  `artifacts/api-server/src/data/catalog-original.json` and is restored through the
+  admin-guarded `POST /api/admin/catalog/recover-original` (log in first via
+  `POST /api/admin/login`). It restores 30 stock rows, 24 product images pointing at
+  `artifacts/candys-pet/public/catalog-recovered/<id>.jpg`, and the two `price_*`
+  settings. The recovered `price_m` is `0` in that source file, so the storefront
+  falls back to $17.990 for Talla M until the price is set in Admin → Precios.
 - `deps` installs the workspace from `pnpm-lock.yaml` (`--frozen-lockfile`) into the
   bind-mounted `node_modules`; app services start only after it exits. It uses
   `--store-dir /pnpm-store` (a named volume) so pnpm never creates a package
