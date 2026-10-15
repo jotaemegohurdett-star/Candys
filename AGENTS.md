@@ -20,7 +20,9 @@ docker compose -f docker-compose.base44.yml up -d --build
   The `db-push` one-shot service applies the Drizzle schema (`drizzle-kit push-force`)
   on every `up`, so a fresh volume becomes usable without manual steps.
 - `deps` installs the workspace from `pnpm-lock.yaml` (`--frozen-lockfile`) into the
-  bind-mounted `node_modules`; app services start only after it exits.
+  bind-mounted `node_modules`; app services start only after it exits. It uses
+  `--store-dir /pnpm-store` (a named volume) so pnpm never creates a package
+  store inside the repo.
 - If `package.json` / `pnpm-lock.yaml` change, re-run `up` (the `deps` service re-syncs).
 
 ## Sandbox-only changes

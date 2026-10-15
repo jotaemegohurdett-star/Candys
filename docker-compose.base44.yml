@@ -35,10 +35,12 @@ services:
   deps:
     <<: *app-image
     working_dir: /app
-    command: ["sh", "-ec", "CI=true pnpm install --frozen-lockfile"]
+    # --store-dir keeps the package store out of the bind-mounted repo (pnpm
+    # would otherwise create ./.pnpm-store inside it).
+    command: ["sh", "-ec", "CI=true pnpm install --frozen-lockfile --store-dir /pnpm-store"]
     volumes:
       - .:/app
-      - pnpm_store:/root/.local/share/pnpm/store
+      - pnpm_store:/pnpm-store
 
   # One-shot: creates/updates the schema (stock, orders, settings, product_images).
   db-push:
