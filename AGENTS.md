@@ -20,6 +20,12 @@ docker compose -f docker-compose.base44.yml up -d --build
   back, `web`'s proxy logs a few `[vite] http proxy error … ECONNREFUSED` lines for the
   storefront's polling calls. That is a transient restart artifact, not a defect — the
   hooks fall back to defaults and the polls succeed again within seconds.
+- `video` runs the separate `candys-pet-video` artifact
+  (`pnpm --filter @workspace/candys-pet-video run dev`, port 26272,
+  `BASE_PATH=/candys-pet-video/`) — the animated composition the storefront embeds in
+  an iframe at `/candys-pet-video/` (see its `.replit-artifact/artifact.toml`: path
+  router, `cozy-puppy.mp4` among its scenes). It is not published on its own host port;
+  `web` proxies that path to it.
 - Postgres 16 runs in-compose; `DATABASE_URL=postgres://candy:candy@db:5432/candyspet`.
   The `db-push` one-shot service applies the Drizzle schema (`drizzle-kit push-force`)
   on every `up`, so a fresh volume becomes usable without manual steps.
@@ -42,6 +48,12 @@ docker compose -f docker-compose.base44.yml up -d --build
   `process.env.API_PROXY_TARGET ?? 'http://localhost:8080'`. Compose sets
   `API_PROXY_TARGET=http://api:8080`; with the variable unset the original
   localhost behavior is preserved (Replit/Vercel unaffected).
+  The same file gained a `/candys-pet-video` proxy entry that only exists when
+  `VIDEO_PROXY_TARGET` is set (compose sets `http://video:26272`). Upstream that path
+  is served by the platform (Replit path router, prebuilt static copy on Vercel via
+  `scripts/build-vercel.sh`), so with the variable unset the config is unchanged —
+  without the proxy the storefront's SPA fallback answers `/candys-pet-video/` with the
+  storefront itself, which draws a copy of the whole page inside the video iframe.
 - `BASE44_PREVIEW_MODE` is passed through to `api` and `web`, but nothing in the
   app branches on it today (Vite already runs with `allowedHosts: true`, so the
   preview host is accepted).

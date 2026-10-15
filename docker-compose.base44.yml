@@ -84,6 +84,30 @@ services:
       retries: 12
       start_period: 30s
 
+  # The `candys-pet-video` artifact: the animated video composition the
+  # storefront embeds in an iframe at /candys-pet-video/ (see its
+  # .replit-artifact/artifact.toml — path router, port 26272).
+  video:
+    <<: *app-image
+    working_dir: /app
+    restart: on-failure
+    depends_on:
+      deps:
+        condition: service_completed_successfully
+    environment:
+      - PORT=26272
+      - BASE_PATH=/candys-pet-video/
+      - BASE44_PREVIEW_MODE
+    volumes:
+      - .:/app
+    command: ["sh", "-ec", "exec pnpm --filter @workspace/candys-pet-video run dev"]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:26272/candys-pet-video/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
   web:
     <<: *app-image
     working_dir: /app
@@ -93,6 +117,8 @@ services:
         condition: service_completed_successfully
       api:
         condition: service_healthy
+      video:
+        condition: service_healthy
     ports:
       - "3000:25253"
     environment:
@@ -101,6 +127,10 @@ services:
       # Vite dev server proxies /api to the API container (single origin,
       # so admin session cookies keep working).
       - API_PROXY_TARGET=http://api:8080
+      # ...and /candys-pet-video/ to the video container, which is what the
+      # storefront's iframe expects there. Without it that path hits Vite's
+      # SPA fallback and renders the storefront inside its own video slot.
+      - VIDEO_PROXY_TARGET=http://video:26272
       - BASE44_PREVIEW_MODE
       - __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS
     volumes:
