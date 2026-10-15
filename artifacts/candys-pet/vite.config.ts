@@ -74,25 +74,9 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        // In the Base44 sandbox the API runs in its own container, so the
-        // proxy target is configurable. Unset → original localhost behavior.
-        target: process.env.API_PROXY_TARGET ?? 'http://localhost:8080',
+        target: 'http://localhost:8080',
         changeOrigin: true,
       },
-      // The video artifact is a separate app served at /candys-pet-video/.
-      // Upstream that path is handled by the platform (Replit path router,
-      // prebuilt static copy on Vercel), so the proxy is added only when the
-      // sandbox provides a target. Otherwise the storefront's SPA fallback
-      // would answer that path with the storefront itself.
-      ...(process.env.VIDEO_PROXY_TARGET
-        ? {
-            '/candys-pet-video': {
-              target: process.env.VIDEO_PROXY_TARGET,
-              changeOrigin: true,
-              ws: true,
-            },
-          }
-        : {}),
     },
   },
   preview: {
