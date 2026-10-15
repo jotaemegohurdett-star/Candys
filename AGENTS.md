@@ -64,9 +64,12 @@ docker compose -f docker-compose.base44.yml up -d --build
   signs URLs through Replit's object-storage sidecar on `127.0.0.1:1106`, which
   only exists on Replit. With `BLOB_READ_WRITE_TOKEN` set the route uses the
   Vercel Blob path instead. Otherwise uploading returns an error.
-- **MercadoPago checkout** without `MP_ACCESS_TOKEN`: `/api/payment/preference`
-  answers `503 MP_NOT_CONFIGURED` and the cart falls back to WhatsApp — expected,
-  not a bug.
+- **MercadoPago checkout**: `MP_ACCESS_TOKEN` is configured and verified —
+  `POST /api/payment/preference` returns a real `init_point` (mercadoPago.cl).
+  The preference's `back_urls`/`notification_url` are derived from the `back_url`
+  the storefront sends (`window.location.origin`), so on `candyspet.cl` they
+  automatically point to `https://candyspet.cl/api/payment/webhook`. If the token
+  expires (MP API answers 403), replace it via the Secrets dashboard.
 - `pnpm run build` fails on workspace typecheck because `artifacts/candys-pet-video`
   has pre-existing TypeScript errors. Use the per-package builds instead
   (`pnpm --filter @workspace/candys-pet run build`).
