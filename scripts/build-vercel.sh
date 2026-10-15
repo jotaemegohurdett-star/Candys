@@ -3,6 +3,7 @@ set -eu
 
 pnpm --filter @workspace/api-server run build
 pnpm --filter @workspace/api-server run build:vercel
+cp artifacts/api-server/dist/vercel.mjs api/vercel-bundle.mjs
 PORT=26272 BASE_PATH=/candys-pet-video/ pnpm --filter @workspace/candys-pet-video run build
 PORT=25253 BASE_PATH=/ pnpm --filter @workspace/candys-pet run build
 

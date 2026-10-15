@@ -6,7 +6,7 @@ export const config = {
 
 // Vercel compiles this entry to CommonJS. Load the prebuilt ESM bundle
 // dynamically so the runtime does not try to require a .mjs file.
-const appPromise = import("../artifacts/api-server/dist/vercel.mjs").then(
+const appPromise = import("./vercel-bundle.mjs").then(
   (module) => module.default,
 );
 

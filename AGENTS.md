@@ -58,6 +58,23 @@ docker compose -f docker-compose.base44.yml up -d --build
   app branches on it today (Vite already runs with `allowedHosts: true`, so the
   preview host is accepted).
 
+## Vercel deployment (candyspet.cl)
+
+The API runs directly on Vercel as a serverless function — no Replit proxy.
+
+- `api/[...path].js` is a catch-all serverless function that dynamically imports the
+  prebuilt Express bundle (`api/vercel-bundle.mjs`, copied by `scripts/build-vercel.sh`
+  from `artifacts/api-server/dist/vercel.mjs`). Vercel auto-matches all `/api/*` paths
+  to it; `rewrites` in `vercel.json` handle the SPA fallback for non-API routes.
+- `vercel.json` declares `domains: ["candyspet.cl", "www.candyspet.cl"]`.
+- `api/vercel-bundle.mjs` is a build artifact — gitignored, regenerated on every
+  `vercel --prod` build.
+- **Required Vercel env vars** (set in Project → Settings → Environment Variables):
+  `DATABASE_URL` (or `POSTGRES_URL`) — a hosted Postgres connection string (the
+  API throws at boot without it); `MP_ACCESS_TOKEN` — MercadoPago; optionally
+  `BLOB_READ_WRITE_TOKEN` (Vercel Blob image uploads), `ADMIN_PASSWORD`,
+  `SESSION_SECRET`.
+
 ## Things that do NOT work in this sandbox
 
 - **Admin image upload** (`/api/storage/uploads/request-url`): the default path
