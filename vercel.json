@@ -1,24 +1,18 @@
 {
   "version": 2,
+  "domains": ["candyspet.cl", "www.candyspet.cl"],
   "installCommand": "pnpm install --frozen-lockfile",
   "buildCommand": "sh scripts/build-vercel.sh",
   "outputDirectory": "artifacts/candys-pet/dist/public",
   "functions": {
-    "api/index.js": {
+    "api/[...path].js": {
       "maxDuration": 60
     }
   },
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "https://candy-pet.replit.app/api/$1"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }

@@ -5,11 +5,13 @@ dist
 tmp
 out-tsc
 *.tsbuildinfo
+api/vercel-bundle.mjs
 .expo
 .expo-shared
 
 # dependencies
 node_modules
+.pnpm-store/
 
 # IDEs and editors
 /.idea
