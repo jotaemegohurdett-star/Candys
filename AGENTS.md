@@ -16,6 +16,10 @@ docker compose -f docker-compose.base44.yml up -d --build
 - `api` runs the project's own `pnpm --filter @workspace/api-server run dev`
   (= esbuild bundle + node). **It has no watch server**: after editing API or `lib/**`
   source run `docker compose -f docker-compose.base44.yml restart api`.
+  Restart `api` on its own (not `api web` together): while the API bundles and comes
+  back, `web`'s proxy logs a few `[vite] http proxy error … ECONNREFUSED` lines for the
+  storefront's polling calls. That is a transient restart artifact, not a defect — the
+  hooks fall back to defaults and the polls succeed again within seconds.
 - Postgres 16 runs in-compose; `DATABASE_URL=postgres://candy:candy@db:5432/candyspet`.
   The `db-push` one-shot service applies the Drizzle schema (`drizzle-kit push-force`)
   on every `up`, so a fresh volume becomes usable without manual steps.
@@ -50,8 +54,10 @@ docker compose -f docker-compose.base44.yml up -d --build
 
 ## Verifying it works
 
-- API: `curl localhost:8080/api/healthz` → `{"status":"ok"}`; `curl localhost:8080/api/catalog`
-  → prices/images/products JSON (empty arrays are valid on a fresh database).
+- API (port 8080 is not published to the host — go through the web proxy or the
+  container): `curl localhost:3000/api/healthz` → `{"status":"ok"}`;
+  `curl localhost:3000/api/catalog` → prices/images/products JSON (empty on a fresh
+  database); `docker compose -f docker-compose.base44.yml exec api node -e "fetch('http://127.0.0.1:8080/api/healthz').then(r=>r.text()).then(console.log)"` for a direct check.
 - Storefront: `curl -s localhost:3000/ | head` serves the Vite dev HTML of the
   cloned source (never a prebuilt bundle).
 - Admin panel lives at `/admin`; dev password comes from `ADMIN_PASSWORD`
