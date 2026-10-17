@@ -79,6 +79,21 @@ export default defineConfig({
         target: process.env.API_PROXY_TARGET ?? 'http://localhost:8080',
         changeOrigin: true,
       },
+      // The video artifact is a separate app served at /candys-pet-video/.
+      // Upstream that path is provided by the platform (Replit path router,
+      // prebuilt static copy on Vercel), so this proxy only exists when the
+      // sandbox supplies a target. Without it the storefront's SPA fallback
+      // answers that path with the storefront itself, which is what fills the
+      // video iframe with a copy of the whole page.
+      ...(process.env.VIDEO_PROXY_TARGET
+        ? {
+            '/candys-pet-video': {
+              target: process.env.VIDEO_PROXY_TARGET,
+              changeOrigin: true,
+              ws: true,
+            },
+          }
+        : {}),
     },
   },
   preview: {

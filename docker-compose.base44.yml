@@ -102,6 +102,35 @@ services:
       retries: 12
       start_period: 60s
 
+  # The candys-pet-video artifact: the animated composition the storefront embeds
+  # in an iframe at /candys-pet-video/ (see its .replit-artifact/artifact.toml —
+  # path router, port 26272). Not published on its own host port; `web` proxies
+  # that path to it, exactly like the Replit path router / Vercel static copy do.
+  video:
+    <<: *node-base
+    restart: on-failure
+    command:
+      - sh
+      - -ec
+      - npm i -g pnpm@10 >/dev/null && exec pnpm --filter @workspace/candys-pet-video run dev
+    depends_on:
+      deps:
+        condition: service_completed_successfully
+    environment:
+      PORT: "26272"
+      BASE_PATH: /candys-pet-video/
+      BASE44_PREVIEW_MODE: ${BASE44_PREVIEW_MODE:-}
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:26272/candys-pet-video/').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
+
   web:
     <<: *node-base
     restart: on-failure
@@ -116,6 +145,8 @@ services:
         condition: service_completed_successfully
       migrate:
         condition: service_completed_successfully
+      video:
+        condition: service_healthy
     ports:
       - "3000:3000"
     environment:
@@ -124,6 +155,10 @@ services:
       # Single-origin wiring: the storefront calls /api/* and Vite proxies it to the
       # API container, so the admin session cookie stays on one origin.
       API_PROXY_TARGET: http://api:8080
+      # ...and /candys-pet-video/ to the video container, which is what the
+      # storefront's iframe expects there. Without it that path falls through to
+      # Vite's SPA fallback and renders the storefront inside its own video slot.
+      VIDEO_PROXY_TARGET: http://video:26272
       BASE44_PREVIEW_MODE: ${BASE44_PREVIEW_MODE:-}
       __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS: ${__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS:-}
     healthcheck:

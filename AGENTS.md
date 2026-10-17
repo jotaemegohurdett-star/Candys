@@ -18,7 +18,8 @@ curl -s http://localhost:3000/api/catalog            # DB-backed pricing/catalog
 
 Services: `db` (postgres:16), `deps` (one-shot `pnpm install --frozen-lockfile` into named
 `node_modules` volumes), `migrate` (one-shot `drizzle-kit push --force`), `api` (esbuild
-build + `node dist/index.mjs` on 8080), `web` (Vite dev server on 3000).
+build + `node dist/index.mjs` on 8080), `video` (the separate `candys-pet-video` artifact
+on 26272), `web` (Vite dev server on 3000).
 
 Non-obvious things worth knowing:
 
@@ -31,6 +32,15 @@ Non-obvious things worth knowing:
   unset it falls back to `http://localhost:8080`, the original Replit behavior. This keeps
   the admin session cookie on one origin (cross-origin cookies would need
   `credentials: 'include'` + `Access-Control-Allow-Credentials`).
+- **The storefront's second video is a separate app**, not a bundled file: `VideoSection`
+  embeds an iframe at `/candys-pet-video/`, which upstream is routed by the platform
+  (Replit path router; in production `scripts/build-vercel.sh` copies the built
+  `candys-pet-video` into `artifacts/candys-pet/dist/public/candys-pet-video`). The sandbox
+  serves it with the `video` service (port 26272, `BASE_PATH=/candys-pet-video/`) and
+  `vite.config.ts` proxies that path only when `VIDEO_PROXY_TARGET` is set (Compose sets
+  `http://video:26272`). With the variable unset the proxy is absent and behavior is
+  unchanged; if the `video` service is stopped, the iframe falls through to the
+  storefront's SPA fallback and shows a copy of the whole page inside the video slot.
 - **The API dev script has no watcher** (`build && start`). After editing
   `artifacts/api-server` or `lib/db`, restart it:
   `docker compose -f docker-compose.base44.yml restart api`.
