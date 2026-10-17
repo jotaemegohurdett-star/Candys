@@ -1,0 +1,187 @@
+# Base44 sandbox development environment — Candy's Pet (storefront + Express API + Postgres).
+#
+# Dev-only wiring: every application service runs from the bind-mounted clone with its
+# own live-reload dev command, so source edits are visible without rebuilding an image.
+# Production deployment is Vercel (see vercel.json and scripts/build-vercel.sh).
+#
+#   docker compose -f docker-compose.base44.yml up -d
+#
+# Web entry point: http://localhost:3000 (the preview publishes host port 3000).
+
+x-node-base: &node-base
+  image: node:22
+  working_dir: /app
+  volumes:
+    # Source is bind-mounted so Vite/esbuild read the live clone. Dependency
+    # directories live in named volumes so installs stay inside Docker and the
+    # clone is never polluted with a symlink farm.
+    - .:/app
+    - node_modules_root:/app/node_modules
+    - node_modules_api_server:/app/artifacts/api-server/node_modules
+    - node_modules_candys_pet:/app/artifacts/candys-pet/node_modules
+    - node_modules_candys_pet_video:/app/artifacts/candys-pet-video/node_modules
+    - node_modules_mockup_sandbox:/app/artifacts/mockup-sandbox/node_modules
+    - node_modules_api_client_react:/app/lib/api-client-react/node_modules
+    - node_modules_api_spec:/app/lib/api-spec/node_modules
+    - node_modules_api_zod:/app/lib/api-zod/node_modules
+    - node_modules_db:/app/lib/db/node_modules
+    - node_modules_object_storage_web:/app/lib/object-storage-web/node_modules
+    - node_modules_scripts:/app/scripts/node_modules
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: on-failure
+    environment:
+      POSTGRES_USER: candys
+      POSTGRES_PASSWORD: candys_local_dev
+      POSTGRES_DB: candys
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U candys -d candys"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  # One-shot: install workspace dependencies into the shared named volumes.
+  # Runs alone so no two installers ever touch the same dependency directory.
+  deps:
+    <<: *node-base
+    command:
+      - sh
+      - -ec
+      - npm i -g pnpm@10 >/dev/null && exec pnpm install --frozen-lockfile
+
+  # One-shot: apply the Drizzle schema to the local database.
+  migrate:
+    <<: *node-base
+    command:
+      - sh
+      - -ec
+      - npm i -g pnpm@10 >/dev/null && exec pnpm --filter @workspace/db run push-force
+    depends_on:
+      db:
+        condition: service_healthy
+      deps:
+        condition: service_completed_successfully
+    env_file:
+      - /run/base44/app.env
+    environment:
+      DATABASE_URL: postgres://candys:candys_local_dev@db:5432/candys
+
+  api:
+    <<: *node-base
+    restart: on-failure
+    command:
+      - sh
+      - -ec
+      - npm i -g pnpm@10 >/dev/null && exec pnpm --filter @workspace/api-server run dev
+    depends_on:
+      db:
+        condition: service_healthy
+      deps:
+        condition: service_completed_successfully
+      migrate:
+        condition: service_completed_successfully
+    # Dashboard-provided secrets (MercadoPago, Vercel Blob) live here, outside the repo.
+    env_file:
+      - /run/base44/app.env
+    environment:
+      PORT: "8080"
+      DATABASE_URL: postgres://candys:candys_local_dev@db:5432/candys
+      BASE44_PREVIEW_MODE: ${BASE44_PREVIEW_MODE:-}
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:8080/api/healthz').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
+
+  # The candys-pet-video artifact: the animated composition the storefront embeds
+  # in an iframe at /candys-pet-video/ (see its .replit-artifact/artifact.toml —
+  # path router, port 26272). Not published on its own host port; `web` proxies
+  # that path to it, exactly like the Replit path router / Vercel static copy do.
+  video:
+    <<: *node-base
+    restart: on-failure
+    command:
+      - sh
+      - -ec
+      - npm i -g pnpm@10 >/dev/null && exec pnpm --filter @workspace/candys-pet-video run dev
+    depends_on:
+      deps:
+        condition: service_completed_successfully
+    environment:
+      PORT: "26272"
+      BASE_PATH: /candys-pet-video/
+      BASE44_PREVIEW_MODE: ${BASE44_PREVIEW_MODE:-}
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:26272/candys-pet-video/').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
+
+  web:
+    <<: *node-base
+    restart: on-failure
+    command:
+      - sh
+      - -ec
+      - npm i -g pnpm@10 >/dev/null && exec pnpm --filter @workspace/candys-pet run dev
+    depends_on:
+      db:
+        condition: service_healthy
+      deps:
+        condition: service_completed_successfully
+      migrate:
+        condition: service_completed_successfully
+      video:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: "3000"
+      BASE_PATH: /
+      # Single-origin wiring: the storefront calls /api/* and Vite proxies it to the
+      # API container, so the admin session cookie stays on one origin.
+      API_PROXY_TARGET: http://api:8080
+      # ...and /candys-pet-video/ to the video container, which is what the
+      # storefront's iframe expects there. Without it that path falls through to
+      # Vite's SPA fallback and renders the storefront inside its own video slot.
+      VIDEO_PROXY_TARGET: http://video:26272
+      BASE44_PREVIEW_MODE: ${BASE44_PREVIEW_MODE:-}
+      __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS: ${__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS:-}
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 45s
+
+volumes:
+  db_data:
+  node_modules_root:
+  node_modules_api_server:
+  node_modules_candys_pet:
+  node_modules_candys_pet_video:
+  node_modules_mockup_sandbox:
+  node_modules_api_client_react:
+  node_modules_api_spec:
+  node_modules_api_zod:
+  node_modules_db:
+  node_modules_object_storage_web:
+  node_modules_scripts:

@@ -15,7 +15,7 @@ export interface CatalogData {
 }
 
 const DEFAULTS: CatalogData = {
-  prices: { price_m: 17990, price_l: 18990 },
+  prices: { price_m: 17990, price_l: 19990 },
   images: {},
   products: [],
 };
@@ -38,7 +38,7 @@ export function useCatalog() {
         prices: {
           ...Object.fromEntries(Object.entries(data.prices).filter(([key]) => key.startsWith('price_')).map(([key, value]) => [key, Number(value)])),
           price_m: parseInt(data.prices['price_m'] ?? '17990', 10) || 17990,
-          price_l: parseInt(data.prices['price_l'] ?? '18990', 10) || 18990,
+          price_l: parseInt(data.prices['price_l'] ?? '19990', 10) || 19990,
         },
         images: data.images ?? {},
         products: (data.products ?? []).map(product => ({
