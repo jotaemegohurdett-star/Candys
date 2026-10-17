@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "domains": ["candyspet.cl", "www.candyspet.cl"],
+  
   "installCommand": "pnpm install --frozen-lockfile",
   "buildCommand": "sh scripts/build-vercel.sh",
   "outputDirectory": "artifacts/candys-pet/dist/public",
