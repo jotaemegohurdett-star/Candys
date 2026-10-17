@@ -153,7 +153,7 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
   const currentPrice = (productId: string, size: 'M' | 'L') =>
     priceSettings[`price_${productId}_${size.toLowerCase()}`]
       ?? priceSettings[`price_${size.toLowerCase()}`]
-      ?? (size === 'M' ? '17990' : '18990');
+      ?? (size === 'M' ? '17990' : '19990');
 
   const beginPriceEdit = (product: Product) => {
     if (editingPriceProduct === product.id) {
@@ -1088,13 +1088,13 @@ function PricesTab({ products }: { products: Product[] }) {
 
   const fields = [
     { key: 'price_m', label: 'Precio general M', sub: 'Respaldo para productos sin precio propio', color: 'hsl(340 84% 50%)', fallback: '17990' },
-    { key: 'price_l', label: 'Precio general L', sub: 'Respaldo para productos sin precio propio', color: 'hsl(270 70% 55%)', fallback: '18990' },
+    { key: 'price_l', label: 'Precio general L', sub: 'Respaldo para productos sin precio propio', color: 'hsl(270 70% 55%)', fallback: '19990' },
     ...products.flatMap(product => (['M', 'L'] as const).map(size => ({
       key: `price_${product.id}_${size.toLowerCase()}`,
       label: `${product.name} · Talla ${size}`,
       sub: 'Precio exclusivo de este producto y talla',
       color: size === 'M' ? 'hsl(340 84% 50%)' : 'hsl(270 70% 55%)',
-      fallback: settings[`price_${size.toLowerCase()}`] ?? (size === 'M' ? '17990' : '18990'),
+      fallback: settings[`price_${size.toLowerCase()}`] ?? (size === 'M' ? '17990' : '19990'),
     }))),
   ];
 

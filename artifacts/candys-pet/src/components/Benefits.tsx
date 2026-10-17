@@ -88,7 +88,7 @@ const sizes = [
   },
   {
     talla: 'L',
-    precio: '$18.990',
+    precio: '$19.990',
     desc: 'Medianos o Duplas',
     detail: 'Hasta 10 kg · Máxima resistencia · Caben 2 perritos pequeños',
     color: '#a78bfa',
