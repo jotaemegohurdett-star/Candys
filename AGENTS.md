@@ -52,11 +52,19 @@ Non-obvious things worth knowing:
   uploads). Both are optional for boot; without them checkout falls back to WhatsApp
   transfer and uploads return 404. Do not move these keys under Compose `environment:` —
   that would permanently override the dashboard values.
-- The DB starts empty by design: the storefront renders its built-in `KNOWN_PRODUCTS` and
-  default prices (`price_m` 17990 / `price_l` 18990), and the admin panel at `/admin`
-  (default password `candys2025`, override with `ADMIN_PASSWORD`) fills the catalog.
-  There is no seed script; `catalog-original.json` is only for the authenticated
-  recovery endpoint.
+- **A fresh database serves an empty catalog, and that is user-visible.** Once
+  `/api/catalog` answers successfully the storefront treats the API list as the source of
+  truth, so with no rows the product grid renders *nothing* (the bundled `KNOWN_PRODUCTS`
+  only apply while the API is unavailable). Populate it through the app's own
+  authenticated recovery path, not with SQL:
+  `curl -c /tmp/cj -X POST http://localhost:3000/api/admin/login -H 'Content-Type: application/json' -d '{"password":"candys2025"}'`
+  then
+  `curl -b /tmp/cj -X POST http://localhost:3000/api/admin/catalog/recover-original`
+  → 30 stock rows, 24 image rows (rewritten to `/catalog-recovered/<id>.jpg`, which exist in
+  `artifacts/candys-pet/public/catalog-recovered/`) and the global prices. That yields 14
+  visible products (p6 stays hidden by design as a duplicate of p12); stock rows with qty 0
+  render an "AGOTADO" overlay. The admin panel is at `/admin` (default password
+  `candys2025`, `ADMIN_PASSWORD` overrides it).
 - Node 22 in Compose (the Replit original was Node 24); Vite 7 and Express 5 are fine on it.
 
 ## Checks
