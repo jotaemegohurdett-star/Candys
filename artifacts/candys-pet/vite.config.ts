@@ -74,7 +74,9 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        // API_PROXY_TARGET lets the containerized dev stack proxy to the API
+        // service; unset, it keeps the local Replit/localhost behavior.
+        target: process.env.API_PROXY_TARGET ?? 'http://localhost:8080',
         changeOrigin: true,
       },
     },

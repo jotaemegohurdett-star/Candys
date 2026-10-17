@@ -1,0 +1,17 @@
+{
+  "previewPort": 3000,
+  "healthPath": "/",
+  "startCommand": "docker compose -f docker-compose.base44.yml up -d",
+  "secrets": [
+    {
+      "name": "MP_ACCESS_TOKEN",
+      "description": "MercadoPago access token (production credentials from MercadoPago > Tus integraciones). Needed for the checkout redirect; without it /api/payment fails and the storefront falls back to WhatsApp transfer.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "BLOB_READ_WRITE_TOKEN",
+      "description": "Vercel Blob read/write token (Vercel project > Storage > Blob). Needed for admin product-image uploads; without it the storage upload route returns 404.",
+      "requiredAtBoot": false
+    }
+  ]
+}
