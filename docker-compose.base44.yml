@@ -145,6 +145,10 @@ services:
         condition: service_completed_successfully
       migrate:
         condition: service_completed_successfully
+      # The storefront proxies /api/* to this service; without it every catalog
+      # and stock request fails with ENOTFOUND/ECONNREFUSED.
+      api:
+        condition: service_healthy
       video:
         condition: service_healthy
     ports:
