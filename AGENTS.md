@@ -63,7 +63,10 @@ Non-obvious things worth knowing:
   → 30 stock rows, 24 image rows (rewritten to `/catalog-recovered/<id>.jpg`, which exist in
   `artifacts/candys-pet/public/catalog-recovered/`) and the global prices. That yields 14
   visible products (p6 stays hidden by design as a duplicate of p12); stock rows with qty 0
-  render an "AGOTADO" overlay. The admin panel is at `/admin` (default password
+  render an "AGOTADO" overlay. The snapshot's global prices are stale (`price_m` = 0,
+  `price_l` = 18990), so after recovering, restore them through the admin API:
+  `PUT /api/admin/settings/price_m` and `/price_l` with `{"value":"17990"}` /
+  `{"value":"19990"}` (0 makes the server reject every M checkout). The admin panel is at `/admin` (default password
   `candys2025`, `ADMIN_PASSWORD` overrides it).
 - Node 22 in Compose (the Replit original was Node 24); Vite 7 and Express 5 are fine on it.
 
