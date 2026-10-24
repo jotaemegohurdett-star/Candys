@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { priceCheckout, resolvePrice, positiveInteger, priceKey, CheckoutError, type CheckoutItem } from "./catalog-pricing";
 
-const settings = { price_m: "17990", price_l: "18990", price_p5_m: "22990", price_p5_l: "25990" };
+const settings = { price_m: "15990", price_l: "17990", price_p5_m: "22990", price_p5_l: "25990" };
 const stocks = [
   { productId: "p1", productName: "Bolso existente", size: "M", qty: 10 },
   { productId: "p5", productName: "Bolso nuevo", size: "M", qty: 3 },
@@ -23,9 +23,9 @@ test("product overrides are isolated and old products retain their global prices
   assert.equal(resolvePrice(editedProductSettings, "p5", "M"), 24990);
   assert.equal(priceCheckout([item()], editedProductSettings, stocks)[0].unit_price, 24990);
   assert.equal(resolvePrice(editedProductSettings, "p5", "L"), 25990);
-  assert.equal(resolvePrice(settings, "p1", "M"), 17990);
-  assert.equal(resolvePrice({ ...settings, price_m: "19990" }, "p5", "M"), 22990);
-  assert.equal(resolvePrice({}, "p1", "L"), 18990);
+  assert.equal(resolvePrice(settings, "p1", "M"), 15990);
+  assert.equal(resolvePrice({ ...settings, price_m: "16990" }, "p5", "M"), 22990);
+  assert.equal(resolvePrice({}, "p1", "L"), 17990);
 });
 
 test("browser price, title and currency are not authoritative", () => {

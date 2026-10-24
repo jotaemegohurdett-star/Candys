@@ -1,4 +1,4 @@
-export const DEFAULT_PRICES: Record<string, number> = { M: 17990, L: 18990 };
+export const DEFAULT_PRICES: Record<string, number> = { M: 15990, L: 17990 };
 export const CUSTOM_ITEM_PRICES: Record<string, number> = {
   "custom-veterinary-notebook-A6": 12990,
   "custom-veterinary-notebook-A5": 15990,

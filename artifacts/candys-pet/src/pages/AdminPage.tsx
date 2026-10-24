@@ -153,7 +153,7 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
   const currentPrice = (productId: string, size: 'M' | 'L') =>
     priceSettings[`price_${productId}_${size.toLowerCase()}`]
       ?? priceSettings[`price_${size.toLowerCase()}`]
-      ?? (size === 'M' ? '17990' : '19990');
+      ?? (size === 'M' ? '15990' : '17990');
 
   const beginPriceEdit = (product: Product) => {
     if (editingPriceProduct === product.id) {
@@ -380,7 +380,7 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
                 </label>
                 <input
                   {...field('priceM')}
-                  placeholder="17990"
+                  placeholder="15990"
                   inputMode="numeric"
                   className="w-full px-4 py-2.5 rounded-xl text-white text-sm focus:outline-none"
                   style={{ background: 'hsl(220 25% 8%)', border: '1px solid hsl(220 25% 25%)' }}
@@ -392,7 +392,7 @@ function ProductsTab({ products, onRefresh }: { products: Product[]; onRefresh: 
                 </label>
                 <input
                   {...field('priceL')}
-                  placeholder="19990"
+                  placeholder="17990"
                   inputMode="numeric"
                   className="w-full px-4 py-2.5 rounded-xl text-white text-sm focus:outline-none"
                   style={{ background: 'hsl(220 25% 8%)', border: '1px solid hsl(220 25% 25%)' }}
@@ -1087,14 +1087,14 @@ function PricesTab({ products }: { products: Product[] }) {
   if (loading) return <Spinner />;
 
   const fields = [
-    { key: 'price_m', label: 'Precio general M', sub: 'Respaldo para productos sin precio propio', color: 'hsl(340 84% 50%)', fallback: '17990' },
-    { key: 'price_l', label: 'Precio general L', sub: 'Respaldo para productos sin precio propio', color: 'hsl(270 70% 55%)', fallback: '19990' },
+    { key: 'price_m', label: 'Precio general M', sub: 'Respaldo para productos sin precio propio', color: 'hsl(340 84% 50%)', fallback: '15990' },
+    { key: 'price_l', label: 'Precio general L', sub: 'Respaldo para productos sin precio propio', color: 'hsl(270 70% 55%)', fallback: '17990' },
     ...products.flatMap(product => (['M', 'L'] as const).map(size => ({
       key: `price_${product.id}_${size.toLowerCase()}`,
       label: `${product.name} · Talla ${size}`,
       sub: 'Precio exclusivo de este producto y talla',
       color: size === 'M' ? 'hsl(340 84% 50%)' : 'hsl(270 70% 55%)',
-      fallback: settings[`price_${size.toLowerCase()}`] ?? (size === 'M' ? '17990' : '19990'),
+      fallback: settings[`price_${size.toLowerCase()}`] ?? (size === 'M' ? '15990' : '17990'),
     }))),
   ];
 
